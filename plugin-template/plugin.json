@@ -1,7 +1,7 @@
 {
   "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
   "name": "comparador-inteligente-compras",
-  "version": "0.7.0",
+  "version": "0.8.0",
   "description": "Pesquise produtos e compare custos reais de ofertas no ChatGPT Web. Projeto pessoal gratuito e de código aberto.",
   "license": "MIT",
   "author": {
@@ -19,9 +19,9 @@
           "Interactive"
         ],
         "defaultPrompt": [
-          "Quero pesquisar uma compra. Abra o formulário de critérios.",
-          "Pesquise ofertas com links diretos e prepare os valores para comparação.",
-          "Compare minhas ofertas usando os preços reais, o frete, os impostos e os cupons confirmados."
+          "Abra o formulário de pesquisa de compras aqui na conversa.",
+          "Pesquise os produtos selecionados e mostre os links encontrados no comparador do próprio chat.",
+          "Quero corrigir preços, frete e impostos e salvar a tabela de ofertas na conversa."
         ]
       }
     }
