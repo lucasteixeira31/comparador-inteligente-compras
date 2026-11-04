@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Pesquisar produtos — Comparador de Compras</title>
+<style>
+:root{font-family:system-ui,-apple-system,"Segoe UI",sans-serif;color:#1a2c43;color-scheme:light}
+*{box-sizing:border-box}body{margin:0;padding:12px;background:#f5f8fc}
+.panel{background:white;border:1px solid #dee6f0;border-radius:14px;padding:16px}
+h1{font-size:19px;line-height:1.3;margin:0 0 6px}p{font-size:13px;line-height:1.5;margin:8px 0;color:#5b6b7e}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(155px,1fr));gap:11px;margin-top:12px}
+.field{display:flex;flex-direction:column;gap:5px;font-size:13px;font-weight:600}
+input,textarea,select{font:inherit;color:#172638;border:1px solid #c2cfde;border-radius:8px;padding:9px;background:#fff;width:100%}
+textarea{min-height:70px;resize:vertical}
+fieldset{border:1px solid #dbe4ee;border-radius:10px;padding:10px 12px;margin:15px 0}
+legend{font-weight:650;font-size:13px}
+.shops{display:grid;grid-template-columns:repeat(auto-fit,minmax(138px,1fr));gap:9px}
+.shops label{display:flex;align-items:center;gap:7px;font-size:13px;white-space:nowrap}
+.shops input{width:auto}
+button{font:inherit;background:#0a745d;border:0;color:#fff;font-weight:650;border-radius:9px;padding:11px 17px;cursor:pointer}
+button:disabled{opacity:.6;cursor:not-allowed}
+button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-visible{outline:2px solid #428bcc;outline-offset:2px}
+.notice{padding:10px;background:#f1f7fc;border-radius:8px;color:#405268}
+.status{min-height:20px;font-size:13px;color:#8b5200;margin-top:9px}
+</style>
+</head>
+<body>
+<section class="panel">
+  <h1>Comparador de Compras</h1>
+  <p>Preencha o que deseja comprar. A pesquisa acontece na conversa do ChatGPT, e os anúncios encontrados aparecem em uma segunda tabela para conferir e salvar preços reais.</p>
+  <form id="search-form">
+    <div class="grid">
+      <label class="field" style="grid-column:1/-1">Produto *<input id="product" maxlength="200" placeholder="Ex.: blusa preta masculina" required></label>
+      <label class="field" style="grid-column:1/-1">Características obrigatórias<textarea id="features" placeholder="Ex.: tamanho M, algodão, manga longa"></textarea></label>
+      <label class="field">Orçamento total (R$)<input id="budget" inputmode="decimal" placeholder="Opcional"></label>
+      <label class="field">Quantidade<input id="quantity" type="number" min="1" max="1000" step="1" value="1" required></label>
+      <label class="field">CEP para frete (opcional)<input id="zip" inputmode="numeric" maxlength="9" placeholder="00000-000"></label>
+      <label class="field">Condição<select id="condition"><option value="novo">Novo</option><option value="qualquer">Qualquer</option><option value="usado">Usado</option></select></label>
+    </div>
+    <fieldset><legend>Marketplaces para pesquisar *</legend>
+      <div id="shops" class="shops"></div>
+    </fieldset>
+    <button id="submit" type="submit">Pesquisar</button>
+    <p id="status" class="status" role="status" aria-live="polite"></p>
+  </form>
+  <p class="notice">Os resultados são limitados aos anúncios localizados nas fontes disponíveis ao ChatGPT. Encontrar um preço baixo não garante o menor preço absoluto de cada marketplace.</p>
+</section>
+<script>
+(function(){
+"use strict";
+const shops=["Mercado Livre","Shopee","AliExpress","Amazon","SHEIN","Temu"];
+const $=id=>document.getElementById(id);
+const form=$("search-form");
+const status=text=>{$("status").textContent=text;};
+const plain=value=>String(value??"").trim();
+let restored=false;
+const snapshot=()=>({
+  produto:plain($("product").value),
+  caracteristicas:plain($("features").value).split(/[\n,;]+/).map(x=>x.trim()).filter(Boolean).slice(0,8),
+  orcamento:plain($("budget").value),
+  quantidade:Number($("quantity").value),
+  cep:plain($("zip").value),
+  condicao:$("condition").value,
+  lojas:[...document.querySelectorAll("[data-marketplace]:checked")].map(x=>x.value)
+});
+const restore=(obj)=>{
+  if(!obj||typeof obj!=="object")return;
+  if(obj.produto!==undefined)$("product").value=plain(obj.produto);
+  if(Array.isArray(obj.caracteristicas))$("features").value=obj.caracteristicas.join(", ");
+  if(obj.orcamento!==undefined)$("budget").value=plain(obj.orcamento);
+  if(obj.quantidade!==undefined&&Number.isInteger(Number(obj.quantidade))&&Number(obj.quantidade)>0)$("quantity").value=obj.quantidade;
+  if(obj.cep!==undefined)$("zip").value=plain(obj.cep);
+  if(["novo","usado","qualquer"].includes(obj.condicao))$("condition").value=obj.condicao;
+  if(Array.isArray(obj.lojas)){
+    for(const input of document.querySelectorAll("[data-marketplace]"))input.checked=obj.lojas.includes(input.value);
+  }
+};
+const storeDraft=()=>{
+  try{window.openai?.setWidgetState?.({privateContent:{criterios:snapshot()},modelContent:"Critérios de pesquisa selecionados pelo usuário."});}catch{}
+};
+for(const shop of shops){
+  const label=document.createElement("label"),box=document.createElement("input");
+  box.type="checkbox";box.value=shop;box.dataset.marketplace="1";
+  box.checked=["Mercado Livre","Shopee","AliExpress"].includes(shop);
+  label.append(box,document.createTextNode(shop));$("shops").append(label);
+}
+const load=()=>{
+  if(restored)return;
+  const state=window.openai?.widgetState;
+  const source=state?.privateContent?.criterios||window.openai?.toolOutput||window.openai?.toolInput;
+  if(source&&typeof source==="object"){restore(source);restored=true;}
+};
+load();
+window.addEventListener("openai:set_globals",load);
+form.addEventListener("change",storeDraft);
+form.addEventListener("submit",async event=>{
+  event.preventDefault();
+  const data=snapshot();
+  if(!data.produto){status("Informe o produto.");return;}
+  if(!Number.isInteger(data.quantidade)||data.quantidade<1||data.quantidade>1000){status("Quantidade inválida.");return;}
+  if(!data.lojas.length){status("Selecione pelo menos um marketplace.");return;}
+  if(data.orcamento&&!/^\d+(?:[.,]\d{1,2})?$/.test(data.orcamento)){status("Informe um orçamento válido.");return;}
+  if(data.cep&&!/^\d{5}-?\d{3}$/.test(data.cep)){status("Informe um CEP válido ou deixe vazio.");return;}
+  if(typeof window.openai?.sendFollowUpMessage!=="function"){
+    status("Este cliente não disponibilizou o envio para a conversa. Use o plugin no ChatGPT Web com suporte a interfaces MCP Apps.");
+    return;
+  }
+  storeDraft();$("submit").disabled=true;status("Enviando os critérios para a pesquisa na conversa...");
+  const criteria=JSON.stringify(data);
+  const message="Continue esta compra com o Comparador de Compras. Critérios definidos no formulário interativo: "+
+    criteria+". Use planejar_busca_profunda e pesquise anúncios individuais reais nas lojas selecionadas com as ferramentas de pesquisa disponíveis. Mostre links e preços anunciados verificados na fonte, não invente valores. Após a pesquisa, chame obrigatoriamente abrir_tabela_comparacao com produto, quantidade e ofertas reais encontradas, para eu corrigir preço, frete, impostos e taxas e SALVAR na tabela INLINE no próprio chat, sem abrir outras abas. Se não houver pesquisa disponível, explique a limitação e abra a tabela vazia para cadastro manual.";
+  try{
+    await window.openai.sendFollowUpMessage({prompt:message});
+    status("Pesquisa solicitada ao ChatGPT.");
+  }catch{
+    status("Não foi possível enviar a pesquisa. Tente novamente.");
+  }finally{
+    $("submit").disabled=false;
+  }
+});
+})();
+</script>
+</body>
+</html>
