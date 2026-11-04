@@ -1,5 +1,5 @@
 interface:
-  display_name: Comparador de Compras
+  display_name: comprar
   short_description: Compare ofertas e custos reais
 policy:
   products:
