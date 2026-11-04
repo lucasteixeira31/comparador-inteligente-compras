@@ -1,0 +1,50 @@
+name: Verificar MCP de compras
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'app/**'
+      - 'src/**'
+      - 'public/widget-*.html'
+      - 'scripts/smoke-mcp.mjs'
+      - 'tests/**'
+      - 'package.json'
+      - '.github/workflows/verificar-mcp.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  validar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - name: Baixar codigo
+        uses: actions/checkout@v4
+      - name: Configurar Node 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Instalar dependencias
+        run: npm install --no-audit --no-fund
+      - name: Rodar testes automatizados
+        run: npm test
+      - name: Aguardar implantacao da versao 0.8.0
+        shell: bash
+        run: |
+          ok=0
+          for i in $(seq 1 18); do
+            if curl -fsS --max-time 10 'https://comparador-inteligente-compras.vercel.app/api/status' | grep -q '"versao_servidor":"0.8.0"'; then
+              ok=1
+              break
+            fi
+            sleep 8
+          done
+          if [ "$ok" != 1 ]; then
+            echo "Servidor da versao esperada nao esta disponivel."
+            exit 1
+          fi
+      - name: Testar ferramentas e recursos MCP publicados
+        run: node scripts/smoke-mcp.mjs
