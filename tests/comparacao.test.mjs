@@ -50,3 +50,14 @@ test("bloqueia marketplaces nao aprovados e links de dominios diferentes",()=>{
   const res=prepararPesquisa({produto:"Blusa",lojas:["SHEIN","Temu"]});
   assert.deepEqual(res.lojas,["SHEIN","Temu"]);
 });
+
+test("permite varias ofertas dentro do mesmo marketplace sem pontuar vendedores",()=>{
+  const res = compararOfertas({quantidade:1,ofertas:[
+    {loja:"Mercado Livre",produto:"Camiseta M",url:"https://produto.mercadolivre.com.br/MLB-1234567890-camiseta",preco_unitario:40,frete:10,impostos:0,outras_taxas:0,disponivel:true},
+    {loja:"Mercado Livre",produto:"Camiseta M",url:"https://produto.mercadolivre.com.br/MLB-9876543210-camiseta",preco_unitario:39,frete:0,impostos:0,outras_taxas:0,disponivel:true}
+  ]});
+  assert.equal(res.ranking.length,2);
+  assert.equal(res.menor_total.loja,"Mercado Livre");
+  assert.equal(res.menor_total.total,39);
+  assert.equal(Object.hasOwn(res.ranking[0],"reputacao_vendedor"),false);
+});
