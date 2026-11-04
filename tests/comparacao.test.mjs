@@ -42,3 +42,11 @@ test("prepara pesquisa sem alegar ter efetuado busca",()=>{
   assert.equal(res.status,"criterios_preparados_sem_busca_remota");
   assert.equal(res.lojas.length,3);
 });
+
+test("bloqueia marketplaces nao aprovados e links de dominios diferentes",()=>{
+  assert.throws(()=>prepararPesquisa({produto:"Blusa",lojas:["Alibaba"]}),/Selecione pelo menos uma loja/);
+  assert.throws(()=>compararOfertas({ofertas:[{loja:"Alibaba",preco_unitario:12}]}),/Marketplace não autorizado/);
+  assert.throws(()=>compararOfertas({ofertas:[{loja:"SHEIN",url:"https://br.shein.com.evil.example/p-123.html",preco_unitario:12}]}),/Link não corresponde/);
+  const res=prepararPesquisa({produto:"Blusa",lojas:["SHEIN","Temu"]});
+  assert.deepEqual(res.lojas,["SHEIN","Temu"]);
+});

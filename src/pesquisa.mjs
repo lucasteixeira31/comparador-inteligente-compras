@@ -1,17 +1,6 @@
-import { LOJAS } from "./comparacao.mjs";
+import { LOJAS, DOMINIOS, dominioAutorizado } from "./comparacao.mjs";
 
-export const DOMINIOS = Object.freeze({
-  "Mercado Livre": ["mercadolivre.com.br"],
-  "Shopee": ["shopee.com.br"],
-  "AliExpress": ["aliexpress.com"],
-  "Amazon": ["amazon.com.br"],
-  "Temu": ["temu.com"],
-  "Alibaba": ["alibaba.com"]
-});
-
-function permitido(hostname, loja) {
-  return DOMINIOS[loja].some(dominio => hostname === dominio || hostname.endsWith("." + dominio));
-}
+export { DOMINIOS };
 
 function caminhoDeAnuncio(url, loja) {
   const path = url.pathname.toLowerCase();
@@ -20,7 +9,7 @@ function caminhoDeAnuncio(url, loja) {
   if (loja === "AliExpress") return /\/item\/\d+\.html/.test(path);
   if (loja === "Amazon") return /\/(?:dp|gp\/product)\/[a-z0-9]{10}/.test(path);
   if (loja === "Temu") return /-g-\d+\.html/.test(path) || (path.includes("/goods.html") && url.searchParams.has("goods_id"));
-  if (loja === "Alibaba") return /\/product-detail\//.test(path);
+  if (loja === "SHEIN") return /-p-\d+\.html$/.test(path);
   return false;
 }
 
@@ -28,7 +17,7 @@ export function verificarAnuncio(link, loja) {
   if (!LOJAS.includes(loja)) return null;
   try {
     const u = new URL(link);
-    if (u.protocol !== "https:" || u.username || u.password || !permitido(u.hostname.toLowerCase(), loja)) return null;
+    if (!dominioAutorizado(u.toString(), loja)) return null;
     if (!caminhoDeAnuncio(u, loja)) return null;
     u.hash = "";
     return u.toString();

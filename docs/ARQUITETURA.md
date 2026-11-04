@@ -9,6 +9,10 @@
 - Compartilhar o código não significa conceder acesso a contas de lojas; as APIs oficiais exigem aprovações próprias.
 - Nenhum segredo ou token de serviço nos ZIPs ou no repositório.
 
+## Marketplaces autorizados
+
+Somente Mercado Livre, Shopee, AliExpress, Amazon, SHEIN e Temu nesta fase. Lista fechada no backend, filtros de domínio na descoberta, validação da plataforma na comparação, links HTTPS oficiais e nenhuma confiança presumida no vendedor. Alibaba está fora da primeira versão de compras ao consumidor.
+
 ## Componentes
 
 1. Plugin: skill em português + MCP remoto para ferramentas estruturadas.

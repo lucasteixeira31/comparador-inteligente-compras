@@ -15,6 +15,12 @@ A versão Lite não dispõe de API nem armazenamento remoto; usa as pesquisas qu
 - **Lite (já empacotada):** skill de pesquisa e comparação. Não contém MCP, autenticação, busca oficial de lojas nem tabela sincronizada. Apenas para quem tiver permissão de upload de ZIP no ChatGPT.
 - **MCP (v0.3.0 — teste privado):** endpoint remoto central implantado, plugin privado vinculado, ferramentas de preparação de critérios e comparação. Ainda sem buscas verificadas em lojas ou interface editável dentro do ChatGPT. A distribuição pública será liberada após validação.
 
+## Marketplaces permitidos
+
+A lista inicial é fechada: **Mercado Livre, Shopee, AliExpress, Amazon, SHEIN e Temu**. Alibaba e demais plataformas não estão habilitados nesta versão. A inclusão de novas lojas exige revisão e atualização explícita da lista.
+
+Os resultados da busca são aceitos apenas quando o domínio pertence ao marketplace autorizado e o link corresponde ao formato de anúncio individual reconhecido. Uma plataforma conhecida não garante que todos os vendedores sejam confiáveis: reputação, histórico, condições de envio, proteção ao comprador e autenticidade do produto permanecem sujeitos à verificação. Se não houver dados confiáveis sobre o vendedor, o sistema deve sinalizar **não verificado**, e jamais declarar que é seguro sem evidências.
+
 ## Como funciona
 
 - `preparar_pesquisa`: valida e organiza os critérios da compra, sem alegar que consultou lojas.

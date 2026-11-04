@@ -1,4 +1,25 @@
-export const LOJAS = ["Mercado Livre", "Shopee", "AliExpress", "Amazon", "Temu", "Alibaba"];
+export const LOJAS = ["Mercado Livre", "Shopee", "AliExpress", "Amazon", "SHEIN", "Temu"];
+
+export const DOMINIOS = Object.freeze({
+  "Mercado Livre": ["mercadolivre.com.br"],
+  "Shopee": ["shopee.com.br"],
+  "AliExpress": ["aliexpress.com"],
+  "Amazon": ["amazon.com.br"],
+  "SHEIN": ["shein.com"],
+  "Temu": ["temu.com"]
+});
+
+export function dominioAutorizado(link, loja) {
+  if (!LOJAS.includes(loja) || typeof link !== "string") return false;
+  try {
+    const u = new URL(link);
+    if (u.protocol !== "https:" || u.username || u.password) return false;
+    const hostname = u.hostname.toLowerCase();
+    return DOMINIOS[loja].some(d => hostname === d || hostname.endsWith("." + d));
+  } catch {
+    return false;
+  }
+}
 
 export function cents(value) {
   if (value === null || value === undefined || value === "") return null;
@@ -36,6 +57,9 @@ export function prepararPesquisa({produto, caracteristicas = [], lojas = LOJAS.s
 export function compararOfertas({quantidade = 1, ofertas = []}) {
   if (!Number.isInteger(quantidade) || quantidade < 1 || quantidade > 1000) throw new Error("Quantidade inválida.");
   const result = ofertas.map((o, i) => {
+    if (!LOJAS.includes(o.loja)) throw new Error("Marketplace não autorizado: " + String(o.loja));
+    if (o.url !== undefined && o.url !== null && o.url !== "" && !dominioAutorizado(o.url, o.loja))
+      throw new Error("Link não corresponde ao domínio oficial do marketplace: " + o.loja);
     const preco = cents(o.preco_unitario);
     const frete = cents(o.frete);
     const impostos = cents(o.impostos);

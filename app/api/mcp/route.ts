@@ -34,7 +34,7 @@ const handler = createMcpHandler((server) => {
     inputSchema: z.object({
       quantidade: z.number().int().min(1).max(1000).default(1),
       ofertas: z.array(z.object({
-        id: z.string().optional(), loja: z.string(), produto: z.string().optional(), url: z.string().url().nullable().optional(),
+        id: z.string().optional(), loja, produto: z.string().optional(), url: z.string().url().nullable().optional(),
         preco_unitario: dinheiro, frete: dinheiro, impostos: dinheiro, outras_taxas: dinheiro,
         disponivel: z.boolean().nullable().optional(),
         desconto_tipo: z.enum(["fixo", "percentual"]).default("fixo"),

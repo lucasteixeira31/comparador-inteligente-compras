@@ -8,7 +8,8 @@ test("aceita links individuais e rejeita paginas de categoria", () => {
   assert.ok(verificarAnuncio("https://pt.aliexpress.com/item/1005001234567890.html", "AliExpress"));
   assert.ok(verificarAnuncio("https://www.amazon.com.br/dp/B012345678", "Amazon"));
   assert.ok(verificarAnuncio("https://www.temu.com/br/exemplo-g-60123456789.html", "Temu"));
-  assert.ok(verificarAnuncio("https://portuguese.alibaba.com/product-detail/item-123.html", "Alibaba"));
+  assert.ok(verificarAnuncio("https://br.shein.com/Blusa-Casual-p-477913062.html", "SHEIN"));
+  assert.equal(verificarAnuncio("https://portuguese.alibaba.com/product-detail/item-123.html", "Alibaba"), null);
   assert.equal(verificarAnuncio("https://lista.mercadolivre.com.br/notebook", "Mercado Livre"), null);
   assert.equal(verificarAnuncio("https://www.amazon.com.br/s?k=notebook", "Amazon"), null);
 });
@@ -17,6 +18,8 @@ test("recusa links adulterados e outros protocolos", () => {
   assert.equal(verificarAnuncio("https://mercadolivre.com.br.evil.example/MLB-1234567", "Mercado Livre"), null);
   assert.equal(verificarAnuncio("http://produto.mercadolivre.com.br/MLB-1234567", "Mercado Livre"), null);
   assert.equal(verificarAnuncio("https://attacker@produto.mercadolivre.com.br/MLB-1234567", "Mercado Livre"), null);
+  assert.equal(verificarAnuncio("https://br.shein.com.evil.example/Blusa-p-477913062.html", "SHEIN"), null);
+  assert.equal(verificarAnuncio("https://br.shein.com/Women-Tops-c-1000.html", "SHEIN"), null);
 });
 
 test("sem chave retorna estado explicito e nao inventa ofertas", async () => {

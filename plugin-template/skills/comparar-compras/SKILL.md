@@ -3,15 +3,19 @@ name: comparar-compras
 description: Use quando alguém acionar o Comparador de Compras para iniciar uma pesquisa, pesquisar produtos em diferentes lojas, validar vendedores, comparar ofertas, atualizar preço do carrinho, frete, impostos, cupons ou classificar custo-benefício.
 ---
 
-# Comparador Inteligente de Compras — versão 0.4
+# Comparador Inteligente de Compras — versão 0.5
 
 ## Objetivo
 
 Ajudar a escolher a oferta mais adequada com critérios verificáveis, links individuais, custo total e comparação editável. Nunca inventar disponibilidade, reputação, preço, frete, imposto, desconto ou avaliação de vendedor.
 
+## Marketplaces aprovados e avaliação de confiança
+
+A lista fechada desta fase é Mercado Livre, Shopee, AliExpress, Amazon, SHEIN e Temu. Não pesquisar, recomendar, calcular ou inserir ofertas de outras lojas como parte do comparador. Outras lojas somente entram após revisão explícita do mantenedor e mudança da lista autorizada. Aceitar exclusivamente links HTTPS de páginas de anúncio em domínios oficiais reconhecidos, nunca domínios parecidos, redirecionamentos suspeitos ou resultados patrocinados de sites externos. Não confundir a reputação da plataforma com a do vendedor: reputação e avaliações do vendedor, autenticidade do produto, política de devolução e custos devem ser verificados quando houver fontes confiáveis; na ausência delas, sinalizar "não verificado", sem garantia de segurança.
+
 ## Abertura
 
-Quando a intenção for começar uma compra, oferecer um formulário visual compacto, quando o ambiente aceitar controles interativos. Campos: produto obrigatório, características desejadas/obrigatórias, teto de orçamento total opcional, quantidade padrão 1, CEP opcional, condição novo/usado/qualquer, marketplaces Mercado Livre/Shopee/AliExpress/Temu/Amazon/Alibaba, prazo e categoria opcionais. Selecionar Mercado Livre, Shopee e AliExpress por padrão. Não exigir login pessoal em marketplaces. Se o usuário já informou algum campo, preencher a partir da conversa e não perguntar novamente.
+Quando a intenção for começar uma compra, oferecer um formulário visual compacto, quando o ambiente aceitar controles interativos. Campos: produto obrigatório, características desejadas/obrigatórias, teto de orçamento total opcional, quantidade padrão 1, CEP opcional, condição novo/usado/qualquer, marketplaces Mercado Livre/Shopee/AliExpress/Amazon/SHEIN/Temu, prazo e categoria opcionais. Selecionar Mercado Livre, Shopee e AliExpress por padrão. Não exigir login pessoal em marketplaces. Se o usuário já informou algum campo, preencher a partir da conversa e não perguntar novamente.
 
 O botão primário deve se chamar `Pesquisar`. Ao clicar, se houver suporte a `GenUI.issueNewTurn`, enviar uma mensagem ao chat com todos os critérios atuais e com instrução de pesquisar links de anúncios individuais, não páginas genéricas de pesquisa. Se não houver suporte a formulários interativos, coletar apenas campos essenciais em uma mensagem e iniciar a pesquisa quando houver dados suficientes. Não anunciar que uma interface ou controle funcionou sem testar.
 
@@ -45,7 +49,7 @@ Não usar scraping proibido, burlar limites, login por cookies de terceiros ou c
 
 ## Pesquisa indexada por marketplace
 
-O MCP dispõe de `pesquisar_ofertas` além de `preparar_pesquisa` e `comparar_carrinhos`. Quando o usuário deseja pesquisar produtos, pode acionar `pesquisar_ofertas` com nome, características e lojas escolhidas. Essa ferramenta usa a API de busca web Tavily, cuja chave pertence exclusivamente ao mantenedor e fica armazenada na Vercel, nunca no plugin ou no dispositivo do usuário. Ela NÃO é uma API oficial de Mercado Livre, Shopee, AliExpress, Amazon, Temu ou Alibaba.
+O MCP dispõe de `pesquisar_ofertas` além de `preparar_pesquisa` e `comparar_carrinhos`. Quando o usuário deseja pesquisar produtos, pode acionar `pesquisar_ofertas` com nome, características e lojas escolhidas. Essa ferramenta usa a API de busca web Tavily, cuja chave pertence exclusivamente ao mantenedor e fica armazenada na Vercel, nunca no plugin ou no dispositivo do usuário. Ela NÃO é uma API oficial de Mercado Livre, Shopee, AliExpress, Amazon, Temu ou SHEIN.
 
 Se a resposta contiver `status: credencial_da_busca_pendente`, explicar que a pesquisa remota ainda não foi habilitada pelo mantenedor; não fingir resultados. Se um marketplace estiver em estado de erro, quota esgotada, sem link individual ou sem acesso, dizer qual é a limitação, sem inventar ofertas. Todos os links retornados pela indexação são candidatos a anúncio, não confirmações. Não preencher preço, imposto, frete, disponibilidade, qualidade do vendedor ou correspondência exata com base apenas em snippets de busca. Usar as ferramentas de pesquisa disponíveis no ChatGPT para ajudar a confirmar quando permitido e indicar a situação de verificação de cada link. Aplicar o comparador de carrinhos somente após obter os valores informados ou confirmados, mantendo desconhecidos como nulos.
 
