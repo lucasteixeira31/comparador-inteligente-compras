@@ -1,0 +1,30 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
+  "name": "comparador-inteligente-compras",
+  "version": "0.3.0",
+  "description": "Pesquise produtos e compare custos reais de ofertas no ChatGPT Web. Projeto pessoal gratuito e de código aberto.",
+  "license": "MIT",
+  "author": {
+    "name": "Comunidade do Comparador Inteligente de Compras"
+  },
+  "extensions": {
+    "com.openai": {
+      "interface": {
+        "displayName": "Comparador de Compras",
+        "developerName": "Comparador Inteligente de Compras",
+        "shortDescription": "Compare ofertas e custos reais",
+        "longDescription": "Organize uma compra, encontre anúncios com links individuais e compare frete, impostos e cupons confirmados. O servidor público não exige que o usuário configure a Vercel.",
+        "category": "Productivity",
+        "capabilities": [
+          "Interactive"
+        ],
+        "defaultPrompt": [
+          "Quero pesquisar uma compra. Abra o formulário de critérios.",
+          "Pesquise ofertas com links diretos e prepare os valores para comparação.",
+          "Compare minhas ofertas usando os preços reais, o frete, os impostos e os cupons confirmados."
+        ]
+      }
+    }
+  },
+  "skills": "./skills"
+}
