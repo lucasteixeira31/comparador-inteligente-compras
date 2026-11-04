@@ -1,6 +1,7 @@
 import { createMcpHandler } from "mcp-handler";
 import { z } from "zod";
 import { pesquisarOfertas } from "../../../src/pesquisa.mjs";
+import { planejarBuscaProfunda, analisarBuscaProfunda } from "../../../src/busca-profunda.mjs";
 import { compararOfertas, prepararPesquisa, LOJAS } from "../../../src/comparacao.mjs";
 
 export const runtime = "nodejs";
@@ -62,6 +63,51 @@ const handler = createMcpHandler((server) => {
   }, async args => {
     const dados = await pesquisarOfertas(args as any);
     return { content: [{ type: "text", text: JSON.stringify(dados) }], structuredContent: dados };
+  });
+
+  server.registerTool("planejar_busca_profunda", {
+    title: "Planejar pesquisa ampla por marketplace",
+    description: "Gera múltiplas consultas precisas por marketplace aprovado, sem consumir APIs, sem executar consultas nem inventar resultados.",
+    inputSchema: z.object({
+      produto: z.string().min(1).max(200),
+      caracteristicas_obrigatorias: z.array(z.string().max(100)).max(8).default([]),
+      lojas: z.array(loja).min(1).max(6).default(["Mercado Livre","Shopee","AliExpress","Amazon","SHEIN","Temu"]),
+      max_consultas_por_loja: z.number().int().min(1).max(4).default(3)
+    }),
+    annotations: {readOnlyHint:true,destructiveHint:false,idempotentHint:true,openWorldHint:false}
+  }, async args => {
+    const dados = planejarBuscaProfunda(args as any);
+    return {content:[{type:"text",text:JSON.stringify(dados)}],structuredContent:dados};
+  });
+
+  server.registerTool("analisar_busca_profunda", {
+    title: "Filtrar e comparar anúncios coletados",
+    description: "Analisa ofertas fornecidas, valida links diretos de marketplaces, deduplica, identifica diferenças de preço anunciado e custo final, com cobertura e pendências. Não consulta lojas nem verifica preços por conta própria.",
+    inputSchema: z.object({
+      produto: z.string().min(1).max(200),
+      caracteristicas_obrigatorias: z.array(z.string().max(100)).max(8).default([]),
+      lojas: z.array(loja).min(1).max(6).default(["Mercado Livre","Shopee","AliExpress","Amazon","SHEIN","Temu"]),
+      quantidade: z.number().int().min(1).max(1000).default(1),
+      ofertas: z.array(z.object({
+        loja,
+        titulo: z.string().min(1).max(300),
+        url: z.string().url(),
+        preco_unitario: dinheiro,
+        frete: dinheiro,
+        impostos: dinheiro,
+        outras_taxas: dinheiro,
+        disponivel: z.boolean().nullable().optional(),
+        produto_confirmado: z.boolean().default(false),
+        preco_confirmado_carrinho: z.boolean().default(false),
+        frete_confirmado_carrinho: z.boolean().default(false),
+        impostos_confirmados_carrinho: z.boolean().default(false),
+        origem: z.string().max(100).optional()
+      })).max(100).default([])
+    }),
+    annotations: {readOnlyHint:true,destructiveHint:false,idempotentHint:true,openWorldHint:false}
+  }, async args => {
+    const dados = analisarBuscaProfunda(args as any);
+    return {content:[{type:"text",text:JSON.stringify(dados)}],structuredContent:dados};
   });
 });
 

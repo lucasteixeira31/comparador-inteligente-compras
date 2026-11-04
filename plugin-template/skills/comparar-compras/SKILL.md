@@ -3,7 +3,7 @@ name: comparar-compras
 description: Use quando alguém acionar o Comparador de Compras para iniciar uma pesquisa, pesquisar produtos em diferentes lojas, comparar anúncios de marketplaces aprovados, atualizar preço do carrinho, frete, impostos, cupons ou classificar custo-benefício.
 ---
 
-# Comparador Inteligente de Compras — versão 0.5.1
+# Comparador Inteligente de Compras — versão 0.6
 
 ## Objetivo
 
@@ -18,6 +18,14 @@ A lista fechada desta fase é Mercado Livre, Shopee, AliExpress, Amazon, SHEIN e
 Quando a intenção for começar uma compra, oferecer um formulário visual compacto, quando o ambiente aceitar controles interativos. Campos: produto obrigatório, características desejadas/obrigatórias, teto de orçamento total opcional, quantidade padrão 1, CEP opcional, condição novo/usado/qualquer, marketplaces Mercado Livre/Shopee/AliExpress/Amazon/SHEIN/Temu, prazo e categoria opcionais. Selecionar Mercado Livre, Shopee e AliExpress por padrão. Não exigir login pessoal em marketplaces. Se o usuário já informou algum campo, preencher a partir da conversa e não perguntar novamente.
 
 O botão primário deve se chamar `Pesquisar`. Ao clicar, se houver suporte a `GenUI.issueNewTurn`, enviar uma mensagem ao chat com todos os critérios atuais e com instrução de pesquisar links de anúncios individuais, não páginas genéricas de pesquisa. Se não houver suporte a formulários interativos, coletar apenas campos essenciais em uma mensagem e iniciar a pesquisa quando houver dados suficientes. Não anunciar que uma interface ou controle funcionou sem testar.
+
+## Pesquisa profunda e análise de preços
+
+Se a intenção for encontrar o menor preço, primeiro chamar `planejar_busca_profunda` com o produto, os critérios obrigatórios e os marketplaces selecionados. A ferramenta devolve consultas diversificadas e **não executa a pesquisa**. Usar as ferramentas de pesquisa que estiverem disponíveis no ChatGPT para obter URLs individuais e valores com fontes. Se não houver acesso a resultados reais, declarar a limitação: não construir uma lista fictícia.
+
+Após coletar anúncios, chamar `analisar_busca_profunda` com as URLs, nomes e valores realmente obtidos. Usar a resposta para exibir o menor preço anunciado provisório por marketplace, rejeições, duplicatas, características não comprovadas e, quando existir, o menor custo total confirmado. Não presumir frete grátis ou impostos iguais a zero. Preço encontrado em snippet ou índice não equivale a checkout confirmado. Informar explicitamente que os rankings são limitados aos anúncios analisados; não prometer menor preço absoluto de toda a internet.
+
+Não usar reputação de vendedor como fator; a unidade de comparação é o anúncio hospedado em uma das seis plataformas oficiais. O planejamento gratuito não depende da chave Tavily; a ferramenta `pesquisar_ofertas` continua opcional e exige uma chave mantida pelo administrador.
 
 ## Pesquisa
 
@@ -57,4 +65,4 @@ O plano Researcher da Tavily oferece franquia mensal gratuita e tem limite. A AP
 
 ## Limitações desta versão
 
-Este plugin agora declara uma conexão MCP HTTP hospedada na Vercel com três ferramentas: `preparar_pesquisa` (critérios), `pesquisar_ofertas` (descoberta de links por índice web, dependente de configuração Tavily) e `comparar_carrinhos` (cálculo de frete, impostos e descontos confirmados). O servidor NÃO possui acesso direto às APIs de listagens dos marketplaces, NÃO verifica checkout automaticamente e NÃO mantém sessões em banco remoto. Usar os recursos de pesquisa disponíveis no ChatGPT quando autorizados, distinguindo com rigor os anúncios efetivamente verificados. O protótipo de tabela em `/comparador.html` salva localmente no navegador, mas ainda não é uma UI MCP integrada ao chat. O plugin permanece privado e não está publicado no diretório público.
+Este plugin declara uma conexão MCP HTTP hospedada na Vercel com cinco ferramentas: `planejar_busca_profunda` (plano gratuito sem coleta), `analisar_busca_profunda` (filtro e comparação de resultados recebidos), e `preparar_pesquisa` (critérios), `pesquisar_ofertas` (descoberta de links por índice web, dependente de configuração Tavily) e `comparar_carrinhos` (cálculo de frete, impostos e descontos confirmados). O servidor NÃO possui acesso direto às APIs de listagens dos marketplaces, NÃO verifica checkout automaticamente e NÃO mantém sessões em banco remoto. Usar os recursos de pesquisa disponíveis no ChatGPT quando autorizados, distinguindo com rigor os anúncios efetivamente verificados. O protótipo de tabela em `/comparador.html` salva localmente no navegador, mas ainda não é uma UI MCP integrada ao chat. O plugin permanece privado e não está publicado no diretório público.

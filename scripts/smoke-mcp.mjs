@@ -39,7 +39,7 @@ const session = init.response.headers.get("mcp-session-id");
 await request("notifications/initialized", {}, undefined, session);
 const tools = await request("tools/list", {}, 2, session);
 const names = tools.data.result?.tools?.map(t => t.name) || [];
-for (const name of ["preparar_pesquisa", "comparar_carrinhos", "pesquisar_ofertas"]) {
+for (const name of ["preparar_pesquisa", "comparar_carrinhos", "pesquisar_ofertas", "planejar_busca_profunda", "analisar_busca_profunda"]) {
   if (!names.includes(name)) throw Error("Missing tool: " + name);
 }
 const call = await request("tools/call", {
@@ -67,3 +67,20 @@ if (output.ranking?.[0]?.total !== 173) {
   throw Error("Unexpected calculator result: " + JSON.stringify(output));
 }
 console.log(JSON.stringify({status:"ok",initialize:init.data.result.protocolVersion,tools:names,comparison:output.ranking[0].total,runId}));
+
+const plan = await request("tools/call", {
+  name:"planejar_busca_profunda",
+  arguments:{produto:"blusa",caracteristicas_obrigatorias:["preta","tamanho M"],lojas:["Shopee","Mercado Livre"]}
+},4,session);
+const p = plan.data.result?.structuredContent || JSON.parse(plan.data.result?.content?.find(c=>c.type==="text")?.text || "{}");
+if(p.total_consultas_planejadas!==6 || p.consultas_executadas!==0) throw Error("Deep search planning invalid: "+JSON.stringify(p));
+const analyzed = await request("tools/call",{
+  name:"analisar_busca_profunda",
+  arguments:{produto:"blusa",lojas:["Shopee"],ofertas:[
+    {loja:"Shopee",titulo:"Blusa preta",url:"https://shopee.com.br/Blusa-i.123.456",preco_unitario:19.9}
+  ]}
+},5,session);
+const a = analyzed.data.result?.structuredContent || JSON.parse(analyzed.data.result?.content?.find(c=>c.type==="text")?.text || "{}");
+if(a.menor_preco_anunciado_provisorio?.preco_unitario!==19.9 || a.menor_custo_total_confirmado!==null)
+  throw Error("Deep search analysis invalid: "+JSON.stringify(a));
+console.log(JSON.stringify({deepSearchPlan:p.total_consultas_planejadas,provisional:a.menor_preco_anunciado_provisorio.preco_unitario,confirmed:a.menor_custo_total_confirmado}));

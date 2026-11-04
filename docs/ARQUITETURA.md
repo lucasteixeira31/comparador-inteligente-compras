@@ -22,6 +22,14 @@ Somente Mercado Livre, Shopee, AliExpress, Amazon, SHEIN e Temu nesta fase. List
 5. Adaptadores de lojas: planejados, dependentes de documentação, aprovação e cobertura.
 6. Persistência remota e autenticação: adiadas; avaliar somente se salvar e sincronizar entre dispositivos for indispensável.
 
+## Motor de busca profunda (0.6.0)
+
+- O planejamento de buscas é local, determinístico e não depende de Tavily.
+- O ChatGPT ou integrações futuras fazem a descoberta de ofertas mediante acesso autorizado.
+- O analisador recebe URLs individuais, filtra marketplace oficial, elimina duplicações, impede anúncios incompatíveis de entrar no ranking e publica a cobertura efetivamente recebida.
+- Os menores preços anunciados são provisórios; preço final somente com confirmação explícita de produto, disponibilidade, preço do carrinho, frete e impostos.
+- O motor não verifica sites automaticamente, não substitui APIs oficiais e não declara menor preço absoluto.
+
 ## Fases
 
 - [x] Calcular e classificar anúncios; preservar valores desconhecidos; não aplicar cupom não confirmado.
@@ -32,6 +40,8 @@ Somente Mercado Livre, Shopee, AliExpress, Amazon, SHEIN e Temu nesta fase. List
 - [x] Plugin privado 0.3.0 atualizado para apontar ao MCP remoto.
 - [ ] Confirmação automática do handshake JSON-RPC e das chamadas de ferramentas no endpoint remoto.
 - [ ] Teste das ferramentas no ChatGPT Web.
+- [x] Planejamento multi-termos gratuito e análise de ofertas sem pontuação de vendedores.
+- [ ] Descoberta automática com preços e disponibilidade verificados, sem depender de franquias reduzidas.
 - [ ] UI MCP App: formulário e resultados sincronizados no chat.
 - [x] Implementado adaptador Tavily para descobrir links individuais por marketplace, com filtragem de domínio e sem fabricar valores.
 - [ ] Ativar TAVILY_API_KEY do plano Researcher gratuito apenas na Vercel, verificar consultas reais e uso da franquia.
