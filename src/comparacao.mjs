@@ -50,7 +50,7 @@ export function prepararPesquisa({produto, caracteristicas = [], lojas = LOJAS.s
     cep: cep || null,
     condicao,
     status: "criterios_preparados_sem_busca_remota",
-    orientacao: "Pesquisar anúncios individuais nas ferramentas de pesquisa autorizadas do host, verificar equivalência e registrar fontes. Este servidor ainda não executa buscas em marketplaces."
+    orientacao: "Pesquisar anúncios individuais nas ferramentas de pesquisa autorizadas do host, verificar equivalência e registrar fontes. A ferramenta preparar_pesquisa apenas organiza os critérios; para descobrir links, use pesquisar_ofertas quando o provedor estiver configurado. A descoberta não comprova preços ou disponibilidade."
   };
 }
 
