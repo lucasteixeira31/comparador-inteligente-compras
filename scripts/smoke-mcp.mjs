@@ -39,7 +39,7 @@ const session = init.response.headers.get("mcp-session-id");
 await request("notifications/initialized", {}, undefined, session);
 const tools = await request("tools/list", {}, 2, session);
 const names = tools.data.result?.tools?.map(t => t.name) || [];
-for (const name of ["preparar_pesquisa", "comparar_carrinhos", "pesquisar_ofertas", "planejar_busca_profunda", "analisar_busca_profunda", "abrir_tabela_comparacao"]) {
+for (const name of ["preparar_pesquisa", "comparar_carrinhos", "pesquisar_ofertas", "planejar_busca_profunda", "analisar_busca_profunda", "abrir_tabela_comparacao", "abrir_formulario_pesquisa"]) {
   if (!names.includes(name)) throw Error("Missing tool: " + name);
 }
 const call = await request("tools/call", {
@@ -105,3 +105,17 @@ if(result.ofertas?.length!==1 || result.links_rejeitados!==1 ||
   result.ofertas[0].preco_anunciado!==29.9 || result.quantidade!==2)
   throw Error("Render tool did not validate URLs: "+JSON.stringify(result));
 console.log(JSON.stringify({widget:"ok",resource:resource.mimeType,renderedOffers:result.ofertas.length,rejected:result.links_rejeitados}));
+
+const initial = await request("tools/call", {
+  name:"abrir_formulario_pesquisa",
+  arguments:{produto:"blusa oversized",quantidade:1,lojas:["Shopee","SHEIN"]}
+},9,session);
+const initialOutput=initial.data.result?.structuredContent ||
+  JSON.parse(initial.data.result?.content?.find(c=>c.type==="text")?.text||"{}");
+if(initialOutput.etapa!=="formulario_pesquisa" || initialOutput.lojas?.length!==2)
+  throw Error("Initial form tool returned invalid content: "+JSON.stringify(initialOutput));
+const formResource=await request("resources/read",{uri:"ui://comparador/formulario-pesquisa-v1"},10,session);
+const formHtml=formResource.data.result?.contents?.[0];
+if(formHtml?.mimeType!=="text/html;profile=mcp-app"||!formHtml.text?.includes("sendFollowUpMessage"))
+  throw Error("Inline search form resource missing or incomplete");
+console.log(JSON.stringify({initialForm:"ok",formUri:"ui://comparador/formulario-pesquisa-v1"}));

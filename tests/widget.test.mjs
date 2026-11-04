@@ -27,3 +27,19 @@ test("salvamento associa link do anuncio ao valor final e evita dominios falsos"
   assert.ok(html.includes("host===domain||host.endsWith"));
   assert.ok(html.includes("preco_unitario"));
 });
+
+const formulario = readFileSync(new URL("../public/widget-pesquisa.html",import.meta.url),"utf8");
+test("formulario interativo informa criterios sem abrir guias",()=>{
+  for(const id of ["product","features","budget","quantity","zip","condition","shops"])
+    assert.ok(formulario.includes('id="'+id+'"'),"Campo ausente: "+id);
+  for(const shop of ["Mercado Livre","Shopee","AliExpress","Amazon","SHEIN","Temu"])
+    assert.ok(formulario.includes('"'+shop+'"'));
+  assert.ok(formulario.includes("sendFollowUpMessage"));
+  assert.ok(formulario.includes("abrir_tabela_comparacao"));
+  assert.ok(!formulario.includes("window.open("));
+});
+test("javascript do formulario é sintaticamente valido",()=>{
+  const m=formulario.match(/<script>([\s\S]*?)<\/script>/);
+  assert.ok(m);
+  assert.doesNotThrow(()=>new vm.Script(m[1]));
+});
