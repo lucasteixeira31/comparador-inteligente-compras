@@ -22,9 +22,12 @@
 
 - [x] Calcular e classificar anúncios; preservar valores desconhecidos; não aplicar cupom não confirmado.
 - [x] Formulário e tabela demonstrativos na web.
-- [x] Servidor MCP para preparar critérios e comparar carrinhos (fonte local, sem deploy).
+- [x] Servidor MCP para preparar critérios e comparar carrinhos, implantado na Vercel com status READY.
 - [x] Gerador de ZIP com URL do servidor central (não gerar URL fictícia).
-- [ ] Deploy de desenvolvimento na Vercel e testes reais com ChatGPT Web.
+- [x] Deploy de produção na Vercel e endpoint HTTPS publicado.
+- [x] Plugin privado 0.3.0 atualizado para apontar ao MCP remoto.
+- [ ] Confirmação automática do handshake JSON-RPC e das chamadas de ferramentas no endpoint remoto.
+- [ ] Teste das ferramentas no ChatGPT Web.
 - [ ] UI MCP App: formulário e resultados sincronizados no chat.
 - [ ] Provedor(es) de busca com fontes autorizadas, provas de disponibilidade e links diretos.
 - [ ] Armazenamento por usuário, se necessário, com OAuth e políticas de privacidade.

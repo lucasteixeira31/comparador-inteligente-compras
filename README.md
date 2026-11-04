@@ -6,14 +6,14 @@ Projeto pessoal, gratuito, sem monetização e de código aberto para uso no **C
 
 ## Para pessoas que só querem usar
 
-Para testes iniciais, o repositório inclui `releases/comparador-compras-lite.zip`, uma versão baseada somente em instruções, **sem servidor MCP**. Depois de implantarmos o servidor, o GitHub Releases oferecerá outro ZIP do plugin com o endereço central já configurado. Você **não** precisará criar conta na Vercel, clonar um repositório, executar comandos ou configurar variáveis de ambiente. Se a sua conta do ChatGPT Web oferecer **upload de plugins**, importe esse ZIP e autorize a conexão necessária. Essa opção depende das permissões da sua conta ou espaço de trabalho. O caminho mais simples para todos é uma futura publicação no diretório de plugins, sujeita a aprovação.
+Para testes iniciais, o repositório inclui `releases/comparador-compras-lite.zip`, uma versão baseada somente em instruções, **sem servidor MCP**. O servidor central já foi implantado na Vercel. O ZIP completo conectado ao MCP será disponibilizado em uma Release após os testes de conexão e controles básicos contra abuso. Você **não** precisará criar conta na Vercel, clonar um repositório, executar comandos ou configurar variáveis de ambiente. Se a sua conta do ChatGPT Web oferecer **upload de plugins**, importe esse ZIP e autorize a conexão necessária. Essa opção depende das permissões da sua conta ou espaço de trabalho. O caminho mais simples para todos é uma futura publicação no diretório de plugins, sujeita a aprovação.
 
 A versão Lite não dispõe de API nem armazenamento remoto; usa as pesquisas que o ChatGPT já conseguir realizar. A busca pública não exigirá conexão com as suas contas do Mercado Livre, Shopee ou AliExpress. Caso uma função futura precise de acesso privado, deverá solicitar autorização oficial e específica. Jamais será necessário enviar senhas ao ChatGPT.
 
 ## Versões
 
 - **Lite (já empacotada):** skill de pesquisa e comparação. Não contém MCP, autenticação, busca oficial de lojas nem tabela sincronizada. Apenas para quem tiver permissão de upload de ZIP no ChatGPT.
-- **MCP (em desenvolvimento):** endpoint remoto central, ferramentas de preparação de critérios e comparação, futuramente buscas verificadas e interface interativa. O ZIP final é gerado quando o servidor tiver URL pública real.
+- **MCP (v0.3.0 — teste privado):** endpoint remoto central implantado, plugin privado vinculado, ferramentas de preparação de critérios e comparação. Ainda sem buscas verificadas em lojas ou interface editável dentro do ChatGPT. A distribuição pública será liberada após validação.
 
 ## Como funciona
 
@@ -32,13 +32,17 @@ npm test
 npm run dev
 ```
 
-O MCP local usa `http://localhost:3000/api/mcp`. Depois de conectar **este** repositório à Vercel e verificar a implantação, gere o ZIP para a distribuição:
+O MCP local usa `http://localhost:3000/api/mcp`. O repositório já está conectado à Vercel, com HTTPS em produção. Para gerar um ZIP a ser distribuído posteriormente:
 
 ```bash
-python3 scripts/gerar-plugin.py https://SEU-DOMINIO.vercel.app/api/mcp
+python3 scripts/gerar-plugin.py https://comparador-inteligente-compras.vercel.app/api/mcp
 ```
 
-O resultado é `dist/comparador-compras-chatgpt.zip`. Publique-o como asset de uma Release do GitHub. **Substitua SEU-DOMINIO pela URL real do deployment; não divulgue ZIP apontando para URL fictícia.**
+O resultado é `dist/comparador-compras-chatgpt.zip`. Publique-o como asset de uma Release do GitHub. Não publique a versão conectada antes dos testes de protocolo, proteção contra abuso e checagem da instalação em outra conta.
+
+## Teste de protocolo MCP
+
+O teste automatizado `scripts/smoke-mcp.mjs` verifica `initialize`, `tools/list` e uma chamada de cálculo real ao endpoint HTTPS. O workflow `.github/workflows/mcp-smoke.yml` executa os testes no GitHub Actions após pushes na branch principal. Sucesso no deploy, por si só, não comprova que as ferramentas apareceram no ChatGPT Web.
 
 ## Privacidade, limites e segurança
 

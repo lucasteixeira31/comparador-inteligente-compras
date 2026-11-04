@@ -1,0 +1,19 @@
+name: Verificar MCP
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - name: Testar motor de comparacao
+        run: node --test tests/comparacao.test.mjs
+      - name: Testar MCP remoto
+        env:
+          MCP_URL: https://comparador-inteligente-compras.vercel.app/api/mcp
+        run: node scripts/smoke-mcp.mjs
