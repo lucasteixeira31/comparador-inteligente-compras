@@ -23,7 +23,7 @@ const handler = createMcpHandler((server) => {
     }),
     annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false }
   }, async args => {
-    const dados = prepararPesquisa(args);
+    const dados = prepararPesquisa(args as any);
     return { content: [{ type: "text", text: JSON.stringify(dados) }], structuredContent: dados };
   });
 
@@ -44,7 +44,7 @@ const handler = createMcpHandler((server) => {
     }),
     annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false }
   }, async args => {
-    const dados = compararOfertas(args);
+    const dados = compararOfertas(args as any);
     return { content: [{ type: "text", text: JSON.stringify(dados) }], structuredContent: dados };
   });
 });
