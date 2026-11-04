@@ -1,5 +1,6 @@
 import { createMcpHandler } from "mcp-handler";
 import { z } from "zod";
+import { pesquisarOfertas } from "../../../src/pesquisa.mjs";
 import { compararOfertas, prepararPesquisa, LOJAS } from "../../../src/comparacao.mjs";
 
 export const runtime = "nodejs";
@@ -45,6 +46,21 @@ const handler = createMcpHandler((server) => {
     annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false }
   }, async args => {
     const dados = compararOfertas(args as any);
+    return { content: [{ type: "text", text: JSON.stringify(dados) }], structuredContent: dados };
+  });
+
+  server.registerTool("pesquisar_ofertas", {
+    title: "Pesquisar links de anúncios",
+    description: "Busca páginas de anúncios indexadas em marketplaces selecionados usando uma integração de busca autorizada, quando configurada pelo mantenedor. Não confirma preços nem estoque.",
+    inputSchema: z.object({
+      produto: z.string().min(2).max(200),
+      caracteristicas: z.array(z.string().max(160)).max(12).default([]),
+      lojas: z.array(loja).min(1).max(6).default(["Mercado Livre", "Shopee", "AliExpress"]),
+      limite_por_loja: z.number().int().min(1).max(5).default(3)
+    }),
+    annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: false, openWorldHint: true }
+  }, async args => {
+    const dados = await pesquisarOfertas(args as any);
     return { content: [{ type: "text", text: JSON.stringify(dados) }], structuredContent: dados };
   });
 });

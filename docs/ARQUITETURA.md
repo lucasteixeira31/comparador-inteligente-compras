@@ -29,7 +29,9 @@
 - [ ] Confirmação automática do handshake JSON-RPC e das chamadas de ferramentas no endpoint remoto.
 - [ ] Teste das ferramentas no ChatGPT Web.
 - [ ] UI MCP App: formulário e resultados sincronizados no chat.
-- [ ] Provedor(es) de busca com fontes autorizadas, provas de disponibilidade e links diretos.
+- [x] Implementado adaptador Tavily para descobrir links individuais por marketplace, com filtragem de domínio e sem fabricar valores.
+- [ ] Ativar TAVILY_API_KEY do plano Researcher gratuito apenas na Vercel, verificar consultas reais e uso da franquia.
+- [ ] Adicionar prova de disponibilidade, preço, identidade do anúncio e outras fontes autorizadas.
 - [ ] Armazenamento por usuário, se necessário, com OAuth e políticas de privacidade.
 - [ ] Rate limiting, logs limitados, monitoramento de cotas e qualidade.
 - [ ] Publicar Release ZIP no GitHub e testar permissões de instalação com outra conta.

@@ -26,7 +26,5 @@
       }
     }
   },
-  "skills": "./skills",
-  "repository": "https://github.com/lucasteixeira31/comparador-inteligente-compras",
-  "homepage": "https://comparador-inteligente-compras.vercel.app"
+  "skills": "./skills"
 }

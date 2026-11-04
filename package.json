@@ -1,6 +1,6 @@
 {
   "name": "comparador-inteligente-compras",
-  "version": "0.3.0-dev",
+  "version": "0.4.0-dev",
   "private": true,
   "type": "module",
   "scripts": {
@@ -9,7 +9,9 @@
     "start": "next start",
     "test": "node --test tests/*.test.mjs"
   },
-  "engines": {"node": "22.x"},
+  "engines": {
+    "node": "22.x"
+  },
   "dependencies": {
     "@modelcontextprotocol/server": "^2.0.0",
     "mcp-handler": "^2.0.0",

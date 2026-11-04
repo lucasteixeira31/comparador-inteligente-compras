@@ -2,7 +2,7 @@
 
 Projeto pessoal, gratuito, sem monetização e de código aberto para uso no **ChatGPT Web**. O objetivo é pesquisar anúncios com links individuais e comparar o custo real da compra, considerando quantidade, frete, impostos, outras taxas e cupons confirmados.
 
-**Estado do projeto: fundação técnica / MVP.** Existe um protótipo web editável (`/comparador.html`) e um servidor MCP com duas ferramentas executáveis. **Não existem ainda conectores de pesquisa automática para lojas, interface MCP App incorporada ao chat, OAuth nem banco de dados na nuvem.** Não confunda este repositório de código-fonte com uma versão final pronta para qualquer pessoa instalar.
+**Estado do projeto: fundação técnica / MVP.** Existe um protótipo web editável (`/comparador.html`) e um servidor MCP com duas ferramentas executáveis. **Existe um conector de pesquisa web indexada (Tavily), mas ele exige a configuração de TAVILY_API_KEY pelo mantenedor e não está necessariamente ativado. Não há integração direta com APIs das lojas, interface MCP App incorporada ao chat, OAuth nem banco de dados na nuvem.** Não confunda este repositório de código-fonte com uma versão final pronta para qualquer pessoa instalar.
 
 ## Para pessoas que só querem usar
 
@@ -18,9 +18,10 @@ A versão Lite não dispõe de API nem armazenamento remoto; usa as pesquisas qu
 ## Como funciona
 
 - `preparar_pesquisa`: valida e organiza os critérios da compra, sem alegar que consultou lojas.
+- `pesquisar_ofertas`: busca páginas individuais indexadas por marketplace via Tavily **quando TAVILY_API_KEY estiver configurada no servidor**. Não confirma estoque ou valores.
 - `comparar_carrinhos`: calcula o custo total e os rankings com os valores informados.
 - `/comparador.html`: protótipo local com tabela editável e salvamento **somente no navegador**.
-- Ferramentas de busca automática por marketplace: **não implementadas nesta fase**.
+- APIs oficiais de busca das próprias lojas: **não integradas nesta fase**. A descoberta via índice web pode retornar zero links ou resultados desatualizados.
 
 ## Para quem mantém o servidor
 
@@ -39,6 +40,12 @@ python3 scripts/gerar-plugin.py https://comparador-inteligente-compras.vercel.ap
 ```
 
 O resultado é `dist/comparador-compras-chatgpt.zip`. Publique-o como asset de uma Release do GitHub. Não publique a versão conectada antes dos testes de protocolo, proteção contra abuso e checagem da instalação em outra conta.
+
+## Ativação da busca indexada (somente mantenedor)
+
+A plataforma [Tavily](https://www.tavily.com/pricing) dispõe do plano Researcher com franquia mensal gratuita de 1.000 créditos e sem cartão de crédito. Para habilitar a pesquisa, o mantenedor cria sua própria conta e adiciona a variável **`TAVILY_API_KEY`** ao ambiente Production do projeto na Vercel, usando o painel de Environment Variables. **Nunca coloque essa chave no GitHub, nos ZIPs ou em mensagens de chat.** Depois disso, a Vercel precisa implantar o código com a variável atualizada.
+
+Uma busca em cada marketplace escolhido consome geralmente um crédito de pesquisa básica; escolher três lojas gera até três consultas. Os limites gratuitos são compartilhados pelos usuários e podem acabar; nesse caso a ferramenta comunica a indisponibilidade. Para o lançamento público, adicionar limite de requisições por origem e controle de gastos/consumo. Não assumir que URL indexada confirma preço, disponibilidade, compatibilidade, impostos ou frete. Não obter dados privados dos usuários nem realizar scraping de páginas das lojas.
 
 ## Teste de protocolo MCP
 

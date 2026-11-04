@@ -39,7 +39,7 @@ const session = init.response.headers.get("mcp-session-id");
 await request("notifications/initialized", {}, undefined, session);
 const tools = await request("tools/list", {}, 2, session);
 const names = tools.data.result?.tools?.map(t => t.name) || [];
-for (const name of ["preparar_pesquisa", "comparar_carrinhos"]) {
+for (const name of ["preparar_pesquisa", "comparar_carrinhos", "pesquisar_ofertas"]) {
   if (!names.includes(name)) throw Error("Missing tool: " + name);
 }
 const call = await request("tools/call", {
