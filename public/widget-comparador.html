@@ -1,0 +1,292 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Tabela de custos — Comparador de Compras</title>
+<style>
+:root{font-family:system-ui,-apple-system,"Segoe UI",sans-serif;color:#15263c;color-scheme:light}
+*{box-sizing:border-box}
+body{margin:0;padding:14px;background:#f4f7fb}
+h1{font-size:19px;margin:0 0 6px}h2{font-size:16px;margin:0 0 10px}
+small,.muted{color:#5b6c80}
+.panel{background:white;border:1px solid #dbe3ed;border-radius:13px;padding:15px;margin-bottom:12px}
+.list{display:grid;gap:10px}
+.offer{border:1px solid #e1e6ef;border-radius:10px;padding:12px;display:flex;justify-content:space-between;align-items:start;gap:10px}
+.offer a,.value-link{overflow-wrap:anywhere}
+.offer .label{font-size:13px;color:#5b6c80}
+button{border:0;background:#096b58;color:white;padding:9px 12px;border-radius:8px;font:inherit;font-weight:600;cursor:pointer}
+button.secondary{background:#e6eef5;color:#1e3749}
+button.danger{color:#ae2727;background:#fbeaec}
+button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid #94c3ed;outline-offset:2px}
+button:disabled{opacity:.55;cursor:not-allowed}
+.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}
+.field{display:flex;flex-direction:column;gap:4px;font-size:13px;font-weight:650}
+input,select{font:inherit;padding:10px 9px;width:100%;border:1px solid #c1cedb;border-radius:8px;background:white;color:#142235}
+.checkbox{display:flex;gap:8px;align-items:center;font-size:13px}
+.checkbox input{width:auto}
+.table-wrap{overflow-x:auto}
+table{border-collapse:collapse;width:100%;min-width:700px}
+th,td{text-align:left;padding:10px;border-bottom:1px solid #e4eaf1;font-size:13px;vertical-align:top}
+th{background:#f3f6fa}td b{white-space:nowrap}
+.pill{display:inline-block;background:#eaf6f0;color:#116347;font-size:12px;border-radius:99px;padding:3px 8px}
+.pill.warn{background:#fff2df;color:#8a5000}
+.best{background:#f1faf5}
+.status{min-height:20px;font-size:13px;color:#315b77;margin:7px 0}
+.hidden{display:none}
+@media(max-width:650px){body{padding:8px}.offer{display:block}.offer button{margin-top:8px}}
+</style>
+</head>
+<body>
+<div class="panel">
+  <h1>Comparador de Compras — valores reais</h1>
+  <p class="muted">Informe o preço do anúncio, frete, impostos e taxas. Clique em <b>Salvar na tabela</b>. Cada total fica ligado ao anúncio correspondente.</p>
+  <p class="status" id="status" role="status" aria-live="polite"></p>
+  <div class="grid">
+    <label class="field">Produto pesquisado<input id="product" placeholder="Ex.: blusa preta tamanho M"></label>
+    <label class="field">Quantidade<input id="quantity" type="number" min="1" max="1000" step="1" value="1"></label>
+  </div>
+</div>
+<section class="panel">
+  <h2>1. Anúncios encontrados</h2>
+  <p class="muted">Os valores exibidos nesta etapa são apenas preços anunciados, quando disponíveis. A tabela definitiva usa os valores informados por você.</p>
+  <div class="list" id="candidates"></div>
+  <div class="actions"><button type="button" class="secondary" id="new">Adicionar anúncio manualmente</button></div>
+</section>
+<section class="panel hidden" id="editor-panel">
+  <h2 id="editor-title">2. Registrar custos</h2>
+  <form id="editor" autocomplete="off">
+    <div class="grid">
+      <label class="field">Marketplace<select id="marketplace" required></select></label>
+      <label class="field">Nome do anúncio<input id="name" required maxlength="300"></label>
+      <label class="field" style="grid-column:1/-1">Link individual do anúncio<input id="link" required type="url" placeholder="https://..." maxlength="1200"></label>
+      <label class="field">Preço unitário real (R$)<input id="price" inputmode="decimal" placeholder="Ex.: 29,90" required></label>
+      <label class="field">Frete total (R$)<input id="shipping" inputmode="decimal" placeholder="Ex.: 12,90" required></label>
+      <label class="field">Impostos (R$)<input id="taxes" inputmode="decimal" placeholder="0 se não houver" required></label>
+      <label class="field">Outras taxas (R$)<input id="fees" inputmode="decimal" placeholder="0 se não houver" required></label>
+      <label class="field">Desconto aplicado (R$)<input id="discount" inputmode="decimal" placeholder="0 se não houver"></label>
+    </div>
+    <p class="muted">Valores vazios não são tratados como zero. O desconto só será considerado quando confirmado.</p>
+    <label class="checkbox"><input type="checkbox" id="discountVerified"> Desconto efetivamente confirmado no carrinho</label>
+    <div class="actions">
+      <button type="submit" id="save">Salvar na tabela</button>
+      <button type="button" class="secondary" id="cancel">Cancelar edição</button>
+    </div>
+    <p class="status" id="editor-error" role="alert"></p>
+  </form>
+</section>
+<section class="panel">
+  <h2>3. Tabela de valores salvos</h2>
+  <p class="muted">Ordenada pelo menor custo total <b>informado</b>. O link de cada linha aponta para o mesmo anúncio cujos valores foram registrados.</p>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Plataforma / anúncio</th><th>Preço unitário</th><th>Frete</th><th>Impostos</th><th>Taxas</th><th>Desconto</th><th>Valor final</th><th>Ações</th></tr></thead>
+    <tbody id="results"><tr><td colspan="8">Nenhuma oferta salva.</td></tr></tbody>
+  </table></div>
+  <p class="status" id="summary"></p>
+  <div class="actions">
+    <button type="button" class="secondary" id="export">Exportar tabela (JSON)</button>
+    <button type="button" class="secondary" id="import">Importar tabela (JSON)</button>
+    <input type="file" accept=".json,application/json" id="import-file" class="hidden">
+  </div>
+  <p class="muted">No ChatGPT, os dados ficam no estado desta interface/conversa, não em banco de dados. Para guardar uma cópia independente, use Exportar JSON. Não há sincronização entre dispositivos nesta versão.</p>
+</section>
+<script>
+(function(){
+"use strict";
+const shops=["Mercado Livre","Shopee","AliExpress","Amazon","SHEIN","Temu"];
+const domains={"Mercado Livre":"mercadolivre.com.br","Shopee":"shopee.com.br","AliExpress":"aliexpress.com","Amazon":"amazon.com.br","SHEIN":"shein.com","Temu":"temu.com"};
+const $=id=>document.getElementById(id);
+const money=n=>new Intl.NumberFormat("pt-BR",{style:"currency",currency:"BRL"}).format(n);
+const raw=v=>String(v??"").trim();
+const cents=v=>{
+  if(v===undefined||v===null||raw(v)==="")return null;
+  const s=raw(v);if(!/^\d+(?:[.,]\d{1,2})?$/.test(s))return null;
+  const n=Number(s.replace(",","."));return Number.isFinite(n)&&n>=0?Math.round(n*100):null;
+};
+const validUrl=(value,shop)=>{
+  try{
+    const u=new URL(value);
+    const host=u.hostname.toLowerCase(),domain=domains[shop];
+    if(!domain||u.protocol!=="https:"||u.username||u.password||!(host===domain||host.endsWith("."+domain)))return false;
+    const path=u.pathname.toLowerCase();
+    if(shop==="Mercado Livre")return /\/mlb-?\d{7,}/.test(path);
+    if(shop==="Shopee")return /-i\.\d+\.\d+/.test(path)||/\/product\/\d+\/\d+/.test(path);
+    if(shop==="AliExpress")return /\/item\/\d+\.html/.test(path);
+    if(shop==="Amazon")return /\/(?:dp|gp\/product)\/[a-z0-9]{10}/.test(path);
+    if(shop==="SHEIN")return /-p-\d+\.html$/.test(path);
+    if(shop==="Temu")return /-g-\d+\.html/.test(path)||(path.includes("/goods.html")&&u.searchParams.has("goods_id"));
+    return false;
+  }catch{return false;}
+};
+const uriKey=(url)=>{
+  const u=new URL(url);
+  for(const k of [...u.searchParams.keys()])if(/^(utm_|gclid$|fbclid$|spm$|source$)/i.test(k))u.searchParams.delete(k);
+  u.hash="";u.searchParams.sort();return u.hostname.toLowerCase()+u.pathname.replace(/\/+$/,"")+u.search;
+};
+const create=(tag,txt,cls)=>{
+  const e=document.createElement(tag);if(txt!==undefined)e.textContent=txt;if(cls)e.className=cls;return e;
+};
+const btn=(text,cls,fn)=>{
+  const b=create("button",text,cls);b.type="button";b.addEventListener("click",fn);return b;
+};
+const link=(url,text)=>{
+  const a=create("a",text);a.href=url;a.target="_blank";a.rel="noopener noreferrer";return a;
+};
+let items=[],saved=[],selectedId=null,quantity=1,product="",hasHostData=false;
+const keyFor=o=>o.loja+"|"+uriKey(o.url);
+const status=message=>{$("status").textContent=message;};
+const rowValue=(r,k)=>r[k]===undefined||r[k]===null?"":String(r[k]);
+const getHostSaved=()=>{
+  const state=window.openai?.widgetState;
+  if(state?.privateContent?.saved && Array.isArray(state.privateContent.saved))return state.privateContent;
+  return state?.saved && Array.isArray(state.saved)?state:null;
+};
+const persist=()=>{
+  const pack={version:1,product,quantity,saved};
+  try{
+    if(window.openai?.setWidgetState)window.openai.setWidgetState({
+      modelContent:JSON.stringify({produto:product,quantidade:quantity,ofertas_salvas:saved.map(o=>({loja:o.loja,nome:o.titulo,url:o.url,preco_unitario:o.price,frete:o.shipping,impostos:o.taxes,taxas:o.fees,desconto_aplicado:o.discountVerified?o.discount:"0",valor_final:total(o)}))}),
+      privateContent:pack
+    });
+    else localStorage.setItem("comparador-widget-v1",JSON.stringify(pack));
+  }catch{status("Tabela salva nesta sessão. Para manter uma cópia permanente, exporte o JSON.");}
+};
+const restore=()=>{
+  let data=getHostSaved();
+  if(!data){try{data=JSON.parse(localStorage.getItem("comparador-widget-v1")||"null");}catch{}}
+  if(data&&Array.isArray(data.saved)){
+    saved=data.saved.filter(o=>shops.includes(o.loja)&&validUrl(o.url,o.loja)).slice(0,100);
+    product=raw(data.product);quantity=Number.isInteger(data.quantity)&&data.quantity>0&&data.quantity<=1000?data.quantity:1;
+  }
+};
+function receive(){
+  const from=window.openai?.toolOutput||window.openai?.toolInput;
+  if(!from||typeof from!=="object"||hasHostData)return;
+  if(!Array.isArray(from.ofertas)&&!Array.isArray(from.anuncios))return;
+  hasHostData=true;
+  if(!product&&from.produto)product=raw(from.produto);
+  if(!saved.length&&Number.isInteger(from.quantidade)&&from.quantidade>0)quantity=from.quantidade;
+  const rawItems=Array.isArray(from.ofertas)?from.ofertas:from.anuncios;
+  const keys=new Set();
+  items=rawItems.filter(o=>{
+    if(!o||typeof o!=="object"||!shops.includes(o.loja)||!validUrl(o.url,o.loja))return false;
+    const k=keyFor(o);if(keys.has(k))return false;keys.add(k);return true;
+  }).slice(0,30).map(o=>({
+    loja:o.loja,titulo:raw(o.titulo||o.produto||"Anúncio"),
+    url:o.url,preco_anunciado:o.preco_anunciado??o.preco_unitario??null
+  })).sort((a,b)=>(cents(a.preco_anunciado)??Infinity)-(cents(b.preco_anunciado)??Infinity));
+  $("product").value=product;$("quantity").value=quantity;
+  renderCandidates();renderSaved();
+}
+function renderCandidates(){
+  const target=$("candidates");target.replaceChildren();
+  if(!items.length){target.append(create("p","Ainda não recebemos links de uma pesquisa. Use Adicionar anúncio manualmente ou peça ao plugin para abrir a tabela com ofertas encontradas.","muted"));return;}
+  for(const o of items){
+    const box=create("div",undefined,"offer"),left=create("div"),right=create("div");
+    left.append(create("strong",o.loja+" — "+o.titulo));
+    const line=create("div");line.append(link(o.url,"Abrir anúncio no marketplace"));left.append(line);
+    left.append(create("div",cents(o.preco_anunciado)===null?"Preço anunciado: não informado":"Preço anunciado: "+money(cents(o.preco_anunciado)/100)+" (não confirmado)","label"));
+    right.append(btn(saved.some(x=>keyFor(x)===keyFor(o))?"Editar valores":"Registrar valores","secondary",()=>edit(o)));
+    box.append(left,right);target.append(box);
+  }
+}
+function total(o){
+  const v=[o.price,o.shipping,o.taxes,o.fees].map(cents);
+  if(v.some(x=>x===null))return null;
+  const desconto=o.discountVerified?(cents(o.discount)??0):0;
+  return Math.max(0,(v[0]*quantity)+v[1]+v[2]+v[3]-Math.min(v[0]*quantity,desconto))/100;
+}
+function edit(data){
+  const existing=saved.find(x=>keyFor(x)===keyFor(data));
+  const o=existing||{loja:data.loja,titulo:data.titulo,url:data.url,price:"",shipping:"",taxes:"",fees:"",discount:"",discountVerified:false};
+  selectedId=existing?keyFor(existing):null;
+  $("marketplace").value=o.loja;$("name").value=o.titulo;$("link").value=o.url;
+  for(const id of ["price","shipping","taxes","fees","discount"])$(id).value=rowValue(o,id);
+  $("discountVerified").checked=Boolean(o.discountVerified);
+  $("editor-title").textContent=existing?"2. Atualizar valores do anúncio":"2. Registrar custos do anúncio";
+  $("editor-error").textContent="";$("editor-panel").classList.remove("hidden");
+  $("editor-panel").scrollIntoView({block:"start",behavior:"smooth"});
+}
+function renderSaved(){
+  const rows=$("results");rows.replaceChildren();
+  const sorted=saved.map(o=>({o,value:total(o)})).sort((a,b)=>(a.value??Infinity)-(b.value??Infinity));
+  if(!sorted.length){const tr=create("tr"),td=create("td","Nenhuma oferta salva.");td.colSpan=8;tr.append(td);rows.append(tr);$("summary").textContent="";return;}
+  sorted.forEach(({o,value},index)=>{
+    const tr=create("tr");if(index===0&&value!==null)tr.className="best";
+    const name=create("td");name.append(create("b",o.loja),create("br"),link(o.url,o.titulo||"Abrir anúncio"));
+    const cells=[name,
+      create("td",cents(o.price)===null?"—":money(cents(o.price)/100)),
+      create("td",cents(o.shipping)===null?"—":money(cents(o.shipping)/100)),
+      create("td",cents(o.taxes)===null?"—":money(cents(o.taxes)/100)),
+      create("td",cents(o.fees)===null?"—":money(cents(o.fees)/100)),
+      create("td",o.discountVerified&&cents(o.discount)!==null?money(cents(o.discount)/100):"—"),
+      create("td",value===null?"Pendente":money(value))];
+    for(const cell of cells)tr.append(cell);
+    const actions=create("td");
+    actions.append(btn("Editar","secondary",()=>edit(o)),create("span"," "));
+    actions.append(btn("Excluir","danger",()=>{
+      saved=saved.filter(x=>keyFor(x)!==keyFor(o));persist();renderSaved();renderCandidates();
+    }));
+    tr.append(actions);rows.append(tr);
+  });
+  const complete=sorted.filter(x=>x.value!==null);
+  $("summary").textContent=complete.length?
+    "Menor total informado: "+money(complete[0].value)+" — "+complete[0].o.loja+". "+(sorted.length-complete.length)+" oferta(s) pendente(s).":
+    "Nenhuma oferta com todos os valores informados.";
+}
+$("marketplace").replaceChildren(...shops.map(s=>{const o=create("option",s);o.value=s;return o;}));
+$("new").addEventListener("click",()=>edit({loja:"Mercado Livre",titulo:"",url:""}));
+$("cancel").addEventListener("click",()=>{$("editor-panel").classList.add("hidden");});
+$("editor").addEventListener("submit",event=>{
+  event.preventDefault();
+  const loja=$("marketplace").value,titulo=raw($("name").value),url=raw($("link").value);
+  const vals={price:raw($("price").value),shipping:raw($("shipping").value),taxes:raw($("taxes").value),fees:raw($("fees").value),discount:raw($("discount").value)};
+  if(!validUrl(url,loja)){$("editor-error").textContent="Use um link individual HTTPS do marketplace selecionado.";return;}
+  if(!titulo){$("editor-error").textContent="Informe o nome do anúncio.";return;}
+  for(const [k,v]of Object.entries(vals)){
+    if(k==="discount"&&v==="")continue;
+    if(cents(v)===null){$("editor-error").textContent="Informe valores monetários válidos. Use 0 quando não houver taxa.";return;}
+  }
+  if($("discountVerified").checked&&cents(vals.discount)===null){$("editor-error").textContent="Informe o valor do desconto confirmado.";return;}
+  const o={loja,titulo,url,...vals,discountVerified:$("discountVerified").checked,savedAt:new Date().toISOString()};
+  const id=keyFor(o);
+  if(saved.some(x=>keyFor(x)===id&&keyFor(x)!==selectedId)){$("editor-error").textContent="Este anúncio já está na tabela. Use Editar para alterar seus valores.";return;}
+  if(selectedId)saved=saved.filter(x=>keyFor(x)!==selectedId);
+  saved=saved.filter(x=>keyFor(x)!==id);
+  saved.push(o);$("editor-panel").classList.add("hidden");
+  persist();renderSaved();renderCandidates();status("Oferta salva na tabela, com o link original e o valor final informado.");
+});
+$("quantity").addEventListener("change",()=>{
+  const n=Number($("quantity").value);
+  if(!Number.isInteger(n)||n<1||n>1000){$("quantity").value=quantity;return;}
+  quantity=n;persist();renderSaved();
+});
+$("product").addEventListener("change",()=>{product=$("product").value.trim();persist();});
+$("export").addEventListener("click",()=>{
+  const blob=new Blob([JSON.stringify({version:1,produto:product,quantidade:quantity,ofertas_salvas:saved},null,2)],{type:"application/json"});
+  const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="comparador-ofertas-salvas.json";a.click();URL.revokeObjectURL(a.href);
+});
+$("import").addEventListener("click",()=>$("import-file").click());
+$("import-file").addEventListener("change",async event=>{
+  const f=event.target.files?.[0];if(!f)return;
+  try{
+    const data=JSON.parse(await f.text());
+    if(!Array.isArray(data.ofertas_salvas)||data.ofertas_salvas.length>100)throw Error("invalid");
+    if(data.ofertas_salvas.some(o=>!shops.includes(o.loja)||!validUrl(o.url,o.loja)||
+      ["price","shipping","taxes","fees"].some(k=>cents(o[k])===null)))throw Error("invalid");
+    saved=data.ofertas_salvas;
+    product=raw(data.produto);quantity=Number.isInteger(data.quantidade)&&data.quantidade>0&&data.quantidade<=1000?data.quantidade:1;
+    $("product").value=product;$("quantity").value=quantity;
+    persist();renderSaved();renderCandidates();status("Tabela importada e restaurada.");
+  }catch{status("Não foi possível importar: verifique o arquivo JSON e os links.");}
+  event.target.value="";
+});
+restore();
+$("product").value=product;$("quantity").value=quantity;
+renderCandidates();renderSaved();receive();
+window.addEventListener("openai:set_globals",receive);
+})();
+</script>
+</body>
+</html>
