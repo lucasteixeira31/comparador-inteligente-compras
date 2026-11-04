@@ -39,7 +39,7 @@ const session = init.response.headers.get("mcp-session-id");
 await request("notifications/initialized", {}, undefined, session);
 const tools = await request("tools/list", {}, 2, session);
 const names = tools.data.result?.tools?.map(t => t.name) || [];
-for (const name of ["preparar_pesquisa", "comparar_carrinhos", "pesquisar_ofertas", "planejar_busca_profunda", "analisar_busca_profunda"]) {
+for (const name of ["preparar_pesquisa", "comparar_carrinhos", "pesquisar_ofertas", "planejar_busca_profunda", "analisar_busca_profunda", "abrir_tabela_comparacao"]) {
   if (!names.includes(name)) throw Error("Missing tool: " + name);
 }
 const call = await request("tools/call", {
@@ -84,3 +84,24 @@ const a = analyzed.data.result?.structuredContent || JSON.parse(analyzed.data.re
 if(a.menor_preco_anunciado_provisorio?.preco_unitario!==19.9 || a.menor_custo_total_confirmado!==null)
   throw Error("Deep search analysis invalid: "+JSON.stringify(a));
 console.log(JSON.stringify({deepSearchPlan:p.total_consultas_planejadas,provisional:a.menor_preco_anunciado_provisorio.preco_unitario,confirmed:a.menor_custo_total_confirmado}));
+
+const resources = await request("resources/list",{},6,session);
+if(!resources.data.result?.resources?.some(x=>x.uri==="ui://comparador/tabela-custos-v1"))
+  throw Error("MCP UI resource not discovered");
+const read = await request("resources/read",{uri:"ui://comparador/tabela-custos-v1"},7,session);
+const resource = read.data.result?.contents?.[0];
+if(resource?.mimeType!=="text/html;profile=mcp-app" ||
+   !resource.text?.includes("Salvar na tabela") ||
+   !resource.text?.includes("setWidgetState")) throw Error("MCP UI template unavailable");
+const table = await request("tools/call",{
+  name:"abrir_tabela_comparacao",
+  arguments:{produto:"blusa preta",quantidade:2,ofertas:[
+    {loja:"Shopee",titulo:"Blusa preta M",url:"https://shopee.com.br/Blusa-preta-i.123.456",preco_anunciado:29.9},
+    {loja:"Shopee",titulo:"Phishing",url:"https://shopee.com.br.evil.example/Blusa-i.123.2",preco_anunciado:1}
+  ]}
+},8,session);
+const result = table.data.result?.structuredContent || JSON.parse(table.data.result?.content?.find(c=>c.type==="text")?.text || "{}");
+if(result.ofertas?.length!==1 || result.links_rejeitados!==1 ||
+  result.ofertas[0].preco_anunciado!==29.9 || result.quantidade!==2)
+  throw Error("Render tool did not validate URLs: "+JSON.stringify(result));
+console.log(JSON.stringify({widget:"ok",resource:resource.mimeType,renderedOffers:result.ofertas.length,rejected:result.links_rejeitados}));

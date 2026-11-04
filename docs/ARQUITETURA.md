@@ -18,7 +18,7 @@ Somente Mercado Livre, Shopee, AliExpress, Amazon, SHEIN e Temu nesta fase. List
 1. Plugin: skill em português + MCP remoto para ferramentas estruturadas.
 2. Backend: Vercel Functions/Next.js e mcp-handler.
 3. Motor de custos: módulo puro testado, sem custos externos.
-4. Interface web demonstrativa: formulário e tabela com armazenamento local. **Não é ainda interface MCP App dentro do chat.**
+4. Interface MCP Apps: recurso `ui://comparador/tabela-custos-v1` associado a `abrir_tabela_comparacao`, com edição e salvamento de ofertas, total e link clicável. Página web independente também disponível em `/widget-comparador.html`. Estado do widget/armazenamento no navegador, sem banco remoto.
 5. Adaptadores de lojas: planejados, dependentes de documentação, aprovação e cobertura.
 6. Persistência remota e autenticação: adiadas; avaliar somente se salvar e sincronizar entre dispositivos for indispensável.
 
@@ -42,7 +42,8 @@ Somente Mercado Livre, Shopee, AliExpress, Amazon, SHEIN e Temu nesta fase. List
 - [ ] Teste das ferramentas no ChatGPT Web.
 - [x] Planejamento multi-termos gratuito e análise de ofertas sem pontuação de vendedores.
 - [ ] Descoberta automática com preços e disponibilidade verificados, sem depender de franquias reduzidas.
-- [ ] UI MCP App: formulário e resultados sincronizados no chat.
+- [x] UI MCP Apps de registro manual com preço, frete, impostos, taxas e salvamento em tabela ligada aos links dos anúncios.
+- [ ] Validar renderização e salvamento do widget dentro de uma conversa real do ChatGPT Web.
 - [x] Implementado adaptador Tavily para descobrir links individuais por marketplace, com filtragem de domínio e sem fabricar valores.
 - [ ] Ativar TAVILY_API_KEY do plano Researcher gratuito apenas na Vercel, verificar consultas reais e uso da franquia.
 - [ ] Adicionar prova de disponibilidade, preço, identidade do anúncio e outras fontes autorizadas.

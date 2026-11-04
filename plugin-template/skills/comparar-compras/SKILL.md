@@ -3,7 +3,7 @@ name: comparar-compras
 description: Use quando alguém acionar o Comparador de Compras para iniciar uma pesquisa, pesquisar produtos em diferentes lojas, comparar anúncios de marketplaces aprovados, atualizar preço do carrinho, frete, impostos, cupons ou classificar custo-benefício.
 ---
 
-# Comparador Inteligente de Compras — versão 0.6
+# Comparador Inteligente de Compras — versão 0.7
 
 ## Objetivo
 
@@ -30,6 +30,14 @@ Não usar reputação de vendedor como fator; a unidade de comparação é o an�
 ## Pesquisa
 
 Usar ferramentas de busca atualmente disponíveis ao assistente. Pesquisar os marketplaces escolhidos, mas não afirmar integração/API oficial onde não exista. Priorizar links diretos para anúncios individuais que correspondam à função do produto. Distinguir preço anunciado de preço final no carrinho. Não equiparar itens visualmente semelhantes se faltar a característica essencial. Marcar anúncio ou plataforma não verificado quando não houver confirmação. Não citar avaliações inexistentes. Para cada anúncio útil, apresentar plataforma, nome/modelo, link individual no marketplace, preço anunciado, disponibilidade/condição de verificação, frete/impostos quando conhecidos e observações de compatibilidade. Não apresentar comparações de reputação entre vendedores. Se uma plataforma não puder ser consultada, explicitar o bloqueio e continuar com as demais.
+
+## Registro de valores informados pelo usuário (obrigatório)
+
+Após encontrar anúncios individuais nos seis marketplaces autorizados, chamar `abrir_tabela_comparacao` com o produto, a quantidade e uma lista de anúncios com seus links correspondentes e, quando houver, preço anunciado provisório. A ferramenta fornece uma tabela MCP Apps dentro do ChatGPT em hosts compatíveis. Não preencher automaticamente o valor real confirmado: o usuário deve poder digitar **preço unitário efetivo, frete, impostos e outras taxas**, além de eventuais descontos confirmados no checkout.
+
+A interface possui botão **Salvar na tabela** para cada registro. Apenas ao salvar, uma linha entra na tabela de valores com plataforma, nome, link clicável do anúncio, custos informados e valor final calculado por quantidade. Se o usuário editar e salvar novamente, atualizar o mesmo anúncio, sem duplicá-lo. O ranking deve ordenar pelo **menor total informado**, diferente do preço anunciado provisório. Campos não informados nunca se tornam zero silenciosamente. Não substituir links entre anúncios distintos. O vínculo entre total salvo e o link original é requisito de integridade.
+
+Persistência na fase atual: usar `window.openai.setWidgetState` (estado da interface/conversa) quando disponível e `localStorage` somente no site web independente. Não alegar banco remoto ou sincronização entre dispositivos; a interface oferece **Exportar JSON** como cópia durável. Não afirmar que a UI foi renderizada no cliente sem teste real; se o host não suportar MCP Apps, fornecer dados estruturados e o endereço HTTPS da tabela independente.
 
 ## Comparação
 
@@ -65,4 +73,4 @@ O plano Researcher da Tavily oferece franquia mensal gratuita e tem limite. A AP
 
 ## Limitações desta versão
 
-Este plugin declara uma conexão MCP HTTP hospedada na Vercel com cinco ferramentas: `planejar_busca_profunda` (plano gratuito sem coleta), `analisar_busca_profunda` (filtro e comparação de resultados recebidos), e `preparar_pesquisa` (critérios), `pesquisar_ofertas` (descoberta de links por índice web, dependente de configuração Tavily) e `comparar_carrinhos` (cálculo de frete, impostos e descontos confirmados). O servidor NÃO possui acesso direto às APIs de listagens dos marketplaces, NÃO verifica checkout automaticamente e NÃO mantém sessões em banco remoto. Usar os recursos de pesquisa disponíveis no ChatGPT quando autorizados, distinguindo com rigor os anúncios efetivamente verificados. O protótipo de tabela em `/comparador.html` salva localmente no navegador, mas ainda não é uma UI MCP integrada ao chat. O plugin permanece privado e não está publicado no diretório público.
+Este plugin declara uma conexão MCP HTTP hospedada na Vercel com seis ferramentas, incluindo `abrir_tabela_comparacao` (recurso MCP Apps para salvar valores e links): `planejar_busca_profunda` (plano gratuito sem coleta), `analisar_busca_profunda` (filtro e comparação de resultados recebidos), e `preparar_pesquisa` (critérios), `pesquisar_ofertas` (descoberta de links por índice web, dependente de configuração Tavily) e `comparar_carrinhos` (cálculo de frete, impostos e descontos confirmados). O servidor NÃO possui acesso direto às APIs de listagens dos marketplaces, NÃO verifica checkout automaticamente e NÃO mantém sessões em banco remoto. Usar os recursos de pesquisa disponíveis no ChatGPT quando autorizados, distinguindo com rigor os anúncios efetivamente verificados. A tabela principal está em `/widget-comparador.html` e exposta também como recurso MCP Apps vinculado à ferramenta `abrir_tabela_comparacao`; o funcionamento visual dentro de uma conversa ChatGPT precisa de teste. O estado é temporário no widget/navegador e não é sincronizado remotamente. O plugin permanece privado e não está publicado no diretório público.

@@ -1,8 +1,11 @@
 import { createMcpHandler } from "mcp-handler";
+import { readFile } from "node:fs/promises";
+import { join } from "node:path";
+import { verificarAnuncio } from "../../../src/pesquisa.mjs";
 import { z } from "zod";
 import { pesquisarOfertas } from "../../../src/pesquisa.mjs";
 import { planejarBuscaProfunda, analisarBuscaProfunda } from "../../../src/busca-profunda.mjs";
-import { compararOfertas, prepararPesquisa, LOJAS } from "../../../src/comparacao.mjs";
+import { compararOfertas, prepararPesquisa, LOJAS, cents } from "../../../src/comparacao.mjs";
 
 export const runtime = "nodejs";
 export const maxDuration = 60;
@@ -108,6 +111,60 @@ const handler = createMcpHandler((server) => {
   }, async args => {
     const dados = analisarBuscaProfunda(args as any);
     return {content:[{type:"text",text:JSON.stringify(dados)}],structuredContent:dados};
+  });
+
+  server.registerResource("Tabela de custos do comparador", "ui://comparador/tabela-custos-v1", {
+    mimeType: "text/html;profile=mcp-app",
+    description: "Interface para o usuário registrar preço real, frete, impostos e taxas, salvar na tabela e abrir o anúncio."
+  }, async () => ({
+    contents: [{
+      uri: "ui://comparador/tabela-custos-v1",
+      mimeType: "text/html;profile=mcp-app",
+      text: await readFile(join(process.cwd(), "public", "widget-comparador.html"), "utf8")
+    }]
+  }));
+
+  server.registerTool("abrir_tabela_comparacao", {
+    title: "Abrir tabela editável de valores e links",
+    description: "Exibe uma interface no ChatGPT para o usuário conferir anúncios, registrar preço real, frete, impostos e taxas e salvar cada oferta numa tabela com link do próprio anúncio. A lista pode vir de resultados pesquisados ou ficar vazia para cadastro manual. Não persiste em banco remoto.",
+    inputSchema: z.object({
+      produto: z.string().max(200).default(""),
+      quantidade: z.number().int().min(1).max(1000).default(1),
+      ofertas: z.array(z.object({
+        loja,
+        titulo: z.string().min(1).max(300),
+        url: z.string().url(),
+        preco_anunciado: dinheiro
+      })).max(30).default([])
+    }),
+    _meta: {
+      ui: { resourceUri: "ui://comparador/tabela-custos-v1" },
+      "openai/outputTemplate": "ui://comparador/tabela-custos-v1"
+    },
+    annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false }
+  }, async args => {
+    const vistos = new Set<string>();
+    const ofertas = args.ofertas.filter(o => {
+      if (!verificarAnuncio(o.url, o.loja)) return false;
+      const key = o.loja + "|" + o.url.split("#")[0];
+      if (vistos.has(key)) return false;
+      vistos.add(key);
+      return true;
+    }).map(o => ({
+      loja: o.loja,
+      titulo: o.titulo,
+      url: o.url,
+      preco_anunciado: cents(o.preco_anunciado) === null ? null : cents(o.preco_anunciado)! / 100
+    })).sort((a,b) => (a.preco_anunciado ?? Infinity) - (b.preco_anunciado ?? Infinity));
+    const dados = {
+      produto: args.produto,
+      quantidade: args.quantidade,
+      ofertas,
+      links_rejeitados: args.ofertas.length - ofertas.length,
+      armazenamento: "estado_do_widget",
+      aviso: "Salvar na tabela guarda valores no estado deste widget. Para cópia durável, o usuário deve exportar o arquivo JSON. Preços anunciados não são confirmados automaticamente."
+    };
+    return { content: [{type:"text",text:JSON.stringify(dados)}], structuredContent:dados };
   });
 });
 

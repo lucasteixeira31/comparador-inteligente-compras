@@ -4,10 +4,10 @@ export const dynamic = "force-dynamic";
 export async function GET() {
   return Response.json({
     projeto: "Comparador Inteligente de Compras",
-    versao_servidor: "0.6.0",
+    versao_servidor: "0.7.0",
     mcp: {
       endpoint: "/api/mcp",
-      ferramentas: ["preparar_pesquisa", "comparar_carrinhos", "pesquisar_ofertas", "planejar_busca_profunda", "analisar_busca_profunda"]
+      ferramentas: ["preparar_pesquisa", "comparar_carrinhos", "pesquisar_ofertas", "planejar_busca_profunda", "analisar_busca_profunda", "abrir_tabela_comparacao"]
     },
     pesquisa: {
       provedor: "Tavily",
