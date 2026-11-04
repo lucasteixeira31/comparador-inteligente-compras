@@ -43,3 +43,15 @@ test("javascript do formulario é sintaticamente valido",()=>{
   assert.ok(m);
   assert.doesNotThrow(()=>new vm.Script(m[1]));
 });
+
+test("tabela mantém preço anunciado editável e custos incompletos",()=>{
+  assert.ok(html.includes('price:cents(data.preco_anunciado)===null'));
+  for(const id of ["price","shipping","taxes","fees"]) {
+    assert.ok(html.includes('id="'+id+'"'));
+    assert.ok(!new RegExp('id="'+id+'"[^>]*required').test(html));
+  }
+  assert.ok(html.includes('if(v==="")continue;'));
+  assert.ok(html.includes('id="share"'));
+  assert.ok(html.includes("Mostrar tabela na conversa"));
+  assert.ok(html.includes("sendFollowUpMessage"));
+});

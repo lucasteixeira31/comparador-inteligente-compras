@@ -61,10 +61,10 @@ th{background:#f3f6fa}td b{white-space:nowrap}
       <label class="field">Marketplace<select id="marketplace" required></select></label>
       <label class="field">Nome do anúncio<input id="name" required maxlength="300"></label>
       <label class="field" style="grid-column:1/-1">Link individual do anúncio<input id="link" required type="url" placeholder="https://..." maxlength="1200"></label>
-      <label class="field">Preço unitário real (R$)<input id="price" inputmode="decimal" placeholder="Ex.: 29,90" required></label>
-      <label class="field">Frete total (R$)<input id="shipping" inputmode="decimal" placeholder="Ex.: 12,90" required></label>
-      <label class="field">Impostos (R$)<input id="taxes" inputmode="decimal" placeholder="0 se não houver" required></label>
-      <label class="field">Outras taxas (R$)<input id="fees" inputmode="decimal" placeholder="0 se não houver" required></label>
+      <label class="field">Preço unitário informado (R$)<input id="price" inputmode="decimal" placeholder="Ex.: 29,90"></label>
+      <label class="field">Frete total (R$)<input id="shipping" inputmode="decimal" placeholder="Ex.: 12,90"></label>
+      <label class="field">Impostos (R$)<input id="taxes" inputmode="decimal" placeholder="0 se não houver"></label>
+      <label class="field">Outras taxas (R$)<input id="fees" inputmode="decimal" placeholder="0 se não houver"></label>
       <label class="field">Desconto aplicado (R$)<input id="discount" inputmode="decimal" placeholder="0 se não houver"></label>
     </div>
     <p class="muted">Valores vazios não são tratados como zero. O desconto só será considerado quando confirmado.</p>
@@ -85,6 +85,7 @@ th{background:#f3f6fa}td b{white-space:nowrap}
   </table></div>
   <p class="status" id="summary"></p>
   <div class="actions">
+    <button type="button" id="share">Mostrar tabela na conversa</button>
     <button type="button" class="secondary" id="export">Exportar tabela (JSON)</button>
     <button type="button" class="secondary" id="import">Importar tabela (JSON)</button>
     <input type="file" accept=".json,application/json" id="import-file" class="hidden">
@@ -201,7 +202,7 @@ function total(o){
 }
 function edit(data){
   const existing=saved.find(x=>keyFor(x)===keyFor(data));
-  const o=existing||{loja:data.loja,titulo:data.titulo,url:data.url,price:"",shipping:"",taxes:"",fees:"",discount:"",discountVerified:false};
+  const o=existing||{loja:data.loja,titulo:data.titulo,url:data.url,price:cents(data.preco_anunciado)===null?"":String(data.preco_anunciado).replace(".",","),shipping:"",taxes:"",fees:"",discount:"",discountVerified:false};
   selectedId=existing?keyFor(existing):null;
   $("marketplace").value=o.loja;$("name").value=o.titulo;$("link").value=o.url;
   for(const id of ["price","shipping","taxes","fees","discount"])$(id).value=rowValue(o,id);
@@ -247,8 +248,8 @@ $("editor").addEventListener("submit",event=>{
   if(!validUrl(url,loja)){$("editor-error").textContent="Use um link individual HTTPS do marketplace selecionado.";return;}
   if(!titulo){$("editor-error").textContent="Informe o nome do anúncio.";return;}
   for(const [k,v]of Object.entries(vals)){
-    if(k==="discount"&&v==="")continue;
-    if(cents(v)===null){$("editor-error").textContent="Informe valores monetários válidos. Use 0 quando não houver taxa.";return;}
+    if(v==="")continue;
+    if(cents(v)===null){$("editor-error").textContent="Informe apenas valores monetários válidos. Deixe vazio quando o custo for desconhecido.";return;}
   }
   if($("discountVerified").checked&&cents(vals.discount)===null){$("editor-error").textContent="Informe o valor do desconto confirmado.";return;}
   const o={loja,titulo,url,...vals,discountVerified:$("discountVerified").checked,savedAt:new Date().toISOString()};
@@ -257,7 +258,7 @@ $("editor").addEventListener("submit",event=>{
   if(selectedId)saved=saved.filter(x=>keyFor(x)!==selectedId);
   saved=saved.filter(x=>keyFor(x)!==id);
   saved.push(o);$("editor-panel").classList.add("hidden");
-  persist();renderSaved();renderCandidates();status("Oferta salva na tabela, com o link original e o valor final informado.");
+  persist();renderSaved();renderCandidates();status("Oferta registrada na tabela com seu link. Custos incompletos continuam pendentes até a edição.");
 });
 $("quantity").addEventListener("change",()=>{
   const n=Number($("quantity").value);
@@ -265,6 +266,30 @@ $("quantity").addEventListener("change",()=>{
   quantity=n;persist();renderSaved();
 });
 $("product").addEventListener("change",()=>{product=$("product").value.trim();persist();});
+$("share").addEventListener("click",async()=>{
+  const rows=saved.map(o=>({
+    loja:o.loja,produto:o.titulo,url:o.url,
+    preco_unitario:raw(o.price)===""?null:o.price,
+    frete:raw(o.shipping)===""?null:o.shipping,
+    impostos:raw(o.taxes)===""?null:o.taxes,
+    outras_taxas:raw(o.fees)===""?null:o.fees,
+    desconto_aplicado:o.discountVerified?o.discount:"0",
+    valor_final:total(o)
+  })).sort((a,b)=>(a.valor_final??Infinity)-(b.valor_final??Infinity));
+  if(!rows.length){status("Salve pelo menos um anúncio antes de mostrar o resumo.");return;}
+  if(typeof window.openai?.sendFollowUpMessage!=="function"){
+    status("O envio para a conversa não está disponível neste cliente. A tabela continua visível aqui.");
+    return;
+  }
+  try{
+    await window.openai.sendFollowUpMessage({
+      prompt:"Exiba na conversa a tabela editada pelo usuário sem refazer a busca, com os links individuais. "+
+        "Ordene os totais informados do menor para o maior e coloque ofertas incompletas em seção separada. "+
+        "Não trate campos vazios como zero. Dados: "+JSON.stringify({produto:product,quantidade,ofertas:rows})
+    });
+    status("Resumo enviado para a conversa.");
+  }catch{status("Não foi possível enviar o resumo; os registros permanecem salvos nesta interface.");}
+});
 $("export").addEventListener("click",()=>{
   const blob=new Blob([JSON.stringify({version:1,produto:product,quantidade:quantity,ofertas_salvas:saved},null,2)],{type:"application/json"});
   const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="comparador-ofertas-salvas.json";a.click();URL.revokeObjectURL(a.href);
@@ -276,7 +301,7 @@ $("import-file").addEventListener("change",async event=>{
     const data=JSON.parse(await f.text());
     if(!Array.isArray(data.ofertas_salvas)||data.ofertas_salvas.length>100)throw Error("invalid");
     if(data.ofertas_salvas.some(o=>!shops.includes(o.loja)||!validUrl(o.url,o.loja)||
-      ["price","shipping","taxes","fees"].some(k=>cents(o[k])===null)))throw Error("invalid");
+      ["price","shipping","taxes","fees"].some(k=>raw(o[k])!==""&&cents(o[k])===null)))throw Error("invalid");
     saved=data.ofertas_salvas;
     product=raw(data.produto);quantity=Number.isInteger(data.quantidade)&&data.quantidade>0&&data.quantidade<=1000?data.quantidade:1;
     $("product").value=product;$("quantity").value=quantity;
