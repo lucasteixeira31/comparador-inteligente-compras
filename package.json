@@ -9,7 +9,7 @@
     "start": "next start",
     "test": "node --test tests/*.test.mjs"
   },
-  "engines": {"node": ">=20"},
+  "engines": {"node": "22.x"},
   "dependencies": {
     "@modelcontextprotocol/server": "^2.0.0",
     "mcp-handler": "^2.0.0",
