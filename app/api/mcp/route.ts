@@ -113,6 +113,42 @@ const handler = createMcpHandler((server) => {
     return {content:[{type:"text",text:JSON.stringify(dados)}],structuredContent:dados};
   });
 
+
+  server.registerResource("Formulário inicial do comparador", "ui://comparador/formulario-pesquisa-v1", {
+    mimeType: "text/html;profile=mcp-app",
+    description: "Formulário de pesquisa de produtos apresentado na própria conversa."
+  }, async () => ({
+    contents: [{
+      uri: "ui://comparador/formulario-pesquisa-v1",
+      mimeType: "text/html;profile=mcp-app",
+      text: await readFile(join(process.cwd(), "public", "widget-pesquisa.html"), "utf8"),
+      _meta: { "openai/ui": { availableDisplayModes: ["inline", "fullscreen"] }, ui: { prefersBorder: true } }
+    }]
+  }));
+
+  server.registerTool("abrir_formulario_pesquisa", {
+    title: "Abrir formulário de pesquisa no chat",
+    description: "Primeira etapa do comparador: apresenta um formulário interativo inline de produto, características, quantidade, orçamento, CEP e marketplaces. A pesquisa é solicitada à conversa após o usuário clicar Pesquisar.",
+    inputSchema: z.object({
+      produto: z.string().max(200).default(""),
+      caracteristicas: z.array(z.string().max(100)).max(8).default([]),
+      orcamento: dinheiro,
+      quantidade: z.number().int().min(1).max(1000).default(1),
+      cep: z.string().max(9).nullable().optional(),
+      condicao: z.enum(["novo", "usado", "qualquer"]).default("novo"),
+      lojas: z.array(loja).min(1).max(6).default(["Mercado Livre", "Shopee", "AliExpress"])
+    }),
+    _meta: {
+      ui: { resourceUri: "ui://comparador/formulario-pesquisa-v1" },
+      "openai/outputTemplate": "ui://comparador/formulario-pesquisa-v1"
+    },
+    annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false }
+  }, async args => {
+    const dados = { ...args, etapa: "formulario_pesquisa",
+      orientacao: "Os critérios serão enviados à própria conversa. O servidor ainda não executou buscas." };
+    return { content: [{ type: "text", text: JSON.stringify(dados) }], structuredContent: dados };
+  });
+
   server.registerResource("Tabela de custos do comparador", "ui://comparador/tabela-custos-v1", {
     mimeType: "text/html;profile=mcp-app",
     description: "Interface para o usuário registrar preço real, frete, impostos e taxas, salvar na tabela e abrir o anúncio."
