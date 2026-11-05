@@ -28,3 +28,14 @@ test("plugin @comprar usa App MCP sem MCP direto",()=>{
   assert.match(skill,/\x60consolidar_comparacao_chat\x60/);
   assert.match(skill,/não abrir formulários nem tabelas MCP Apps automaticamente/);
 });
+
+test("guia dos gatilhos esta acessivel a partir do README e esclarece seus limites",()=>{
+  const readProject = p => readFileSync(new URL("../"+p,root),"utf8");
+  const guia=readProject("docs/GATILHOS.md");
+  const readme=readProject("README.md");
+  assert.match(readme,/\[guia completo dos gatilhos\]\(docs\/GATILHOS\.md\)/);
+  for (const comando of ["@comprar #visual","#visual","#chat","modo visual","modo chat"])
+    assert.ok(guia.includes(comando),"Gatilho não documentado: "+comando);
+  assert.match(guia,/não são comandos universais/);
+  assert.match(guia,/não são automaticamente sincronizados/);
+});

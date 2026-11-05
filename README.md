@@ -8,6 +8,10 @@ Projeto pessoal, gratuito, sem monetização e de código aberto para uso no **C
 
 O nome técnico e visível do plugin atual é **comprar** (menção **`@comprar`**); a pasta histórica `plugin-template/` usa o identificador antigo `comparador-inteligente-compras` e não é o pacote principal de Chat. O plugin é pessoal e privado; **atualizar o nome não garante que apareça no seletor `@`** se não estiver instalado/ativado ou se o cliente atual não oferecer suporte. Abra a página do plugin no ChatGPT, confira a instalação em **Plugins → Pessoais/Instalados**, e teste novamente em uma conversa compatível, preferencialmente ChatGPT Web. A disponibilidade varia por interface, conta e configurações; uma instalação não substitui o teste na interface.
 
+## Guia de comandos e gatilhos
+
+O **modo Chat é padrão** e o modo gráfico só abre por solicitação explícita. Exemplos: `@comprar` (conversa), `@comprar #visual` (gráfico) e `#chat` (voltar ao texto). Consulte o **[guia completo dos gatilhos](docs/GATILHOS.md)**, que explica os comandos, exemplos práticos, limitações e regras de alternância.
+
 ## Plugin `@comprar` — Chat padrão e modo gráfico opt-in (0.9.4)
 
 A experiência **conversacional é o padrão**. `@comprar` sem comandos coleta dados, pesquisa links reais, permite corrigir preços/frete/impostos e salva a tabela Markdown na própria conversa. A versão gráfica existe como opção experimental, **não substitui o Chat nem encerra o trabalho de aperfeiçoamento conversacional**.
