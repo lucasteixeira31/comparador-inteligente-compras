@@ -7,7 +7,7 @@ export async function GET() {
     versao_servidor: "0.8.0",
     mcp: {
       endpoint: "/api/mcp",
-      ferramentas: ["preparar_pesquisa", "comparar_carrinhos", "pesquisar_ofertas", "planejar_busca_profunda", "analisar_busca_profunda", "abrir_tabela_comparacao", "abrir_formulario_pesquisa"]
+      ferramentas: ["preparar_pesquisa", "comparar_carrinhos", "pesquisar_ofertas", "planejar_busca_profunda", "analisar_busca_profunda", "consolidar_comparacao_chat", "abrir_tabela_comparacao", "abrir_formulario_pesquisa"]
     },
     pesquisa: {
       provedor: "Tavily",

@@ -3,7 +3,7 @@ name: comparar-compras
 description: Use quando o usuário invocar @comprar, pedir pesquisa de ofertas, edição de preços/frete/impostos ou classificação de compras na conversa.
 ---
 
-# @comprar — MVP conversacional (ChatGPT Chat web/celular) — 0.9.2
+# @comprar — MVP conversacional (ChatGPT Chat web/celular) — 0.9.3
 
 ## Escopo e prioridade desta etapa
 
@@ -11,7 +11,7 @@ A versão em desenvolvimento é **APENAS CONVERSACIONAL**: o fluxo começa, cont
 
 O plugin usa ChatGPT Chat, não exige Work, Codex, desktop, sites externos, logins de marketplace ou instalação local. O App remoto `comprar-backend` continua conectado por `.app.json` para cálculos/validação quando suas ferramentas estiverem efetivamente disponíveis, mas **a presença do App não autoriza substituir o fluxo textual por widgets**. Não adicionar `mcp.json` nem `.mcp.json` ao pacote.
 
-Ferramentas MCP permitidas nesta fase, somente se disponíveis: `preparar_pesquisa` para normalizar critérios, `planejar_busca_profunda` para gerar consultas, `analisar_busca_profunda` para filtrar ofertas realmente localizadas e `comparar_carrinhos` para calcular totais. A ferramenta `pesquisar_ofertas` só pode ser usada quando o provedor de busca estiver configurado; planejamento não é pesquisa real. Jamais afirmar que o servidor verificou preços, estoque ou fretes que não verificou. Usar ferramentas de busca web nativas do ChatGPT para pesquisar quando disponíveis. Se indisponíveis, informar a limitação e permitir cadastro manual de links e valores no chat.
+Ferramentas MCP permitidas nesta fase, somente se disponíveis: `preparar_pesquisa` para normalizar critérios, `planejar_busca_profunda` para gerar consultas, `analisar_busca_profunda` para filtrar ofertas realmente localizadas e `consolidar_comparacao_chat` para aplicar correções por ID, calcular totais e devolver uma tabela Markdown sem widgets. `comparar_carrinhos` permanece disponível para cálculo isolado, quando necessário. A ferramenta `pesquisar_ofertas` só pode ser usada quando o provedor de busca estiver configurado; planejamento não é pesquisa real. Jamais afirmar que o servidor verificou preços, estoque ou fretes que não verificou. Usar ferramentas de busca web nativas do ChatGPT para pesquisar quando disponíveis. Se indisponíveis, informar a limitação e permitir cadastro manual de links e valores no chat.
 
 ## Lojas permitidas
 
@@ -33,11 +33,13 @@ No retorno, criar no próprio chat uma **tabela Markdown textual** com identific
 
 Permitir comandos naturais como `corrigir #2 preço 45,90, frete 12` ou `#3 sem frete`, e atualizar **apenas os campos citados**, sem refazer a pesquisa nem duplicar a linha. Campos editáveis: preço unitário real, quantidade, frete total, impostos, outras taxas e desconto efetivamente confirmado. O usuário pode alterar lojas, critérios ou adicionar/remover anúncios de maneira explícita; quando isso exigir nova pesquisa, explicar o alcance da atualização. Manter as informações de anúncio originais separadas dos valores revisados no carrinho.
 
+**Para corrigir anúncios já encontrados**, priorizar `consolidar_comparacao_chat`: passar em `ofertas` o conjunto atual completo de anúncios com seus IDs e URLs, e em `edicoes` apenas os campos mencionados para cada ID. O retorno `ofertas_atualizadas` é o novo estado da comparação a manter no histórico da conversa. Não inventar valor de `preco_unitario`: o preço de vitrine deve ficar em `preco_anunciado` até confirmação explícita. A ferramenta não pesquisa produtos, não abre widgets e não grava dados remotamente. Se a ferramenta não estiver disponível, manter o mesmo comportamento com tabelas Markdown calculadas na conversa.
+
 Tratar campos desconhecidos como `pendente`, **não como R$ 0,00**. Zero somente quando confirmado pelo usuário ou claramente comprovado. Desconto apenas se confirmado, e não pode tornar o total negativo. Preservar preços, links e ordem de inserção de todos os anúncios mesmo ao reordenar a comparação. Se o usuário confirmar um custo completo, registrar a confirmação; se for apenas preço da página, não tratar frete ou tributos como confirmados.
 
 ## Etapa 4 — Salvar e classificar NA CONVERSA
 
-Quando o usuário disser `salvar`, `registrar` ou equivalente, registrar nesta mesma conversa a **tabela final textual** com ID, plataforma, anúncio/link, preço, frete, impostos, taxas, desconto, quantidade, total final e eventuais pendências. Total = (preço unitário × quantidade) + frete + impostos + taxas − desconto confirmado. Ordenar apenas ofertas com todos os custos conhecidos pelo menor total final; exibir **itens pendentes** em subseção separada, ordenados pelo preço anunciado ou subtotal parcial, explicitamente sem comparação válida de custo final. Não classificar oferta incompleta como a mais barata. Se não houver custos completos, dizer que não há vencedor confirmado.
+Quando o usuário disser `salvar`, `registrar` ou equivalente, usar a `tabela_markdown` de `consolidar_comparacao_chat` quando disponível e **publicá-la como mensagem na própria conversa**, sem confundir o retorno do MCP com armazenamento. Se não houver essa ferramenta, produzir equivalente Markdown manualmente. Registrar nesta mesma conversa a **tabela final textual** com ID, plataforma, anúncio/link, preço, frete, impostos, taxas, desconto, quantidade, total final e eventuais pendências. Total = (preço unitário × quantidade) + frete + impostos + taxas − desconto confirmado. Ordenar apenas ofertas com todos os custos conhecidos pelo menor total final; exibir **itens pendentes** em subseção separada, ordenados pelo preço anunciado ou subtotal parcial, explicitamente sem comparação válida de custo final. Não classificar oferta incompleta como a mais barata. Se não houver custos completos, dizer que não há vencedor confirmado.
 
 O registro fica **no histórico desta conversa**, não em banco remoto nem sincronizado entre chats/dispositivos por este plugin. Não anunciar sucesso de armazenamento sem registro efetivo. Permitir novas correções após salvar, mantendo URL e ID e atualizando a tabela sem busca adicional. Não enviar o usuário a outro site para edição, apenas para abrir o anúncio ao comprar.
 

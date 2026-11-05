@@ -8,11 +8,13 @@ Projeto pessoal, gratuito, sem monetização e de código aberto para uso no **C
 
 O nome técnico e visível do plugin atual é **comprar** (menção **`@comprar`**); a pasta histórica `plugin-template/` usa o identificador antigo `comparador-inteligente-compras` e não é o pacote principal de Chat. O plugin é pessoal e privado; **atualizar o nome não garante que apareça no seletor `@`** se não estiver instalado/ativado ou se o cliente atual não oferecer suporte. Abra a página do plugin no ChatGPT, confira a instalação em **Plugins → Pessoais/Instalados**, e teste novamente em uma conversa compatível, preferencialmente ChatGPT Web. A disponibilidade varia por interface, conta e configurações; uma instalação não substitui o teste na interface.
 
-## Plugin `@comprar` no ChatGPT Web e celular — MVP conversacional 0.9.2
+## Plugin `@comprar` no ChatGPT Web e celular — MVP conversacional 0.9.3
 
 **Prioridade atual: apenas experiência por mensagens e tabelas no chat.** O fluxo é `@comprar` → coleta textual dos critérios (produto, características, orçamento, quantidade, CEP, lojas e condição) → pesquisa de anúncios individuais com links e preços → edição conversacional de preço/frete/impostos/taxas/descontos → comando `salvar` → tabela Markdown ordenada por custo final **confirmado**. Não abrir `abrir_formulario_pesquisa` nem `abrir_tabela_comparacao` durante o desenvolvimento deste MVP. A experiência visual foi testada como prova de conceito e será retomada apenas numa fase posterior.
 
 O plugin **comprar** conserva seu App `comprar-backend` no arquivo `plugin-chat/.app.json` e permanece dedicado a `CHAT`; o App usa o servidor Vercel MCP existente. As ferramentas de planejamento, validação de resultados e cálculo podem apoiar os passos conversacionais quando disponíveis. A busca autônoma do backend ainda depende de provedor configurado; a experiência de pesquisa usa as ferramentas nativas do ChatGPT realmente disponíveis. O pacote do plugin continua sem `mcp.json` e `.mcp.json` para evitar classificação exclusiva de computador.
+
+**Novo na versão 0.9.3:** a ferramenta MCP não visual `consolidar_comparacao_chat` recebe IDs estáveis, ofertas já encontradas e correções pontuais; produz tabela Markdown textual, informa pendências e devolve as ofertas atualizadas sem duplicação nem perda do link. Não pesquisa anúncios e não grava o histórico em banco remoto. Exemplos: `corrigir #2 frete 12,90`, `#1 confirmar preço 29,90` e `salvar` na mesma conversa. Disponibilidade não confirmada impede declarar um vencedor; custo de vitrine não é custo confirmado.
 
 **Critérios de qualidade:** links individuais genuínos; variações como G3 precisam ser confirmadas; custos desconhecidos não equivalem a zero; só calcular o ranking definitivo para ofertas com custos completos; conservar anúncio e URL ao editar; `salvar` registra na conversa, sem prometer banco de dados remoto. Testar chat móvel e web antes de avançar para widgets.
 
