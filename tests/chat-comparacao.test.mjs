@@ -26,7 +26,7 @@ test("corrige somente linha e campos informados sem perder URL ou ID",()=>{
   assert.equal(r.ranking[0].total,45);
   assert.equal(r.ranking[1].total,49.9);
   assert.equal(r.ofertas_atualizadas[1].url,url(789));
-  assert.match(r.tabela_markdown,/\[#/); // IDs permanecem visíveis na tabela
+  assert.match(r.tabela_markdown,/#2/); // IDs permanecem visíveis na tabela
   assert.ok(r.tabela_markdown.includes(url(456)));
   assert.ok(r.tabela_markdown.includes(url(789)));
 });
