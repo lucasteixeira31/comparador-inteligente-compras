@@ -31,12 +31,12 @@ jobs:
         run: npm install --no-audit --no-fund
       - name: Rodar testes automatizados
         run: npm test
-      - name: Aguardar implantacao da versao 0.8.0
+      - name: Aguardar implantacao da versao 0.9.3
         shell: bash
         run: |
           ok=0
           for i in $(seq 1 18); do
-            if curl -fsS --max-time 10 'https://comparador-inteligente-compras.vercel.app/api/status' | grep -q '"versao_servidor":"0.8.0"'; then
+            if curl -fsS --max-time 10 'https://comparador-inteligente-compras.vercel.app/api/status' | grep -q '"versao_servidor":"0.9.3"'; then
               ok=1
               break
             fi

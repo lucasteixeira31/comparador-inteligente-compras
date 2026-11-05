@@ -39,7 +39,7 @@ const session = init.response.headers.get("mcp-session-id");
 await request("notifications/initialized", {}, undefined, session);
 const tools = await request("tools/list", {}, 2, session);
 const names = tools.data.result?.tools?.map(t => t.name) || [];
-for (const name of ["preparar_pesquisa", "comparar_carrinhos", "pesquisar_ofertas", "planejar_busca_profunda", "analisar_busca_profunda", "abrir_tabela_comparacao", "abrir_formulario_pesquisa"]) {
+for (const name of ["preparar_pesquisa", "comparar_carrinhos", "pesquisar_ofertas", "planejar_busca_profunda", "analisar_busca_profunda", "consolidar_comparacao_chat", "abrir_tabela_comparacao", "abrir_formulario_pesquisa"]) {
   if (!names.includes(name)) throw Error("Missing tool: " + name);
 }
 const call = await request("tools/call", {
@@ -119,3 +119,23 @@ const formHtml=formResource.data.result?.contents?.[0];
 if(formHtml?.mimeType!=="text/html;profile=mcp-app"||!formHtml.text?.includes("sendFollowUpMessage"))
   throw Error("Inline search form resource missing or incomplete");
 console.log(JSON.stringify({initialForm:"ok",formUri:"ui://comparador/formulario-pesquisa-v1"}));
+
+
+const chat = await request("tools/call", {
+  name: "consolidar_comparacao_chat",
+  arguments: {
+    produto: "blusa oversized G3",
+    quantidade: 1,
+    ofertas: [
+      {id:"1",loja:"Shopee",titulo:"Blusa G3",url:"https://shopee.com.br/Blusa-G3-i.123.456",preco_anunciado:29.90},
+      {id:"2",loja:"Mercado Livre",titulo:"Blusa G3",url:"https://produto.mercadolivre.com.br/MLB-1234567890-blusa",preco_anunciado:39.90}
+    ],
+    edicoes: [{id:"2",preco_unitario:39.90,frete:0,impostos:0,outras_taxas:0,disponivel:true}]
+  }
+}, 11, session);
+const c = chat.data.result?.structuredContent;
+if(c?.ranking?.[0]?.id!=="2" || c?.pendentes?.[0]?.id!=="1" || c.armazenado_remotamente!==false
+   || !c.tabela_markdown?.includes("MLB-1234567890") || !c.tabela_markdown?.includes("shopee.com.br")) {
+  throw Error("Falha no fluxo conversacional MCP: "+JSON.stringify(c));
+}
+console.log(JSON.stringify({chatMvp:"ok",ranking:c.ranking.length,pendencias:c.pendentes.length}));
