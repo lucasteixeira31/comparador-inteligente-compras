@@ -9,8 +9,8 @@ test("plugin @comprar usa App MCP sem MCP direto",()=>{
   const app=JSON.parse(read(".app.json"));
   assert.equal(rootManifest.name,"comprar");
   assert.equal(rootManifest.extensions["com.openai"].interface.displayName,"comprar");
-  assert.equal(rootManifest.version,"0.9.1");
-  assert.equal(compat.version,"0.9.1");
+  assert.equal(rootManifest.version,"0.9.2");
+  assert.equal(compat.version,"0.9.2");
   assert.equal(rootManifest.extensions["com.openai"].apps,"./.app.json");
   assert.equal(compat.apps,"./.app.json");
   assert.equal(app.apps["comprar-backend"].id,"asdk_app_6aeca1ead5d88191974ba923cfef6dc3");
@@ -19,4 +19,8 @@ test("plugin @comprar usa App MCP sem MCP direto",()=>{
   assert.equal(existsSync(new URL("mcp.json",root)),false);
   assert.equal(existsSync(new URL(".mcp.json",root)),false);
   assert.match(read("agents/openai.yaml"),/\bCHAT\b/);
+  const skill=read("skills/comparar-compras/SKILL.md");
+  assert.match(skill,/APENAS CONVERSACIONAL/);
+  assert.match(skill,/NÃO abrir widgets MCP Apps/);
+  assert.match(skill,/Não chamar `abrir_formulario_pesquisa` nem `abrir_tabela_comparacao`/);
 });
