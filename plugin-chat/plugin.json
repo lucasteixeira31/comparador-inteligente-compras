@@ -1,0 +1,31 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
+  "author": {
+    "email": "ericafdead@gmail.com",
+    "name": "Faculdade Detroit"
+  },
+  "description": "Comparador de preços de marketplaces: pesquisa anúncios no ChatGPT, permite corrigir custos e ordenar ofertas com links no chat.",
+  "extensions": {
+    "com.openai": {
+      "interface": {
+        "capabilities": [
+          "Interactive"
+        ],
+        "category": "Productivity",
+        "defaultPrompt": [
+          "Abra o formulário do @comprar aqui no chat para eu pesquisar um produto.",
+          "Pesquise anúncios nas lojas selecionadas e mostre os menores preços encontrados.",
+          "Quero corrigir valores, fretes e impostos e salvar o ranking com os links."
+        ],
+        "developerName": "Faculdade Detroit",
+        "displayName": "comprar",
+        "longDescription": "Pesquise anúncios do Mercado Livre, Shopee, AliExpress, Amazon, SHEIN e Temu. Corrija preços reais, frete, impostos, taxas e descontos diretamente em uma tabela no ChatGPT; compare os menores custos encontrados com links de origem.",
+        "shortDescription": "Compare preços e fretes"
+      }
+    }
+  },
+  "name": "comprar",
+  "version": "0.9.0",
+  "repository": "https://github.com/lucasteixeira31/comparador-inteligente-compras",
+  "homepage": "https://comparador-inteligente-compras.vercel.app"
+}

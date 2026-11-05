@@ -1,0 +1,6 @@
+interface:
+  display_name: comprar
+  short_description: Compare ofertas e custos reais
+policy:
+  products:
+    - CHAT

@@ -1,0 +1,28 @@
+{
+  "interface": {
+    "capabilities": [
+      "Interactive"
+    ],
+    "category": "Productivity",
+    "defaultPrompt": [
+      "Abra o formul\u00e1rio do @comprar aqui no chat para eu pesquisar um produto.",
+      "Pesquise an\u00fancios nas lojas selecionadas e mostre os menores pre\u00e7os encontrados.",
+      "Quero corrigir valores, fretes e impostos e salvar o ranking com os links."
+    ],
+    "developerName": "Faculdade Detroit",
+    "displayName": "comprar",
+    "longDescription": "Pesquise an\u00fancios do Mercado Livre, Shopee, AliExpress, Amazon, SHEIN e Temu. Corrija pre\u00e7os reais, frete, impostos, taxas e descontos diretamente em uma tabela no ChatGPT; compare os menores custos encontrados com links de origem.",
+    "shortDescription": "Compare pre\u00e7os e fretes"
+  },
+  "name": "comprar",
+  "version": "0.9.0",
+  "description": "Comparador de pre\u00e7os de marketplaces: pesquisa an\u00fancios no ChatGPT, permite corrigir custos e ordenar ofertas com links no chat.",
+  "author": {
+    "name": "Faculdade Detroit",
+    "email": "ericafdead@gmail.com"
+  },
+  "keywords": [],
+  "homepage": "https://comparador-inteligente-compras.vercel.app",
+  "repository": "https://github.com/lucasteixeira31/comparador-inteligente-compras",
+  "skills": "./skills"
+}
