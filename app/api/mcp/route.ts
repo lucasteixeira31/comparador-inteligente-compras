@@ -6,6 +6,7 @@ import { z } from "zod";
 import { pesquisarOfertas } from "../../../src/pesquisa.mjs";
 import { planejarBuscaProfunda, analisarBuscaProfunda } from "../../../src/busca-profunda.mjs";
 import { compararOfertas, prepararPesquisa, LOJAS, cents } from "../../../src/comparacao.mjs";
+import { consolidarComparacaoChat } from "../../../src/chat-comparacao.mjs";
 
 export const runtime = "nodejs";
 export const maxDuration = 60;
@@ -111,6 +112,35 @@ const handler = createMcpHandler((server) => {
   }, async args => {
     const dados = analisarBuscaProfunda(args as any);
     return {content:[{type:"text",text:JSON.stringify(dados)}],structuredContent:dados};
+  });
+
+
+  server.registerTool("consolidar_comparacao_chat", {
+    title: "Consolidar comparação textual no ChatGPT",
+    description: "Aplica correções por ID estável sem refazer pesquisas, calcula custos completos e devolve tabela Markdown para SALVAR na própria conversa. Não abre widgets e não persiste em banco remoto.",
+    inputSchema: z.object({
+      produto: z.string().max(200).default(""),
+      quantidade: z.number().int().min(1).max(1000).default(1),
+      ofertas: z.array(z.object({
+        id: z.string().optional(), loja, titulo: z.string().min(1).max(300), url: z.string().url(),
+        preco_anunciado: dinheiro, preco_unitario: dinheiro, frete: dinheiro,
+        impostos: dinheiro, outras_taxas: dinheiro, desconto_valor: dinheiro,
+        desconto_tipo: z.enum(["fixo","percentual"]).optional(),
+        desconto_percentual: z.number().min(0).max(100).optional(),
+        cupom_confirmado: z.boolean().optional(), disponivel: z.boolean().nullable().optional()
+      })).max(100).default([]),
+      edicoes: z.array(z.object({
+        id: z.string().min(1), preco_unitario: dinheiro, frete: dinheiro,
+        impostos: dinheiro, outras_taxas: dinheiro, desconto_valor: dinheiro,
+        desconto_tipo: z.enum(["fixo","percentual"]).optional(),
+        desconto_percentual: z.number().min(0).max(100).optional(),
+        cupom_confirmado: z.boolean().optional(), disponivel: z.boolean().nullable().optional()
+      })).max(100).default([])
+    }),
+    annotations: {readOnlyHint:true,destructiveHint:false,idempotentHint:true,openWorldHint:false}
+  }, async args => {
+    const dados = consolidarComparacaoChat(args as any);
+    return {content:[{type:"text",text:dados.tabela_markdown}],structuredContent:dados};
   });
 
 
