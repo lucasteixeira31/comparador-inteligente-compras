@@ -36,6 +36,6 @@ test("guia dos gatilhos esta acessivel a partir do README e esclarece seus limit
   assert.match(readme,/\[guia completo dos gatilhos\]\(docs\/GATILHOS\.md\)/);
   for (const comando of ["@comprar #visual","#visual","#chat","modo visual","modo chat"])
     assert.ok(guia.includes(comando),"Gatilho não documentado: "+comando);
-  assert.match(guia,/não são comandos universais/);
+  assert.match(guia,/não comandos universais/);
   assert.match(guia,/não são automaticamente sincronizados/);
 });
