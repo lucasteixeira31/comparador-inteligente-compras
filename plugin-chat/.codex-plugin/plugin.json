@@ -14,8 +14,9 @@
     "longDescription": "Pesquise an\u00fancios do Mercado Livre, Shopee, AliExpress, Amazon, SHEIN e Temu. Corrija pre\u00e7os reais, frete, impostos, taxas e descontos diretamente em uma tabela no ChatGPT; compare os menores custos encontrados com links de origem.",
     "shortDescription": "Compare pre\u00e7os e fretes"
   },
+  "apps": "./.app.json",
   "name": "comprar",
-  "version": "0.9.0",
+  "version": "0.9.1",
   "description": "Comparador de pre\u00e7os de marketplaces: pesquisa an\u00fancios no ChatGPT, permite corrigir custos e ordenar ofertas com links no chat.",
   "author": {
     "name": "Faculdade Detroit",

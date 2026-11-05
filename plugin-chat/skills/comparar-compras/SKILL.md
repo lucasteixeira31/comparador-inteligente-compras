@@ -7,9 +7,20 @@ description: Use quando o usuário disser @comprar, quiser pesquisar produtos e 
 
 ## Superfície e prioridade
 
-Esta versão é um plugin **somente de instruções**, preparado para ChatGPT Chat (web e celular), sem execução local, sem Codex, sem Work e sem ligação MCP declarada no pacote. A pesquisa é conduzida pelas ferramentas de pesquisa nativas efetivamente disponíveis ao ChatGPT. O projeto também mantém um servidor remoto MCP separado para desenvolvimento, mas **este plugin de Chat não possui acesso direto às ferramentas desse servidor**. Nunca alegar que chamou `abrir_formulario_pesquisa`, `planejar_busca_profunda` ou `abrir_tabela_comparacao` por MCP, nem afirmar uma persistência que não ocorreu.
+Este plugin foi preparado para o **ChatGPT Chat (web e celular)**, sem exigir Codex ou Work. Seu pacote inclui uma dependencia de App **comprar-backend** declarada em `.app.json` com o ID de aplicativo real. O App fornece as ferramentas do servidor remoto MCP ja publicado em Vercel. Nao usar `mcp.json` ou `.mcp.json` no pacote, pois a conexão é feita via App. **A presença da dependencia nao garante que o host permita ferramentas em todo dispositivo ou sessao:** chamar apenas ferramentas efetivamente disponibilizadas pelo ChatGPT. Nunca alegar sucesso de chamada nao realizada nem persistencia que nao ocorreu.
 
-Ao ser invocado, executar o fluxo na **própria conversa**, sem abrir outras abas para registrar dados. Se houver controles interativos nativos para entrada de dados, utilizá-los; caso contrário, conduzir as etapas com mensagens concisas e tabela Markdown no chat. Usar links de produtos apenas para o usuário abrir o anúncio quando desejar comprar.
+Quando o App `comprar-backend` estiver disponivel, priorizar as ferramentas registradas sob esse App:
+- `abrir_formulario_pesquisa`: abrir formulario interativo inline com os parametros ja conhecidos; nao abrir navegador externo.
+- `preparar_pesquisa`: normalizar criterios, sem confundir com busca real.
+- `planejar_busca_profunda`: gerar consultas por loja; pesquisar ofertas na web pelas capacidades de pesquisa que o ChatGPT disponibilizar.
+- `pesquisar_ofertas`: usar apenas quando o provedor de busca do backend estiver configurado; atualmente ele pode estar sem chave e nao consegue buscar por si so.
+- `analisar_busca_profunda`: filtrar resultados e links genuinos provenientes de pesquisas efetivamente realizadas.
+- `abrir_tabela_comparacao`: mostrar tabela editavel no ChatGPT, preservando o link individual de cada anuncio.
+- `comparar_carrinhos`: calcular totais completos, mantendo frete/impostos/taxas desconhecidos como pendencias.
+
+Se qualquer uma das ferramentas acima nao estiver acessivel na interface, usar o fluxo conversacional no proprio ChatGPT, sem inventar chamadas ou funcionalidades.
+
+Ao ser invocado, executar o fluxo na **própria conversa**, sem abrir outras abas para registrar dados. Se a ferramenta `abrir_formulario_pesquisa` do App estiver acessível, utilizá-la; caso contrário, empregar controles interativos nativos. Na ausência de ambos, conduzir as etapas com mensagens concisas e tabela Markdown no chat. Usar links de produtos apenas para o usuário abrir o anúncio quando desejar comprar.
 
 ## Lojas permitidas
 
@@ -53,4 +64,4 @@ Permitir ao usuário corrigir e atualizar uma linha salva sem duplicação do me
 
 ## Restrições e clareza
 
-A pessoa deve poder completar o fluxo no chat, do formulário até a tabela salva. Não exigir acesso ao desktop, Work, Codex, Vercel ou GitHub. É gratuito para o usuário; compras são realizadas nas plataformas autorizadas, fora do plugin. Não solicitar login ou credenciais de marketplaces. Este pacote não permite conferir checkout/estoque automaticamente por ferramentas do MCP, nem renderiza o antigo widget HTML do servidor; esses recursos dependem de uma futura conexão de App compatível com o ChatGPT Web.
+A pessoa deve poder completar o fluxo no chat, do formulário até a tabela salva. Não exigir acesso ao desktop, Work, Codex, Vercel ou GitHub. É gratuito para o usuário; compras são realizadas nas plataformas autorizadas, fora do plugin. Não solicitar login ou credenciais de marketplaces. O App MCP não garante verificação automática de checkout/estoque, nem disponibilidade de widgets em todos os clientes. O servidor não tem provedor de busca habilitado por padrão; distinguir resultados de busca nativos do ChatGPT e retornos do App. Se o host apresentar os widgets MCP, utilizá-los diretamente no ChatGPT, sem exigir site externo. Se não os apresentar, oferecer controles de chat ou tabelas Markdown.

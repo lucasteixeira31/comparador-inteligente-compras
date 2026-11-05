@@ -8,15 +8,15 @@ Projeto pessoal, gratuito, sem monetização e de código aberto para uso no **C
 
 O nome visível desejado é **comprar** (menção **`@comprar`**). O identificador técnico permanece `comparador-inteligente-compras` para preservar o plugin já criado e sua conexão MCP. O plugin é pessoal e privado; **atualizar o nome não garante que apareça no seletor `@`** se não estiver instalado/ativado ou se o cliente atual não oferecer suporte. Abra a página do plugin no ChatGPT, confira a instalação em **Plugins → Pessoais/Instalados**, e teste novamente em uma conversa compatível, preferencialmente ChatGPT Web. A disponibilidade varia por interface, conta e configurações; uma instalação não substitui o teste na interface.
 
-## Plugin `@comprar` no ChatGPT Web e celular — versão 0.9.0
+## Plugin `@comprar` no ChatGPT Web e celular — versão 0.9.1
 
-O plugin pessoal **comprar** usa agora o pacote sem MCP embutido em `plugin-chat/`. O motivo da divisão é técnico: plugins importados que incluem `mcp.json` ou `.mcp.json` podem receber a classificação **Somente para computador**, mesmo com servidor HTTPS. O pacote de `plugin-chat/` contém apenas instruções e metadados para `CHAT`. O conteúdo antigo de `plugin-template/` permanece como referência de desenvolvimento do backend MCP.
+O plugin pessoal **comprar** está vinculado ao App **comprar-backend**, que foi cadastrado na conta ChatGPT correta e aponta para o MCP remoto `/api/mcp` na Vercel. A ligação é declarada em `plugin-chat/.app.json`, usando o ID real `asdk_app_6aeca1ead5d88191974ba923cfef6dc3`, e referenciada nos dois manifestos do plugin. O nome técnico e de exibição continua `comprar` e a política de produto continua `CHAT`.
 
-**O que funciona nesta edição sem MCP:** invocação `@comprar` em clientes que permitam o plugin, interpretação de critérios, pesquisa pelas ferramentas nativas do ChatGPT efetivamente disponíveis, apresentação de links encontrados, edição conversacional de preço/frete/impostos/taxas e tabela ordenada, com salvamento no histórico da conversa.
+**O que foi preservado:** o plugin web continua sem `mcp.json` ou `.mcp.json` próprios, para evitar a classificação *Somente para computador* na instalação. O servidor MCP original, com sete ferramentas, continua implantado e pode ser chamado pelo App conectado quando o ChatGPT oferecer essas ferramentas ao usuário.
 
-**Limitação:** o plugin web não chama diretamente as ferramentas de `/api/mcp`, não incorpora automaticamente os widgets HTML daquele servidor, nem grava compras em banco de dados remoto. A Vercel e o servidor MCP continuam implantados, mas separados deste pacote para não reativar a restrição de computador.
+**Fluxo pretendido:** `@comprar` → formulário interativo (`abrir_formulario_pesquisa`) → pesquisa real via ferramentas disponíveis no ChatGPT (o backend Tavily ainda está sem chave) → análise de ofertas → tabela interativa (`abrir_tabela_comparacao`) → correção de frete, impostos, taxas e desconto → total final por `comparar_carrinhos` → registro na conversa. Custos desconhecidos não viram zero. Sem persistência remota garantida.
 
-**Próxima integração:** cadastrar o servidor em um **App** do ChatGPT Web e associar ao plugin por um ID de app real (`plugin_asdk_app_...` / `asdk_app_...`), sem incluir declarações MCP diretas no pacote. Não reutilizar IDs de outros apps nem inventar um. Validar novamente a instalação e o formulário/resultado inline no ChatGPT Web após essa etapa.
+**Estado da validação:** o pacote versão 0.9.1 foi publicado com vínculo ao App e o inventário de arquivos foi confirmado. A apresentação e o funcionamento dos widgets no Chrome celular ainda precisam ser testados no host. Não anunciar busca automática do backend ou suporte de widgets móveis como confirmados sem testes.
 
 ## Para pessoas que só querem usar
 
