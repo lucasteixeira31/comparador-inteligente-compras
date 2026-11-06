@@ -67,17 +67,20 @@ test("guia dos gatilhos esta acessivel a partir do README e esclarece seus limit
 });
 
 
-test("primeiro contato @comprar avisa sobre preco e pede produto com envio conversacional",()=>{
+test("primeiro contato @comprar avisa sobre preco e apresenta formulario completo",()=>{
   const skill=read("skills/comparar-compras/SKILL.md");
   const guia=readFileSync(new URL("../docs/TABELA-CHAT.md",root),"utf8");
   assert.match(skill,/preços encontrados na pesquisa podem mudar/);
-  assert.match(skill,/Qual produto você deseja analisar\?/);
-  assert.match(skill,/botão \*\*"Pesquisar"\*\*/);
-  assert.match(skill,/mensagem à \*\*mesma conversa\*\*/);
+  assert.match(skill,/Qual produto você deseja analisar\\?/);
+  assert.ok(skill.includes("Pesquisar"));
+  assert.match(skill,/mesma conversa/);
   assert.match(skill,/produto e critérios suficientes/);
   assert.match(skill,/não repetir pergunta/);
-  assert.match(guia,/campo de texto conversacional/);
-  assert.match(guia,/link clicável \+ cartão editável/);
+  assert.match(skill,/Descrição ou características/);
+  assert.match(skill,/Onde deseja pesquisar/);
+  assert.match(skill,/Quanto pretende gastar/);
+  assert.match(guia,/Formulário de entrada completo/);
+  assert.match(guia,/links individuais e cartões editáveis/);
 });
 
 test("preco de busca e URL de MCP permanecem separados da edicao",()=>{
