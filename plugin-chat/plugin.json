@@ -26,7 +26,7 @@
     }
   },
   "name": "comprar",
-  "version": "0.9.4",
+  "version": "0.9.5",
   "repository": "https://github.com/lucasteixeira31/comparador-inteligente-compras",
   "homepage": "https://comparador-inteligente-compras.vercel.app"
 }

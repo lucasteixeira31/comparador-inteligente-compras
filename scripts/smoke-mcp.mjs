@@ -139,3 +139,30 @@ if(c?.ranking?.[0]?.id!=="2" || c?.pendentes?.[0]?.id!=="1" || c.armazenado_remo
   throw Error("Falha no fluxo conversacional MCP: "+JSON.stringify(c));
 }
 console.log(JSON.stringify({chatMvp:"ok",ranking:c.ranking.length,pendencias:c.pendentes.length}));
+
+
+const variante = await request("tools/call",{
+ name:"analisar_busca_profunda",
+ arguments:{produto:"blusa oversized",caracteristicas_obrigatorias:["tamanho G3"],lojas:["Shopee"],ofertas:[
+  {loja:"Shopee",titulo:"Blusa oversized G1",url:"https://shopee.com.br/Blusa-G1-i.123.456",preco_unitario:24.90,produto_confirmado:true},
+  {loja:"Shopee",titulo:"Blusa oversized G3",url:"https://shopee.com.br/Blusa-G3-i.123.457",preco_unitario:29.90,produto_confirmado:true}
+ ]}
+},12,session);
+const v=variante.data.result?.structuredContent;
+if(v?.ranking_preco_anunciado_provisorio?.length!==1 ||
+  v?.cobertura?.anuncios_com_caracteristicas_pendentes!==1 ||
+  v?.menor_preco_da_variacao_confirmada_provisorio!==null ||
+  !v?.pendentes?.some(x=>x.pendencias?.includes("preco_variacao_nao_confirmado")))
+ throw Error("Falha na validação da variação de tamanho e preço: "+JSON.stringify(v));
+const orcamento=await request("tools/call",{
+ name:"consolidar_comparacao_chat",
+ arguments:{produto:"blusa G3",quantidade:1,orcamento_total:40,
+ ofertas:[{id:"1",loja:"Shopee",titulo:"Blusa G3",url:"https://shopee.com.br/Blusa-G3-i.123.457",preco_anunciado:29.90}],
+ edicoes:[{id:"1",preco_unitario:29.90,frete:15,impostos:0,outras_taxas:0,disponivel:true}]
+ }
+},13,session);
+const o=orcamento.data.result?.structuredContent;
+if(o?.dentro_orcamento?.length!==0 || o?.acima_orcamento?.[0]?.id!=="1" ||
+  o?.menor_dentro_orcamento!==null || !o?.tabela_markdown?.includes("acima do orçamento"))
+  throw Error("Falha na comparação de orçamento completo: "+JSON.stringify(o));
+console.log(JSON.stringify({regrasChat:"ok",variantePendente:v.cobertura.anuncios_com_caracteristicas_pendentes,acimaOrcamento:o.acima_orcamento.length}));

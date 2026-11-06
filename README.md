@@ -2,7 +2,7 @@
 
 Projeto pessoal, gratuito, sem monetização e de código aberto para uso no **ChatGPT Web**. O objetivo é pesquisar anúncios com links individuais e comparar o custo real da compra, considerando quantidade, frete, impostos, outras taxas e cupons confirmados.
 
-**Estado do projeto: fundação técnica / MVP.** Existe uma tabela editável em `/widget-comparador.html`, um formulário complementar em `/comparador.html` e um servidor MCP com sete ferramentas, incluindo dois recursos MCP Apps: formulário inicial de pesquisa e tabela final de custos, ambos destinados a renderizar dentro da conversa no ChatGPT Web. **Existe um conector de pesquisa web indexada (Tavily), mas ele exige a configuração de TAVILY_API_KEY pelo mantenedor e não está necessariamente ativado. Não há integração direta com APIs das lojas, coleta automática contínua, OAuth nem banco de dados remoto. A interface inline MCP Apps já é registrada pelo servidor, mas ainda precisa ser confirmada visualmente no ChatGPT Web.** Não confunda este repositório de código-fonte com uma versão final pronta para qualquer pessoa instalar.
+**Estado do projeto: fundação técnica / MVP.** Existe uma tabela editável em `/widget-comparador.html`, um formulário complementar em `/comparador.html` e um servidor MCP com oito ferramentas, incluindo dois recursos MCP Apps: formulário inicial de pesquisa e tabela final de custos, ambos destinados a renderizar dentro da conversa no ChatGPT Web. **Existe um conector de pesquisa web indexada (Tavily), mas ele exige a configuração de TAVILY_API_KEY pelo mantenedor e não está necessariamente ativado. Não há integração direta com APIs das lojas, coleta automática contínua, OAuth nem banco de dados remoto. A interface inline MCP Apps já é registrada pelo servidor, mas ainda precisa ser confirmada visualmente no ChatGPT Web.** Não confunda este repositório de código-fonte com uma versão final pronta para qualquer pessoa instalar.
 
 ## Como encontrar no ChatGPT
 
@@ -12,7 +12,7 @@ O nome técnico e visível do plugin atual é **comprar** (menção **`@comprar`
 
 O **modo Chat é padrão** e o modo gráfico só abre por solicitação explícita. Exemplos: `@comprar` (conversa), `@comprar #visual` (gráfico) e `#chat` (voltar ao texto). Consulte o **[guia completo dos gatilhos](docs/GATILHOS.md)**, que explica os comandos, exemplos práticos, limitações e regras de alternância.
 
-## Plugin `@comprar` — Chat padrão e modo gráfico opt-in (0.9.4)
+## Plugin `@comprar` — Chat padrão e modo gráfico opt-in (0.9.5)
 
 A experiência **conversacional é o padrão**. `@comprar` sem comandos coleta dados, pesquisa links reais, permite corrigir preços/frete/impostos e salva a tabela Markdown na própria conversa. A versão gráfica existe como opção experimental, **não substitui o Chat nem encerra o trabalho de aperfeiçoamento conversacional**.
 
@@ -21,6 +21,12 @@ A experiência **conversacional é o padrão**. `@comprar` sem comandos coleta d
 O plugin mantém a dependência do App `comprar-backend` em `plugin-chat/.app.json` e política `CHAT`, sem `mcp.json` ou `.mcp.json` diretos no pacote. No modo Chat, ferramentas MCP não visuais `planejar_busca_profunda`, `analisar_busca_profunda`, `comparar_carrinhos` e `consolidar_comparacao_chat` apoiam o cálculo e a validação; quando indisponíveis, deve-se informar a limitação. O servidor tem a ferramenta de busca indexada, mas seu provedor Tavily não está configurado; descobrir anúncios depende de buscas efetivas disponibilizadas pelo ChatGPT.
 
 **Restrições mantidas:** pesquisa sem inventar anúncios/preços, URLs individuais oficiais, IDs estáveis, variações específicas verificadas, desconto apenas confirmado, custos ausentes classificados como pendência (não zero). Um widget visual não representa persistência em banco de dados nem prova sincronização com os dados textuais.
+
+## Verificação de tamanho, preço da variação e orçamento (0.9.5)
+
+Na pesquisa de anúncios, o plugin separa **tamanho disponível**, **preço da variação específica** e **custo total da compra**. Um anúncio com G3 na lista de tamanhos não comprova que o preço inicial seja o preço de G3. A ferramenta `analisar_busca_profunda` agora identifica características obrigatórias não comprovadas e sinaliza preços de variações ainda não confirmados. O servidor valida a estrutura e os campos recebidos, **mas não visita os marketplaces para comprovar o que o agente declarou**. Não se pode transformar dados de índice em confirmação de estoque ou checkout.
+
+Na comparação conversacional `consolidar_comparacao_chat`, o campo `orcamento_total` compara o limite com o **total de compra completo** (preço × quantidade + frete + impostos + taxas − descontos confirmados). Ofertas que dependam de custos desconhecidos ficam como **indeterminadas** em relação ao orçamento. Consulte [as regras detalhadas de validação de ofertas](docs/VALIDACAO-OFERTAS.md). O modo Chat continua padrão e a interface `#visual` permanece opcional.
 
 ## Para pessoas que só querem usar
 

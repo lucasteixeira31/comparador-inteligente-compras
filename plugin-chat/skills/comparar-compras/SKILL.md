@@ -3,7 +3,7 @@ name: comparar-compras
 description: Use quando o usuário invocar @comprar, pedir pesquisa de ofertas, edição de preços/frete/impostos ou classificação de compras na conversa.
 ---
 
-# @comprar — Chat como padrão; #visual sob demanda (ChatGPT web/celular) — 0.9.4
+# @comprar — Chat como padrão; #visual sob demanda (ChatGPT web/celular) — 0.9.5
 
 ## Modos de uso e gatilhos (experiência padrão: conversa)
 
@@ -39,6 +39,14 @@ Buscar diferentes palavras-chave e anúncios individuais por marketplace selecio
 
 No modo Chat, criar no próprio chat uma **tabela Markdown textual** com identificador estável (#1, #2...), loja, produto/anúncio em link clicável, preço anunciado e status da conferência. No modo Visual, apresentar a interface gráfica sob comando `#visual`, mas preservar também os identificadores e os resultados no histórico textual quando possível. Cada ID deve manter o URL exato da oferta em todas as correções e versões posteriores. Não confundir preço anunciado com custo final.
 
+### Verificação de características e variações obrigatórias (v0.9.5)
+
+Quando o usuário pedir tamanho, cor, versão ou modelo específico, tratar essa condição como **obrigatória**. Na análise por `analisar_busca_profunda`, informar `caracteristicas_obrigatorias` com os critérios relevantes, sem usar `produto_confirmado: true` para ignorar tamanho incorreto. O analisador só considera uma oferta compatível se a característica aparecer no anúncio ou tiver sido explicitamente conferida na fonte em `caracteristicas_confirmadas`. Essa lista representa **informação declarada pelo agente**, não verificação independente feita pelo servidor. Se nenhuma fonte comprovar G3, deixar como pendente de característica e **não** afirmar que o anúncio está disponível em G3.
+
+Distinguir **G3 listado na grade** de **preço específico da variação G3**. Informar `preco_variacao_confirmado: true` somente se a seleção de G3 e seu preço forem realmente verificáveis na página. Caso contrário, manter o valor em `preco_unitario` como preço anunciado provisório, sinalizar `preco_variacao_nao_confirmado` e não anunciar esse valor como preço de G3 confirmado. `menor_preco_anunciado_provisorio` não equivale a `menor_preco_da_variacao_confirmada_provisorio`, nem a menor custo final confirmado. Não fabricar citações, referências `turn...` ou datas de consulta: só citar fontes realmente retornadas pelas ferramentas em execução.
+
+Sempre preservar dados da fonte recuperada e expor incertezas, sem transformar em verificação automática os indicadores declarados à ferramenta. A pesquisa é feita com ferramentas de busca externas efetivamente disponíveis, não pelo analisador.
+
 ## Etapa 3 — Conferência e correção
 
 Permitir comandos naturais como `corrigir #2 preço 45,90, frete 12` ou `#3 sem frete`, e atualizar **apenas os campos citados**, sem refazer a pesquisa nem duplicar a linha. Campos editáveis: preço unitário real, quantidade, frete total, impostos, outras taxas e desconto efetivamente confirmado. O usuário pode alterar lojas, critérios ou adicionar/remover anúncios de maneira explícita; quando isso exigir nova pesquisa, explicar o alcance da atualização. Manter as informações de anúncio originais separadas dos valores revisados no carrinho.
@@ -52,6 +60,10 @@ Tratar campos desconhecidos como `pendente`, **não como R$ 0,00**. Zero somente
 No modo Chat, quando o usuário disser `salvar`, `registrar` ou equivalente, usar a `tabela_markdown` de `consolidar_comparacao_chat` quando disponível e **publicá-la como mensagem na própria conversa**, sem confundir o retorno do MCP com armazenamento. Se não houver essa ferramenta, produzir equivalente Markdown manualmente. Registrar nesta mesma conversa a **tabela final textual** com ID, plataforma, anúncio/link, preço, frete, impostos, taxas, desconto, quantidade, total final e eventuais pendências. Total = (preço unitário × quantidade) + frete + impostos + taxas − desconto confirmado. Ordenar apenas ofertas com todos os custos conhecidos pelo menor total final; exibir **itens pendentes** em subseção separada, ordenados pelo preço anunciado ou subtotal parcial, explicitamente sem comparação válida de custo final. Não classificar oferta incompleta como a mais barata. Se não houver custos completos, dizer que não há vencedor confirmado.
 
 O registro fica **no histórico desta conversa**, não em banco remoto nem sincronizado entre chats/dispositivos por este plugin. Não anunciar sucesso de armazenamento sem registro efetivo. Permitir novas correções após salvar, mantendo URL e ID e atualizando a tabela sem busca adicional. Não enviar o usuário a outro site para edição, apenas para abrir o anúncio ao comprar.
+
+### Orçamento no ranking conversacional (v0.9.5)
+
+Se o usuário informar orçamento (ex.: R$ 150), transmitir esse valor como `orcamento_total` ao chamar `consolidar_comparacao_chat`. Classificar os **totais completos** como `dentro_orcamento` ou `acima_orcamento` considerando preço unitário × quantidade, frete, impostos, taxas e descontos efetivamente confirmados. Para anúncios sem preço real, frete, tributos, taxas ou disponibilidade, o cumprimento do orçamento é **indeterminado**, mesmo que o preço anunciado seja baixo. Não afirmar que o menor preço de vitrine é a compra dentro do orçamento.
 
 ## Garantias de honestidade e desenvolvimento
 

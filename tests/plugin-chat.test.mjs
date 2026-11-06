@@ -9,8 +9,8 @@ test("plugin @comprar usa App MCP sem MCP direto",()=>{
   const app=JSON.parse(read(".app.json"));
   assert.equal(rootManifest.name,"comprar");
   assert.equal(rootManifest.extensions["com.openai"].interface.displayName,"comprar");
-  assert.equal(rootManifest.version,"0.9.4");
-  assert.equal(compat.version,"0.9.4");
+  assert.equal(rootManifest.version,"0.9.5");
+  assert.equal(compat.version,"0.9.5");
   assert.equal(rootManifest.extensions["com.openai"].apps,"./.app.json");
   assert.equal(compat.apps,"./.app.json");
   assert.equal(app.apps["comprar-backend"].id,"asdk_app_6aeca1ead5d88191974ba923cfef6dc3");
@@ -27,6 +27,10 @@ test("plugin @comprar usa App MCP sem MCP direto",()=>{
   assert.match(skill,/\x60abrir_tabela_comparacao\x60/);
   assert.match(skill,/\x60consolidar_comparacao_chat\x60/);
   assert.match(skill,/não abrir formulários nem tabelas MCP Apps automaticamente/);
+  assert.match(skill,/caracteristicas_confirmadas/);
+  assert.match(skill,/preco_variacao_confirmado/);
+  assert.match(skill,/orcamento_total/);
+  assert.match(skill,/Não fabricar citações/);
 });
 
 test("guia dos gatilhos esta acessivel a partir do README e esclarece seus limites",()=>{
