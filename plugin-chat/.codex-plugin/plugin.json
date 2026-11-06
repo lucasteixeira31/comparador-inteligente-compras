@@ -5,19 +5,19 @@
     ],
     "category": "Productivity",
     "defaultPrompt": [
-      "Pesquise ofertas no modo Chat e mostre a tabela edit\u00e1vel inline com bot\u00e3o Enviar tabela.",
-      "Quero corrigir pre\u00e7os, fretes e impostos de todos os an\u00fancios em uma s\u00f3 tabela no chat.",
-      "@comprar #visual \u2014 abrir interface gr\u00e1fica avan\u00e7ada sob demanda."
+      "Pesquise ofertas no modo Chat e mostre a tabela editável inline com botão Enviar tabela.",
+      "Quero corrigir preços, fretes e impostos de todos os anúncios em uma só tabela no chat.",
+      "@comprar #visual — abrir interface gráfica avançada sob demanda."
     ],
     "developerName": "Faculdade Detroit",
     "displayName": "comprar",
-    "longDescription": "Pesquise an\u00fancios do Mercado Livre, Shopee, AliExpress, Amazon, SHEIN e Temu. Corrija pre\u00e7os reais, frete, impostos, taxas e descontos diretamente em uma tabela no ChatGPT; compare os menores custos encontrados com links de origem.",
-    "shortDescription": "Compare pre\u00e7os e fretes"
+    "longDescription": "Pesquise anúncios do Mercado Livre, Shopee, AliExpress, Amazon, SHEIN e Temu. Corrija preços reais, frete, impostos, taxas e descontos diretamente em uma tabela no ChatGPT; compare os menores custos encontrados com links de origem.",
+    "shortDescription": "Compare preços e fretes"
   },
   "apps": "./.app.json",
   "name": "comprar",
-  "version": "0.9.6",
-  "description": "Comparador de pre\u00e7os de marketplaces: pesquisa an\u00fancios no ChatGPT, permite corrigir custos e ordenar ofertas com links no chat.",
+  "version": "0.9.7",
+  "description": "Comparador de preços de marketplaces: pesquisa anúncios no ChatGPT, permite corrigir custos e ordenar ofertas com links no chat.",
   "author": {
     "name": "Faculdade Detroit",
     "email": "ericafdead@gmail.com"
