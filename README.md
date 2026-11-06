@@ -4,6 +4,19 @@ Projeto pessoal, gratuito, sem monetização e de código aberto para uso no **C
 
 **Estado do projeto: fundação técnica / MVP.** Existe uma tabela editável em `/widget-comparador.html`, um formulário complementar em `/comparador.html` e um servidor MCP com oito ferramentas, incluindo dois recursos MCP Apps: formulário inicial de pesquisa e tabela final de custos, ambos destinados a renderizar dentro da conversa no ChatGPT Web. **Existe um conector de pesquisa web indexada (Tavily), mas ele exige a configuração de TAVILY_API_KEY pelo mantenedor e não está necessariamente ativado. Não há integração direta com APIs das lojas, coleta automática contínua, OAuth nem banco de dados remoto. A interface inline MCP Apps já é registrada pelo servidor, mas ainda precisa ser confirmada visualmente no ChatGPT Web.** Não confunda este repositório de código-fonte com uma versão final pronta para qualquer pessoa instalar.
 
+## Integração MCP direta no plugin `@comprar` — etapa de transição (v0.10.2)
+
+**Objetivo:** permitir que o plugin principal tenha suas próprias instruções, formulário, navegação, edição e a configuração remota do **mesmo** servidor MCP da Vercel, sem exigir a escolha de `@comprar-backend` para usar o fluxo de compras.
+
+- Configuração portátil: `plugin-chat/mcp.json` declara um servidor `comprar` de tipo `streamable-http` em `https://comparador-inteligente-compras.vercel.app/api/mcp`.
+- Compatibilidade: `plugin-chat/.mcp.json` e referência no manifest `.codex-plugin/plugin.json`.
+- **Transição sem exclusões:** a referência legada `plugin-chat/.app.json` continua apontando para a conexão técnica anterior. O servidor remoto, os registros anteriores, as oito ferramentas e toda a lógica permanecem preservados.
+- O registro de desenvolvimento `comprar-backend` poderá **continuar aparecendo no seletor @** enquanto existir como plugin separado; a nova configuração não o oculta automaticamente.
+- Este commit valida o **empacotamento**; conexão real do novo servidor declarativo e renderização do seletor exigem teste em nova conversa. Não presumir que a ligação direta já substituiu a autorização do App anterior.
+- **Não desinstalar** o registro legado antes de comprovar que o `@comprar` invoca as oito ferramentas exclusivamente pelo novo caminho.
+
+Leia [MIGRACAO-MCP.md](docs/MIGRACAO-MCP.md) para critérios de aceite e reversão.
+
 ## Como encontrar no ChatGPT
 
 O nome técnico e visível do plugin atual é **comprar** (menção **`@comprar`**); a pasta histórica `plugin-template/` usa o identificador antigo `comparador-inteligente-compras` e não é o pacote principal de Chat. O plugin é pessoal e privado; **atualizar o nome não garante que apareça no seletor `@`** se não estiver instalado/ativado ou se o cliente atual não oferecer suporte. Abra a página do plugin no ChatGPT, confira a instalação em **Plugins → Pessoais/Instalados**, e teste novamente em uma conversa compatível, preferencialmente ChatGPT Web. A disponibilidade varia por interface, conta e configurações; uma instalação não substitui o teste na interface.

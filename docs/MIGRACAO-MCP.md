@@ -1,0 +1,40 @@
+# Migração do @comprar para MCP direto — v0.10.2
+
+## Finalidade
+
+Reunir no plugin pessoal `@comprar` a experiência conversacional (skills e cartões de correção) e a configuração direta do servidor MCP remoto, sem recriar serviços nem interromper a conexão de desenvolvimento `comprar-backend`.
+
+## Arquitetura
+
+- Plugin público/futuro: `@comprar` (atualmente pessoal/privado).
+- Skills: `skills/comparar-compras`, `skills/entrada-compras` e `skills/navegacao-compras`.
+- MCP remoto já existente: `https://comparador-inteligente-compras.vercel.app/api/mcp`.
+- Configuração portátil em `plugin-chat/mcp.json`: `mcpServers.comprar.type = streamable-http` com HTTPS, autenticador `none`, conforme política atual do endpoint.
+- Formato de compatibilidade em `plugin-chat/.mcp.json`; `plugin-chat/.codex-plugin/plugin.json` referencia `./.mcp.json`.
+- A referência `plugin-chat/.app.json` continua ativa, apontando para o App técnico anterior `asdk_app_6aeca1ead5d88191974ba923cfef6dc3`. A versão nova **não depende de removê-la** para validar o empacotamento.
+
+## O que esta versão comprova
+
+1. Os dois manifests e os dois formatos MCP possuem URLs coincidentes.
+2. As oito ferramentas do servidor continuam registradas no código.
+3. A versão do plugin principal é 0.10.2 e os testes de regressão verificam o fluxo de pesquisa, custos e UI.
+4. Nenhum registro antigo foi removido ou desconectado.
+
+## O que ainda precisa ser testado no ChatGPT
+
+1. Em uma conversa **nova**, chamar somente `@comprar`.
+2. Confirmar o formulário completo (Produto, Descrição, checkboxes das seis lojas, Valor pretendido).
+3. Pesquisar e validar que o ChatGPT consegue invocar uma ferramenta MCP da nova declaração direta, **sem depender exclusivamente** da instalação independente de desenvolvimento.
+4. Conferir as oito ferramentas, URLs em HTTPS puro, custos pendentes, edição e botão Enviar tabela.
+5. Testar Buscar mais ofertas (mesmos critérios/mesclagem) e Nova pesquisa (estado independente).
+6. Verificar a entrada do seletor `@`. **Ela poderá continuar mostrando `comprar-backend` porque se trata de outro cadastro pessoal instalado**; a inclusão de `mcp.json` não equivale a removê-lo.
+
+## Critério antes da desinstalação
+
+Só considerar remover a **instalação/cadastro independente** de `comprar-backend`, mediante aprovação, depois de testar no `@comprar` acesso à totalidade das ferramentas sem o cadastro legado. **Nunca** excluir o repositório, o servidor MCP na Vercel ou as definições das ferramentas.
+
+## Plano de reversão
+
+Se o cliente rejeitar a ligação direta ou duplicar ferramentas, restaurar os manifests anteriores 0.10.1, preservando `.app.json`, sem tocar na Vercel. O histórico do GitHub mantém a versão anterior para recuperação.
+
+Fonte do formato: https://developers.openai.com/plugins/build/plugins

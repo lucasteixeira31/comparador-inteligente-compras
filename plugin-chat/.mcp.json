@@ -1,0 +1,16 @@
+{
+  "mcpServers": {
+    "comprar": {
+      "type": "streamable-http",
+      "url": "https://comparador-inteligente-compras.vercel.app/api/mcp",
+      "headers": {},
+      "extensions": {
+        "com.openai": {
+          "auth": {
+            "type": "none"
+          }
+        }
+      }
+    }
+  }
+}
