@@ -13,9 +13,9 @@
         ],
         "category": "Productivity",
         "defaultPrompt": [
-          "Abra o formulário do @comprar aqui no chat para eu pesquisar um produto.",
-          "Pesquise anúncios nas lojas selecionadas e mostre os menores preços encontrados.",
-          "Quero corrigir valores, fretes e impostos e salvar o ranking com os links."
+          "Pesquise ofertas no modo Chat e mostre a tabela editável inline com botão Enviar tabela.",
+          "Quero corrigir preços, fretes e impostos de todos os anúncios em uma só tabela no chat.",
+          "@comprar #visual — abrir interface gráfica avançada sob demanda."
         ],
         "developerName": "Faculdade Detroit",
         "displayName": "comprar",
@@ -26,7 +26,7 @@
     }
   },
   "name": "comprar",
-  "version": "0.9.5",
+  "version": "0.9.6",
   "repository": "https://github.com/lucasteixeira31/comparador-inteligente-compras",
   "homepage": "https://comparador-inteligente-compras.vercel.app"
 }

@@ -12,9 +12,9 @@ O nome técnico e visível do plugin atual é **comprar** (menção **`@comprar`
 
 O **modo Chat é padrão** e o modo gráfico só abre por solicitação explícita. Exemplos: `@comprar` (conversa), `@comprar #visual` (gráfico) e `#chat` (voltar ao texto). Consulte o **[guia completo dos gatilhos](docs/GATILHOS.md)**, que explica os comandos, exemplos práticos, limitações e regras de alternância.
 
-## Plugin `@comprar` — Chat padrão e modo gráfico opt-in (0.9.5)
+## Plugin `@comprar` — Chat padrão e modo gráfico opt-in (0.9.6)
 
-A experiência **conversacional é o padrão**. `@comprar` sem comandos coleta dados, pesquisa links reais, permite corrigir preços/frete/impostos e salva a tabela Markdown na própria conversa. A versão gráfica existe como opção experimental, **não substitui o Chat nem encerra o trabalho de aperfeiçoamento conversacional**.
+A experiência **conversacional é o padrão**. `@comprar` sem comandos coleta dados, pesquisa links reais e mostra imediatamente uma **tabela de preços editável com campos nativos do chat e um único botão Enviar tabela** (quando o cliente suportar). O envio atualiza a comparação na mesma conversa sem comandos manuais por ID. A versão gráfica existe como opção experimental, **não substitui o Chat nem encerra o trabalho de aperfeiçoamento conversacional**.
 
 **Gatilhos:** `@comprar #visual` (ou `#visual` / `modo visual` na comparação atual) ativa a interface gráfica do MCP. Se não houver critérios, abre `abrir_formulario_pesquisa`; se já houver resultados, `abrir_tabela_comparacao` é aberto com aquelas ofertas sem refazer a pesquisa. `#chat` ou `modo chat` volta ao fluxo textual; uma nova pesquisa sem gatilho recomeça em Chat. Menções incidentais à palavra “visual” na descrição de um produto **não** ativam a interface.
 
@@ -22,11 +22,17 @@ O plugin mantém a dependência do App `comprar-backend` em `plugin-chat/.app.js
 
 **Restrições mantidas:** pesquisa sem inventar anúncios/preços, URLs individuais oficiais, IDs estáveis, variações específicas verificadas, desconto apenas confirmado, custos ausentes classificados como pendência (não zero). Um widget visual não representa persistência em banco de dados nem prova sincronização com os dados textuais.
 
-## Verificação de tamanho, preço da variação e orçamento (0.9.5)
+## Verificação de tamanho, preço da variação e orçamento (0.9.6)
 
 Na pesquisa de anúncios, o plugin separa **tamanho disponível**, **preço da variação específica** e **custo total da compra**. Um anúncio com G3 na lista de tamanhos não comprova que o preço inicial seja o preço de G3. A ferramenta `analisar_busca_profunda` agora identifica características obrigatórias não comprovadas e sinaliza preços de variações ainda não confirmados. O servidor valida a estrutura e os campos recebidos, **mas não visita os marketplaces para comprovar o que o agente declarou**. Não se pode transformar dados de índice em confirmação de estoque ou checkout.
 
 Na comparação conversacional `consolidar_comparacao_chat`, o campo `orcamento_total` compara o limite com o **total de compra completo** (preço × quantidade + frete + impostos + taxas − descontos confirmados). Ofertas que dependam de custos desconhecidos ficam como **indeterminadas** em relação ao orçamento. Consulte [as regras detalhadas de validação de ofertas](docs/VALIDACAO-OFERTAS.md). O modo Chat continua padrão e a interface `#visual` permanece opcional.
+
+## Tabela de custos no modo Chat — 0.9.6
+
+**Regra de interface:** após apresentar os anúncios, o @comprar mostra na mesma resposta uma tabela **inline e editável** usando os controles nativos do ChatGPT, se disponíveis. Cada linha inclui anúncio/link, preço anunciado, campos **preço real**, **frete**, **impostos** e campos opcionais para custos extras e descontos. O botão **Enviar tabela** encaminha todas as linhas à mesma conversa para cálculo e registro. Campos vazios continuam pendentes; zero só quando explicitamente confirmado. Não exigir comandos do tipo `#6 preço 46,30, frete 12`.
+
+A tabela leve faz parte do **Chat padrão**. O comando `#visual` continua abrindo exclusivamente o **MCP App gráfico avançado**, sob solicitação explícita. **Limite de compatibilidade:** as instruções do plugin não conseguem forçar controles interativos em um cliente do ChatGPT que não os ofereça; nesse caso o fallback é uma única tabela textual preenchível enviada por mensagem, e não comandos separados por anúncio. O botão, quando renderizado, envia a edição à conversa; não representa armazenamento remoto. Consulte [o guia de tabela inline](docs/TABELA-CHAT.md).
 
 ## Para pessoas que só querem usar
 

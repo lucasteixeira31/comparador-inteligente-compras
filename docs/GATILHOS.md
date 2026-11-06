@@ -8,14 +8,14 @@ Este guia explica como escolher entre o **modo conversacional (padrão)** e o **
 
 | O que digitar | Resultado esperado |
 |---|---|
-| `@comprar` | Inicia a coleta de dados e a comparação por mensagens, **sem abrir interface visual**. |
+| `@comprar` | Inicia a coleta por mensagens e, após a pesquisa, a **tabela editável nativa do chat**, se disponível, sem abrir a interface MCP avançada. |
 | `@comprar Quero pesquisar uma camiseta oversized G3` | Inicia a pesquisa **conversacional** com os critérios já fornecidos. |
 | `@comprar #visual` | Solicita o **modo visual** desde o início. |
 | `#visual` | Na conversa já iniciada com o plugin, solicita a interface visual para a comparação em andamento. |
 | `#chat` | Volta à apresentação **conversacional**, em texto e tabelas no chat. |
 | `modo visual` / `modo chat` | Alternativas escritas por extenso para os gatilhos correspondentes. |
 
-O modo conversacional é sempre o **padrão de uma nova pesquisa** quando não há solicitação explícita de interface gráfica. O gatilho deve ser um pedido intencional de troca de modo; a palavra "visual" usada casualmente em características de um produto não deve mudar o modo.
+O modo conversacional (incluindo a [tabela inline de preenchimento](TABELA-CHAT.md)) é sempre o **padrão de uma nova pesquisa** quando não há solicitação explícita de interface gráfica. O gatilho deve ser um pedido intencional de troca de modo; a palavra "visual" usada casualmente em características de um produto não deve mudar o modo.
 
 ## Exemplo 1: comparação somente no chat
 
