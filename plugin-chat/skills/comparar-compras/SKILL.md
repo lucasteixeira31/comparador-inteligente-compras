@@ -3,7 +3,7 @@ name: comparar-compras
 description: Use quando o usuário invocar @comprar, pedir pesquisa de ofertas, edição de preços/frete/impostos ou classificação de compras na conversa.
 ---
 
-# @comprar — Chat com tabela editável nativa; #visual sob demanda — 0.9.7
+# @comprar — Chat com tabela editável nativa; #visual sob demanda — 0.9.8
 
 ## Modos de uso e gatilhos (experiência padrão: conversa)
 
@@ -47,21 +47,21 @@ Distinguir **G3 listado na grade** de **preço específico da variação G3**. I
 
 Sempre preservar dados da fonte recuperada e expor incertezas, sem transformar em verificação automática os indicadores declarados à ferramenta. A pesquisa é feita com ferramentas de busca externas efetivamente disponíveis, não pelo analisador.
 
-## Etapa 2.5 — TABELA EDITÁVEL INLINE NO CHAT (fluxo padrão, v0.9.7)
+## Etapa 2.5 — TABELA EDITÁVEL INLINE NO CHAT (fluxo padrão, v0.9.8)
 
-### Apresentação RESPONSIVA EM CARTÕES EXPANSÍVEIS (v0.9.7)
+### Apresentação RESPONSIVA EM CARTÕES EXPANSÍVEIS + LINK DESTACADO (v0.9.8)
 
-**Padrão de UX obrigatório:** a tabela ampla com dois blocos e quatro campos repetidos em todas as linhas foi rejeitada por ser pouco responsiva. Não usar tabela HTML/Markdown com formulários embutidos. Em vez disso, renderizar **lista vertical de cartões compactos, mobile-first** com **edição progressiva por anúncio**.
+**Regra UX fundamental:** a primeira resposta que apresentar resultados da pesquisa DEVE incluir os **links reais junto da lista editável**, na MESMA mensagem. Não separar um catálogo só textual dos cartões de edição e nunca pedir para o usuário procurar URLs em outra parte da conversa.
 
-- No estado fechado, cada cartão contém somente **ID estável**, nome/loja, **link individual do anúncio**, preço anunciado e situação G3, além do botão **Editar**; não exibir campos vazios dos nove anúncios de uma vez.
-- Ao clicar Editar, expandir **um anúncio por vez** com controles nativos do chat rotulados **Preço real (R$)**, **Frete (R$)** e **Impostos (R$)** e **Taxas (R$)** opcionais, em grade responsiva (até duas colunas, uma coluna quando o espaço for estreito). Disponibilidade é uma confirmação explícita opcional. Os outros cartões ficam compactos.
-- **Manter os valores digitados no estado compartilhado** mesmo quando o usuário fechar um anúncio e abrir outro. Ofertas editadas recebem indicação discreta de preenchimento; não marcar como 'completo' enquanto custos ou disponibilidade estiverem pendentes.
-- Mostrar **um único botão Enviar tabela ao final da lista** para todas as correções, inclusive parciais. Jamais exigir comandos por ID nem um botão separado por anúncio.
-- Evitar rolagem horizontal, colunas apertadas, preços truncados, formulários inteiros repetidos e cards excessivamente altos. Links legíveis, alvos de toque apropriados, labels sempre visíveis, campos vazios = null, 0 só quando digitado.
-- Na resposta seguinte, preservar IDs e links e chamar `consolidar_comparacao_chat` com a mesma pesquisa, o catálogo completo e apenas os campos alterados. Se o cliente não oferecer controles nativos, apresentar um fallback textual compacto; não alegar que o botão funciona.
-- Esta interface leve é a experiência **Chat**, nunca chamar as ferramentas MCP Apps visuais sem o gatilho `#visual`.
-
-
+- Renderizar uma **lista vertical de cartões compactos, mobile-first**, sem tabela horizontal com formulários, sem colunas apertadas. Um cartão para CADA anúncio efetivamente encontrado, preservando ordem, ID e URL individual.
+- **Cabeçalho visível com cartão fechado E aberto:** `#ID · Marketplace`; título do produto em texto; preço anunciado; informação de variação G3; e logo abaixo, em **linha separada**, um **link individual permanentemente visível**, por exemplo **“Abrir anúncio na Shopee”**. O título não substitui o link; não o colocar dentro da área expansível nem escondê-lo atrás de `Editar`.
+- O link deve ser clicável em cada cartão, apontando exatamente para o anúncio específico da loja autorizada. **Nunca inventar URL**; não usar links para resultados de busca genéricos. Se não houver link individual verificável, não cadastrar como anúncio. O botão `Editar` controla somente os campos do mesmo cartão, não a navegação à loja.
+- Fluxo de uso: **abrir link → conferir preço real/frete/impostos na loja → voltar ao mesmo cartão → preencher → tocar “Próximo anúncio”**. Se houver suporte, um pequeno controle **“Próximo anúncio”** expande o seguinte, mantendo o estado dos campos anteriores; o usuário também pode tocar `Editar` em qualquer anúncio.
+- Expansão de **um cartão por vez**, com campos rotulados **Preço real (R$)**, **Frete (R$)**, **Impostos (R$)** e **Outras taxas (R$)** opcionais em grade responsiva, além de confirmação explícita opcional de disponibilidade. Manter valores digitados em estado compartilhado ao navegar entre cartões, sem presumir que sobreviverão a fechamento/recarregamento de página.
+- Cada cartão indica discretamente `dados preenchidos` quando houver edição; não marcar como `completo` enquanto houver pendências. Campos vazios significam null, **não zero**; zero apenas se o usuário informar 0.
+- Apenas **UM botão “Enviar tabela” abaixo de todos os cartões**, que envia todos os anúncios (inclusive intactos) e apenas as edições preenchidas na mesma conversa, sem repetir pesquisa, trocar IDs ou URLs e sem exigir comandos de correção.
+- Manter links e cartões acessíveis com toque e leitura confortáveis no celular; sem rolagem horizontal. Não usar ferramentas MCP Apps `abrir_formulario_pesquisa` ou `abrir_tabela_comparacao` fora do gatilho `#visual`.
+- Se o host não puder renderizar controles nativos, oferecer os links individuais destacados com um formulário textual condensado que possa ser devolvido de uma vez, declarando a limitação. Não afirmar que a tabela interativa existe ou funciona em um cliente sem teste.
 
 **Requisito principal de UX:** terminou a pesquisa e encontrou anúncios individuais reais? Já mostrar, **na mesma resposta**, um formulário em formato de tabela compacto **dentro da conversa**. Não esperar o usuário digitar `corrigir #6 ...` e não obrigar uma mensagem por anúncio. Usar **componentes nativos interativos do ChatGPT** (`input`/campos, tabelas/linhas, botão de envio ou equivalente) caso o host suporte; são diferentes dos recursos UI/HTML do MCP. Nunca chamar `abrir_tabela_comparacao` ou `abrir_formulario_pesquisa` no modo Chat. Em celulares, adaptar a tabela a linhas/cartões compactos se necessário, sem mudar o fluxo.
 

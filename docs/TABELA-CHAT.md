@@ -1,8 +1,8 @@
-# Tabela editável na própria conversa — @comprar 0.9.7
+# Tabela editável na própria conversa — @comprar 0.9.8
 
-O modo **Chat** continua sendo a experiência padrão do plugin. A partir da versão 0.9.7, a interface desejada após uma pesquisa é uma **tabela com campos editáveis nativos do ChatGPT e um botão “Enviar tabela”**, sem abrir o HTML da interface `#visual`.
+O modo **Chat** continua sendo a experiência padrão do plugin. A partir da versão 0.9.8, a interface desejada após uma pesquisa é uma **tabela com campos editáveis nativos do ChatGPT e um botão “Enviar tabela”**, sem abrir o HTML da interface `#visual`.
 
-## Layout responsivo aprovado para testes (0.9.7)
+## Layout responsivo aprovado para testes (0.9.8)
 
 A versão anterior mostrou quatro campos de entrada em todas as linhas de uma tabela larga e repetitiva. Esse layout não é adequado para celular. O padrão passa a ser **cartões compactos e expansíveis**, em lista vertical:
 
@@ -12,6 +12,27 @@ A versão anterior mostrou quatro campos de entrada em todas as linhas de uma ta
 4. Um único botão **Enviar tabela** no rodapé, que envia todos os anúncios e as alterações informadas em uma mensagem ao mesmo chat.
 
 Não usar formulários dentro de tabelas largas ou com colunas estreitas. Priorizar leitura e toque no celular, sem rolagem horizontal; disponibilizar links clicáveis e campos com rótulos visíveis. Números ausentes seguem `null`, jamais zero automático.
+
+## Link individual sempre visível (0.9.8)
+
+**Na primeira resposta da pesquisa**, cada anúncio já deve aparecer como um cartão compacto com nome, ID, preço de vitrine e um link **“Abrir anúncio na [loja]” em linha separada**, sem precisar clicar em `Editar`. Não esconder o link no título, na expansão ou em uma resposta anterior.
+
+Sequência do usuário: **Abrir anúncio → conferir o carrinho → voltar ao chat → preencher os custos do cartão → Próximo anúncio**. O comando opcional `Próximo anúncio` abre o item seguinte sem apagar os valores já informados. No fim, **Enviar tabela** transmite os dados de todos os itens em uma única mensagem.
+
+**Estrutura visual do cartão:**
+
+```text
+#3 · Mercado Livre
+Blusa oversized azul royal — R$ 39,74 anunciado
+G3 selecionado (preço/carrinho a conferir)
+Abrir anúncio no Mercado Livre  [LINK INDIVIDUAL]
+[Editar]
+  Preço real: ______   Frete: ______
+  Impostos:   ______   Outras taxas: ______
+  [Próximo anúncio]
+```
+
+O título identifica o produto; a linha **Abrir anúncio** é o elemento de navegação e deve funcionar mesmo com o editor fechado. Nenhum anúncio sem URL individual válida entra na comparação. O histórico da conversa não é um banco de dados remoto; não garantir persistência dos campos se o cliente recarregar.
 
 ## Como funciona
 

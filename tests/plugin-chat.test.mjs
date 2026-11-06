@@ -9,8 +9,8 @@ test("plugin @comprar usa App MCP sem MCP direto",()=>{
   const app=JSON.parse(read(".app.json"));
   assert.equal(rootManifest.name,"comprar");
   assert.equal(rootManifest.extensions["com.openai"].interface.displayName,"comprar");
-  assert.equal(rootManifest.version,"0.9.7");
-  assert.equal(compat.version,"0.9.7");
+  assert.equal(rootManifest.version,"0.9.8");
+  assert.equal(compat.version,"0.9.8");
   assert.equal(rootManifest.extensions["com.openai"].apps,"./.app.json");
   assert.equal(compat.apps,"./.app.json");
   assert.equal(app.apps["comprar-backend"].id,"asdk_app_6aeca1ead5d88191974ba923cfef6dc3");
@@ -42,6 +42,14 @@ test("plugin @comprar usa App MCP sem MCP direto",()=>{
   assert.match(skill,/um anúncio por vez/);
   assert.match(skill,/Manter os valores digitados/);
   assert.match(skill,/rolagem horizontal/);
+  assert.match(skill,/LINK DESTACADO/);
+  assert.match(skill,/link individual permanentemente visível/);
+  assert.match(skill,/O título não substitui o link/);
+  assert.match(skill,/Próximo anúncio/);
+  assert.match(skill,/MESMA mensagem/);
+  const guiaTabela=readFileSync(new URL("../docs/TABELA-CHAT.md",root),"utf8");
+  assert.match(guiaTabela,/Link individual sempre visível/);
+  assert.match(guiaTabela,/Abrir anúncio na/);
 });
 
 test("guia dos gatilhos esta acessivel a partir do README e esclarece seus limites",()=>{

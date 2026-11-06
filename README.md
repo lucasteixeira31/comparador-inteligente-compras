@@ -12,7 +12,7 @@ O nome técnico e visível do plugin atual é **comprar** (menção **`@comprar`
 
 O **modo Chat é padrão** e o modo gráfico só abre por solicitação explícita. Exemplos: `@comprar` (conversa), `@comprar #visual` (gráfico) e `#chat` (voltar ao texto). Consulte o **[guia completo dos gatilhos](docs/GATILHOS.md)**, que explica os comandos, exemplos práticos, limitações e regras de alternância.
 
-## Plugin `@comprar` — Chat padrão e modo gráfico opt-in (0.9.7)
+## Plugin `@comprar` — Chat padrão e modo gráfico opt-in (0.9.8)
 
 A experiência **conversacional é o padrão**. `@comprar` sem comandos coleta dados, pesquisa links reais e mostra imediatamente uma **tabela de preços editável com campos nativos do chat e um único botão Enviar tabela** (quando o cliente suportar). O envio atualiza a comparação na mesma conversa sem comandos manuais por ID. A versão gráfica existe como opção experimental, **não substitui o Chat nem encerra o trabalho de aperfeiçoamento conversacional**.
 
@@ -22,15 +22,15 @@ O plugin mantém a dependência do App `comprar-backend` em `plugin-chat/.app.js
 
 **Restrições mantidas:** pesquisa sem inventar anúncios/preços, URLs individuais oficiais, IDs estáveis, variações específicas verificadas, desconto apenas confirmado, custos ausentes classificados como pendência (não zero). Um widget visual não representa persistência em banco de dados nem prova sincronização com os dados textuais.
 
-## Verificação de tamanho, preço da variação e orçamento (0.9.7)
+## Verificação de tamanho, preço da variação e orçamento (0.9.8)
 
 Na pesquisa de anúncios, o plugin separa **tamanho disponível**, **preço da variação específica** e **custo total da compra**. Um anúncio com G3 na lista de tamanhos não comprova que o preço inicial seja o preço de G3. A ferramenta `analisar_busca_profunda` agora identifica características obrigatórias não comprovadas e sinaliza preços de variações ainda não confirmados. O servidor valida a estrutura e os campos recebidos, **mas não visita os marketplaces para comprovar o que o agente declarou**. Não se pode transformar dados de índice em confirmação de estoque ou checkout.
 
 Na comparação conversacional `consolidar_comparacao_chat`, o campo `orcamento_total` compara o limite com o **total de compra completo** (preço × quantidade + frete + impostos + taxas − descontos confirmados). Ofertas que dependam de custos desconhecidos ficam como **indeterminadas** em relação ao orçamento. Consulte [as regras detalhadas de validação de ofertas](docs/VALIDACAO-OFERTAS.md). O modo Chat continua padrão e a interface `#visual` permanece opcional.
 
-## Tabela de custos no modo Chat — 0.9.7
+## Tabela de custos no modo Chat — 0.9.8
 
-**Regra de interface:** após apresentar os anúncios, o @comprar mostra **uma lista vertical responsiva de cartões compactos** na própria conversa; cada anúncio apresenta ID, loja, nome/link, preço anunciado e botão **Editar**. Somente o cartão aberto revela os campos de valores, sem rolagem horizontal. A lista usa controles nativos do ChatGPT quando disponíveis. Cada linha inclui anúncio/link, preço anunciado, campos **preço real**, **frete**, **impostos** e campos opcionais para custos extras e descontos. O botão **Enviar tabela** encaminha todas as linhas à mesma conversa para cálculo e registro. Campos vazios continuam pendentes; zero só quando explicitamente confirmado. Não exigir comandos do tipo `#6 preço 46,30, frete 12`.
+**Regra de interface:** após apresentar os anúncios, o @comprar mostra **uma lista vertical responsiva de cartões compactos** na própria conversa; cada anúncio apresenta ID, loja, título, preço anunciado e um link **“Abrir anúncio na [loja]” sempre visível em uma linha separada**; o botão **Editar** expande apenas os custos. Somente o cartão aberto revela os campos de valores, sem rolagem horizontal. A lista usa controles nativos do ChatGPT quando disponíveis. Cada linha inclui anúncio/link, preço anunciado, campos **preço real**, **frete**, **impostos** e campos opcionais para custos extras e descontos. O botão **Enviar tabela** encaminha todas as linhas à mesma conversa para cálculo e registro. Campos vazios continuam pendentes; zero só quando explicitamente confirmado. Não exigir comandos do tipo `#6 preço 46,30, frete 12`.
 
 A tabela leve faz parte do **Chat padrão**. O comando `#visual` continua abrindo exclusivamente o **MCP App gráfico avançado**, sob solicitação explícita. **Limite de compatibilidade:** as instruções do plugin não conseguem forçar controles interativos em um cliente do ChatGPT que não os ofereça; nesse caso o fallback é uma única tabela textual preenchível enviada por mensagem, e não comandos separados por anúncio. O botão, quando renderizado, envia a edição à conversa; não representa armazenamento remoto. Consulte [o guia de tabela inline](docs/TABELA-CHAT.md).
 

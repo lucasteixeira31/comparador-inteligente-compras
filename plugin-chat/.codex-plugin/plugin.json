@@ -16,7 +16,7 @@
   },
   "apps": "./.app.json",
   "name": "comprar",
-  "version": "0.9.7",
+  "version": "0.9.8",
   "description": "Comparador de preços de marketplaces: pesquisa anúncios no ChatGPT, permite corrigir custos e ordenar ofertas com links no chat.",
   "author": {
     "name": "Faculdade Detroit",
