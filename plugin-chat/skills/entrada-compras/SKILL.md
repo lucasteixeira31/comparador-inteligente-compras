@@ -4,21 +4,33 @@ name: entrada-compras
 description: Use obrigatoriamente na invocação @comprar para iniciar uma nova pesquisa, perguntar qual produto analisar, mostrar aviso de preço provisório, enviar pesquisa no modo Chat, apresentar links e cartões editáveis na mesma resposta e corrigir divergências de valores.
 ---
 
-# @comprar — Primeiro contato, conferência e envio conversacional (v0.9.9)
+# @comprar — Primeiro contato, conferência e envio conversacional (v0.10.1)
 
 Esta regra complementa `comparar-compras`, prevalecendo quando o usuário chamar apenas `@comprar` sem informar produto, e especializando a pesquisa de preços quando houver dúvida sobre valores. Preserve os demais mecanismos de validação, modos e cálculo da skill principal.
 
-## 1. Primeira resposta ao chamar apenas `@comprar`
+## 1. Primeira resposta ao chamar apenas `@comprar` (v0.10.1)
 
-O comportamento inicial é o **modo Chat**, nunca abrir MCP Apps ou modo `#visual` sem o gatilho explícito. A primeira resposta contém nesta ordem:
+**Esta regra prevalece sobre instruções antigas que pedem um único campo de texto.** O modo é Chat, sem abrir `#visual`. A captura do teste anterior demonstrou apenas um campo: isso **não atende** ao fluxo aprovado. Renderizar **campos distintos, rótulos e caixas de seleção nativas** na própria conversa quando o cliente permitir.
 
-**Aviso curto:** “Os preços encontrados na pesquisa podem mudar ou variar conforme tamanho, cor, promoção e frete. Abra cada anúncio, confira os valores e, se houver diferença, corrija os campos do cartão antes de enviar a comparação.”
+**Aviso breve, antes do formulário:** “Os preços encontrados na pesquisa podem mudar conforme tamanho, cor, promoção e frete. Abra cada anúncio, confira os valores e, se houver diferença, corrija os campos antes de enviar a comparação.”
 
 **Pergunta:** “Qual produto você deseja analisar?”
 
-**Entrada:** campo de texto conversacional, com exemplo `camiseta oversized G3, até R$ 150`, e botão **Pesquisar** (ou **Enviar**) nativo quando o cliente ChatGPT permitir. O botão envia o texto fornecido pelo usuário como uma única solicitação de pesquisa **à mesma conversa**, e então segue para a busca. Se o cliente não oferecer componentes nativos interativos, perguntar em texto e receber o produto na caixa de mensagem comum; nunca simular um botão que não funciona.
+**Formulário inicial obrigatório, em sequência vertical, com botão único Pesquisar:**
 
-O usuário pode colocar características, tamanho, cor, orçamento, quantidade, CEP e marketplaces no mesmo campo, em linguagem natural. Produto é obrigatório; os demais dados são opcionais. Defaults: quantidade 1; condição novo; marketplaces Mercado Livre, Shopee e AliExpress. Não exigir múltiplas perguntas se a mensagem contiver dados suficientes. Se o usuário invocar `@comprar` **já com um produto**, apresentar aviso curto e iniciar a pesquisa, sem perguntar novamente qual é o produto. Correção de oferta existente não reinicia o onboarding nem repete o aviso.
+1. **Produto** — campo separado `input`, rotulado “Produto *”, obrigatório, exemplo “Camiseta oversized”.
+2. **Descrição ou características** — campo `textarea` separado e opcional. Exemplo “G3, preta, algodão”. Não misturar com o título do produto; preserve tamanho e cor obrigatórios na pesquisa.
+3. **Onde deseja pesquisar?** — **seis checkboxes independentes** e nomeados para **Mercado Livre, Shopee, AliExpress, Amazon, SHEIN e Temu**. Iniciar Mercado Livre, Shopee e AliExpress marcados; os outros desmarcados. Permitir marcar/desmarcar livremente e pesquisar **somente nas lojas selecionadas**. Pelo menos uma loja é necessária.
+4. **Quanto pretende gastar? (R$)** — campo monetário separado, opcional, exemplo “150,00”. É valor pretendido **de referência**, não exclusão absoluta de ofertas acima. Associá-lo ao orçamento informado para comparação com custos finais, sem ocultar opções relevantes.
+5. **Mais opções** — mostrar, de modo discreto e recolhível, **Quantidade** (padrão 1, inteiro positivo), **CEP** (opcional) e **Condição** (padrão novo); não exigir abertura para iniciar a pesquisa.
+
+O botão **Pesquisar** (ou “Enviar”) deve disparar **uma mensagem à mesma conversa**, com `produto`, `caracteristicas`, `lojas` como **lista das caixas realmente marcadas**, `orcamento`, `quantidade`, `cep`, `condicao`. Não acrescentar lojas não marcadas. Não abrir site externo nem iniciar `#visual`. Validar produto e ao menos uma loja; valores monetários em pt-BR devem ser convertidos corretamente (49,77 não é 4977).
+
+**Responsividade:** campos em coluna; checkboxes em duas colunas apenas quando houver espaço, caso contrário empilhar. Rótulos legíveis, sem rolagem horizontal, com áreas confortáveis para toque. O aviso aparece apenas no início de uma comparação, não depois de cada edição.
+
+**Se controles nativos não estiverem disponíveis:** apresentar claramente **quatro perguntas separadas** em texto (Produto; Descrição; Lojas selecionadas; Valor pretendido), preservando quantidade e CEP opcionais, e aceitar uma resposta única pela caixa comum. Nunca simular botões inoperantes.
+
+Se a mensagem já trouxer **produto e critérios suficientes**, apresentar somente o aviso sucinto e pesquisar diretamente, **não repetir pergunta** nem exigir formulário. Se o usuário estiver corrigindo uma oferta, não repetir aviso nem pesquisa. Depois do envio, mostrar links individuais e cartões editáveis **na mesma resposta**.
 
 ## 2. Primeira resposta com anúncios encontrados
 
@@ -38,4 +50,4 @@ Na interface, apresentar link individual clicável em cada cartão. Ao pressiona
 
 ## 5. Compatibilidade e continuidade
 
-A experiência principal é nativa do ChatGPT no modo Chat; formulários e tabelas MCP Apps são somente para `#visual`. Não garantir que o cliente renderize componentes interativos sem teste real; informar a limitação e usar equivalente textual em uma única resposta. A conversa é o registro da comparação, não banco remoto. Após o usuário enviar as correções, chamar `consolidar_comparacao_chat` com todos os IDs e URLs originais, mais os valores alterados, sem refazer a pesquisa. Resultados incompletos ficam pendentes. Não confundir preço de vitrine com preço do carrinho.
+A experiência principal é nativa do ChatGPT no modo Chat; formulários e tabelas MCP Apps são somente para `#visual`. Não garantir que o cliente renderize componentes interativos sem teste real; informar a limitação e usar equivalente textual em uma única resposta. A conversa é o registro da comparação, não banco remoto. Ao selecionar Nova pesquisa, reapresentar este formulário completo (não somente um campo). Após o usuário enviar as correções, chamar `consolidar_comparacao_chat` com todos os IDs e URLs originais, mais os valores alterados, sem refazer a pesquisa. Resultados incompletos ficam pendentes. Não confundir preço de vitrine com preço do carrinho.

@@ -1,14 +1,29 @@
 # Tabela editável na própria conversa — @comprar 0.10.0
 
-O modo **Chat** continua sendo a experiência padrão do plugin. A partir da versão 0.9.9, a interface desejada após uma pesquisa é uma **tabela com campos editáveis nativos do ChatGPT e um botão “Enviar tabela”**, sem abrir o HTML da interface `#visual`.
+O modo **Chat** continua sendo a experiência padrão do plugin. A partir da versão 0.10.1, a interface desejada após uma pesquisa é uma **tabela com campos editáveis nativos do ChatGPT e um botão “Enviar tabela”**, sem abrir o HTML da interface `#visual`.
 
-## Entrada obrigatória ao invocar somente @comprar (v0.9.9)
+## Formulário de entrada completo — v0.10.1
 
-A primeira mensagem do plugin, **antes da pesquisa**, mostra um aviso curto: **"Os preços encontrados na pesquisa podem mudar ou variar conforme tamanho, cor, promoção e frete. Abra cada anúncio, confira os valores e, se houver diferença, corrija os campos do cartão antes de enviar a comparação."**
+O usuário testou o `@comprar` em um chat fora do projeto e viu **apenas um campo único para escrever tudo**. Esse formato é **incompleto** e não atende ao MVP aprovado. A entrada no modo Chat deve conservar o aviso breve e oferecer os **quatro grupos de campos separados** abaixo.
 
-Em seguida, apresenta **"Qual produto você deseja analisar?"** e um **campo de texto conversacional** com botão **Pesquisar** / **Enviar**, ambos nativos do ChatGPT quando disponíveis. A pessoa digita livremente, por exemplo: `camiseta oversized G3, até R$ 150, 1 unidade, CEP 32340-040, Mercado Livre, Shopee e SHEIN`. O clique gera uma mensagem de pesquisa para **a mesma conversa**; caso o cliente não suporte controles, a pergunta permanece e a pessoa responde pela caixa de mensagens comum. Não ativar `#visual` automaticamente.
+**Aviso inicial:** “Os preços encontrados na pesquisa podem mudar conforme tamanho, cor, promoção e frete. Abra cada anúncio, confira os valores e, se houver diferença, corrija os campos antes de enviar a comparação.”
 
-Se o produto já estiver indicado na invocação, exibir aviso sucinto e **pesquisar imediatamente**, sem segunda confirmação. A mensagem de resultados traz **link clicável + cartão editável na mesma resposta**, nunca apenas links. O aviso não é repetido na sequência da mesma compra.
+**Pergunta:** “Qual produto você deseja analisar?”
+
+| Rótulo no formulário | Tipo de controle | Estado inicial | Obrigatório |
+|---|---|---|---|
+| **Produto** | Campo de texto simples | Vazio; ex.: camiseta oversized | Sim |
+| **Descrição ou características** | Área de texto | Vazia; ex.: G3, preta, algodão | Não |
+| **Onde deseja pesquisar?** | Seis checkboxes: Mercado Livre, Shopee, AliExpress, Amazon, SHEIN e Temu | Os três primeiros marcados, demais desmarcados | Ao menos uma loja |
+| **Quanto pretende gastar? (R$)** | Campo de valor/moeda | Vazio; ex.: 150,00 | Não |
+
+A seção recolhível **Mais opções** contém **Quantidade** (padrão 1), **CEP** e **Condição** (padrão novo). Os campos aparecem em coluna, checkboxes se adaptam à largura, sem rolagem horizontal. Ao clicar em **Pesquisar**, o ChatGPT recebe o conjunto completo e **somente as lojas efetivamente selecionadas** como uma única mensagem na mesma conversa.
+
+**Significado do valor:** é um valor **pretendido de referência**, não um bloqueio que impede mostrar opções úteis acima dele. Pode ser usado na comparação para informar quais ofertas ficaram acima/abaixo, sem descartar arbitrariamente anúncios que atendam aos outros critérios.
+
+Se o usuário escrever o produto diretamente na invocação (`@comprar camiseta oversized`), começar a pesquisa sem formulário redundante. Se o cliente não suportar múltiplos controles nativos, apresentar as quatro perguntas separadamente em texto e receber uma única mensagem; não transformar o formulário em um campo único e não simular botões.
+
+Após **Nova pesquisa**, reabrir o formulário completo (sem reutilizar valores anteriores). **Buscar mais ofertas** não pede formulário: mantém critérios e alterações e amplia a comparação existente.
 
 ## Preços provisórios e divergências de página
 
@@ -16,7 +31,7 @@ Preço de índice de busca = **"Preço encontrado na pesquisa — provisório; c
 
 **Transmissão dos links:** os cartões exibem links clicáveis, mas o botão `Enviar tabela` serializa no JSON URLs HTTPS em texto puro (valor de `url`), **nunca** `[rótulo](URL)`; os IDs e endereços originais devem permanecer idênticos durante correções. O campo de preço anunciado é histórico, e o de preço real é a correção informada, não uma verificação automática da loja.
 
-## Layout responsivo aprovado para testes (0.9.9)
+## Layout responsivo aprovado para testes (0.10.1)
 
 A versão anterior mostrou quatro campos de entrada em todas as linhas de uma tabela larga e repetitiva. Esse layout não é adequado para celular. O padrão passa a ser **cartões compactos e expansíveis**, em lista vertical:
 
@@ -27,7 +42,7 @@ A versão anterior mostrou quatro campos de entrada em todas as linhas de uma ta
 
 Não usar formulários dentro de tabelas largas ou com colunas estreitas. Priorizar leitura e toque no celular, sem rolagem horizontal; disponibilizar links clicáveis e campos com rótulos visíveis. Números ausentes seguem `null`, jamais zero automático.
 
-## Navegação depois da pesquisa — v0.10.0
+## Navegação depois da pesquisa — v0.10.1
 
 A interface apresenta, **após os anúncios e o único botão Enviar tabela**, dois controles nativos e responsivos. Eles são opcionais, não substituem a tabela e continuam disponíveis depois da consolidação:
 
@@ -44,7 +59,7 @@ Ao tocar **Nova pesquisa**, a conversa registra a intenção explícita de come�
 
 Se o cliente ChatGPT não oferecer botões nativos, exibir as duas opções textuais e reconhecer seus nomes como comandos. Nunca indicar que o botão funciona sem teste no cliente. O backend MCP atual não fornece por si só a persistência de estado entre mensagens; o histórico conversacional e o estado enviado pelo host são a referência.
 
-## Link individual sempre visível (0.9.9)
+## Link individual sempre visível (0.10.1)
 
 **Na primeira resposta da pesquisa**, cada anúncio já deve aparecer como um cartão compacto com nome, ID, preço de vitrine e um link **“Abrir anúncio na [loja]” em linha separada**, sem precisar clicar em `Editar`. Não esconder o link no título, na expansão ou em uma resposta anterior.
 

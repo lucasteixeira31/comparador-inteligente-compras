@@ -3,7 +3,7 @@ name: comparar-compras
 description: Use quando o usuário invocar @comprar, pedir pesquisa de ofertas, edição de preços/frete/impostos ou classificação de compras na conversa.
 ---
 
-# @comprar — Chat com tabela editável nativa; #visual sob demanda — 0.9.9
+# @comprar — Chat com tabela editável nativa; #visual sob demanda — 0.10.1
 
 ## Modos de uso e gatilhos (experiência padrão: conversa)
 
@@ -27,17 +27,13 @@ O App remoto `comprar-backend` permanece vinculado em `.app.json`. Não adiciona
 
 Apenas Mercado Livre, Shopee, AliExpress, Amazon, SHEIN e Temu. Aceitar anúncios individuais em HTTPS nos domínios oficiais, inclusive vendedores terceiros dentro das lojas, sem ranquear reputação de vendedores. Não usar páginas genéricas de pesquisa como se fossem anúncios nem links falsos/redirecionamentos para pagamentos externos. A seleção padrão, se não informada, é Mercado Livre, Shopee e AliExpress.
 
-## Etapa 1 — Primeiro contato e entrada conversacional (v0.9.9)
+## Etapa 1 — Primeiro contato e entrada conversacional (v0.10.1)
 
-**Fluxo obrigatório quando a mensagem for somente `@comprar` e ainda não houver produto:** a primeira resposta deve conter, nesta ordem e no próprio modo Chat:
+Quando `@comprar` for invocado sem produto, mostrar um aviso curto de que os preços encontrados na pesquisa podem mudar e perguntar “Qual produto você deseja analisar?”. **Não reduzir o formulário a um único campo**: a entrada normal deve exibir **Produto**, **Descrição ou características**, **Onde deseja pesquisar?** (checkboxes para Mercado Livre, Shopee, AliExpress, Amazon, SHEIN e Temu) e **Quanto pretende gastar? (R$)** (valor de referência), cada um com rótulo e controle próprios. Produto é obrigatório; descrição e valor pretendido são opcionais. Mercado Livre, Shopee e AliExpress começam selecionados; o usuário pode alterar as lojas e a pesquisa deve respeitar somente as selecionadas. Mostrar **Quantidade** (1), **CEP** (opcional) e **Condição** (novo) em “Mais opções” quando suportado.
 
-1. Um aviso **breve, uma única vez por nova comparação**, em português claro: **"Os preços encontrados na pesquisa podem mudar ou variar conforme tamanho, cor, promoção e frete. Abra cada anúncio, confira os valores e, se houver diferença, corrija os campos do cartão antes de enviar a comparação."** Não alegar que a página atual já foi verificada.
-2. Logo abaixo, a pergunta **"Qual produto você deseja analisar?"** com **um campo conversacional editável** (nativo do ChatGPT, se suportado) com dica de preenchimento como `camiseta oversized G3, até R$ 150`. Um botão **"Pesquisar"** ou **"Enviar"** deve remeter o conteúdo do campo como uma única mensagem à **mesma conversa**, iniciando a busca. Não abrir outra página, site, janela ou o MCP App visual.
-3. Aceitar no mesmo campo texto livre com tamanho/cor, quantidade, orçamento, CEP e lojas. São opcionais: características, orçamento e CEP; quantidade padrão 1, condição padrão nova, marketplaces padrão Mercado Livre, Shopee e AliExpress. Não obrigar o usuário a preencher um formulário longo para fazer a pesquisa. Caso o cliente não permita campo/botão nativo, exibir o mesmo aviso e pergunta por texto e aceitar a resposta pela caixa de mensagens padrão; explicar a limitação se necessário, sem simular controle inoperante.
+A skill `entrada-compras` detalha o formulário e prevalece na construção do primeiro contato. Em celular, usar cartões/coluna e checkboxes responsivos; não abrir HTML de MCP Apps no modo Chat. Botão **"Pesquisar"** nativo e funcional envia os critérios em uma única mensagem à **mesma conversa**, sem nova aba. Se o cliente não suportar controles, apresentar quatro perguntas separadas em texto para receber uma resposta única. Nunca alegar que o botão funcionou sem teste.
 
-**Se a invocação já contiver um produto e critérios suficientes** (ex.: `@comprar camiseta oversized G3`), não repetir pergunta nem exigir envio redundante: apresentar aviso sucinto de preços provisórios e iniciar a pesquisa na mesma solicitação. **Se for uma correção ou continuação de compra**, não reiniciar o fluxo, não repetir o aviso e não pesquisar novamente. O envio do botão de pesquisa é a transição de Etapa 1 para Etapa 2. O envio da tabela de correções é outra ação, identificada por **"Enviar tabela"**.
-
-**Após a primeira busca:** a primeira resposta com anúncios deve apresentar **todos os links individuais clicáveis e os controles de edição de preço/frete/impostos no mesmo cartão**, imediatamente. Não enviar somente links nem exigir outra mensagem do usuário para abrir a tabela. O modo Chat não utiliza automaticamente `abrir_formulario_pesquisa` ou `abrir_tabela_comparacao`; essas ferramentas MCP Apps são exclusivas do `#visual`.
+Se a invocação contiver **produto e critérios suficientes**, iniciar a busca sem **repetir pergunta** ou exigir envio redundante; uma correção de oferta não reinicia a pesquisa. Ao retornar resultados, já incluir link individual e campos de edição dos anúncios na mesma resposta; jamais apenas links. A ação Nova pesquisa deve retornar a este formulário completo, enquanto Buscar mais ofertas preserva a comparação atual. O botão “Enviar tabela” é exclusivo da etapa de correção.
 
 ## Etapa 2 — Pesquisa comprovável
 

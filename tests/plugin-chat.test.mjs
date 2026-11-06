@@ -9,8 +9,8 @@ test("plugin @comprar usa App MCP sem MCP direto",()=>{
   const app=JSON.parse(read(".app.json"));
   assert.equal(rootManifest.name,"comprar");
   assert.equal(rootManifest.extensions["com.openai"].interface.displayName,"comprar");
-  assert.equal(rootManifest.version,"0.10.0");
-  assert.equal(compat.version,"0.10.0");
+  assert.equal(rootManifest.version,"0.10.1");
+  assert.equal(compat.version,"0.10.1");
   assert.equal(rootManifest.extensions["com.openai"].apps,"./.app.json");
   assert.equal(compat.apps,"./.app.json");
   assert.equal(app.apps["comprar-backend"].id,"asdk_app_6aeca1ead5d88191974ba923cfef6dc3");
@@ -118,4 +118,31 @@ test("busca adicional mantém lojas selecionadas e nova pesquisa não herda resu
   assert.match(nav,/não reutilize anúncios ou custos|Não misturar produtos, filtros, links, IDs ou preços/);
   assert.match(nav,/Qual produto você deseja analisar\?/);
   assert.match(nav,/#visual/);
+});
+
+
+test("formulario inicial v0.10.1 tem quatro grupos separados e seis marketplaces",()=>{
+  const e=read("skills/entrada-compras/SKILL.md");
+  const c=read("skills/comparar-compras/SKILL.md");
+  const d=readFileSync(new URL("../docs/TABELA-CHAT.md",root),"utf8");
+  for(const label of ["Produto","Descrição ou características","Onde deseja pesquisar?","Quanto pretende gastar? (R$)"]) {
+    assert.ok(e.includes(label),"Campo obrigatório da interface ausente: "+label);
+    assert.ok(c.includes(label),"Instrução principal sem campo: "+label);
+    assert.ok(d.includes(label),"Documentação sem campo: "+label);
+  }
+  for(const loja of ["Mercado Livre","Shopee","AliExpress","Amazon","SHEIN","Temu"]){
+    assert.ok(e.includes(loja),"Loja faltante: "+loja);
+  }
+  assert.match(e,/checkboxes independentes/);
+  assert.match(e,/Mercado Livre, Shopee e AliExpress marcados/);
+  assert.match(e,/somente nas lojas selecionadas/);
+  assert.match(e,/uma mensagem à mesma conversa/);
+  assert.match(e,/Mais opções/);
+  assert.match(e,/CEP/);
+  assert.match(e,/Quantidade/);
+  assert.match(e,/valor pretendido/);
+  assert.match(e,/não é exclusão absoluta|não exclusão absoluta|referência/);
+  assert.match(c,/Não reduzir o formulário a um único campo/);
+  assert.match(d,/apenas um campo único/);
+  assert.match(d,/Nova pesquisa/);
 });

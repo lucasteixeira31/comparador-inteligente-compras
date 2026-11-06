@@ -3,7 +3,7 @@ name: navegacao-compras
 description: Use obrigatoriamente no @comprar ao exibir resultados, links, cartões editáveis ou comparação consolidada, e sempre que o usuário selecionar Buscar mais ofertas, Pesquisar mais, Nova pesquisa, Reiniciar pesquisa ou começar outra compra. Implementa os dois botões intuitivos no Chat, continuação sem duplicatas e início independente.
 ---
 
-# @comprar — Continuidade e nova pesquisa no Chat (v0.10.0)
+# @comprar — Continuidade e nova pesquisa no Chat (v0.10.1)
 
 Esta skill complementa `comparar-compras` e `entrada-compras`. Nas ações de continuação/reinício e na disposição dos botões, esta regra prevalece sobre qualquer sugestão genérica de refazer a pesquisa. Não alterar a conexão MCP, a lista de marketplaces, as regras de custo e o modo `#visual`.
 
@@ -31,7 +31,7 @@ Exibir em uma linha se couber, e empilhar verticalmente em telas pequenas; usar 
 
 - Esta ação **não é `Buscar mais ofertas`**: encerrar a seleção ativa da comparação anterior, sem remover mensagens ou tabelas já registradas no histórico da conversa. Não misturar produtos, filtros, links, IDs ou preços da pesquisa anterior. IDs da nova comparação podem recomeçar em `#1` **somente após ficar claro que é uma nova comparação**; não renumerar a comparação antiga.
 - Se existem edições ainda **não enviadas**, apresentar antes uma confirmação clara como: `Há valores preenchidos que ainda não foram enviados. Deseja enviar a tabela antes de iniciar outra pesquisa?` com caminhos de **`Enviar tabela`** e **`Iniciar nova pesquisa sem enviar`**; caso o cliente não suporte, perguntar em texto. Se os dados já foram enviados ou estão vazios, avançar imediatamente, sem confirmação redundante.
-- Mostrar novamente o aviso compacto: **`Os preços encontrados na pesquisa podem mudar. Confira cada anúncio e corrija os valores quando necessário.`**, e a pergunta **`Qual produto você deseja analisar?`** com campo conversacional e botão **`Pesquisar`** (ou `Enviar`) na mesma conversa, se suportados. Não abrir formulário MCP Apps, não solicitar `#visual`.
+- Mostrar novamente o aviso compacto: **`Os preços encontrados na pesquisa podem mudar. Confira cada anúncio e corrija os valores quando necessário.`**, e a pergunta **`Qual produto você deseja analisar?`** com **formulário conversacional completo**: Produto, Descrição ou características, checkboxes de lojas, Quanto pretende gastar? (R$), opções de quantidade/CEP e botão **`Pesquisar`** (ou `Enviar`) na mesma conversa, se suportados. Não abrir formulário MCP Apps, não solicitar `#visual`.
 - O próximo envio de produto inicia outra pesquisa **independente**, usando os padrões do plugin para critérios não fornecidos, sem importar critérios da busca anterior automaticamente. Se a pessoa pedir reutilização explícita de determinado critério, atendê-la.
 
 ## 4. Comandos inequívocos para botões nativos
