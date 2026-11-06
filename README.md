@@ -1,3 +1,11 @@
+## Recuperação do ChatGPT Web — v0.10.4
+
+A experiência oficial do projeto é `@comprar` em uma conversa no **ChatGPT Web**, não um plugin de execução local/desktop. Após a tentativa de distribuir o MCP remoto por `mcp.json`, o ChatGPT deixou de mostrar o plugin no navegador e o usuário relatou a indicação de uso em desktop.
+
+A versão **0.10.4 restaura a referência ao App MCP registrado** por `.app.json` nos manifests e retira `mcp.json` e `.mcp.json` da pasta empacotada `plugin-chat/`. Os experimentos de MCP direto permanecem documentados em `docs/historico-mcp-direto/` e no histórico de commits. O servidor Vercel e suas oito ferramentas continuam operando na mesma URL. **Não foi feita reinstalação nem exclusão do App técnico.** A conexão poderá exigir autorização/instalação do App subjacente no ChatGPT.
+
+**Importante:** publicar o pacote e passar testes não garante que esteja instalado na conta ou visível no seletor `@`. Abra a página privada do plugin e confira o status da instalação em Plugins > Pessoais ou Instalados, no ChatGPT Web. Se continuar marcado “Somente para computador” ou ausente, o fluxo do app registrado precisa ser diagnosticado diretamente na interface ou pelo suporte, sem repetidas trocas de manifest.
+
 # Comparador Inteligente de Compras
 
 Projeto pessoal, gratuito, sem monetização e de código aberto para uso no **ChatGPT Web**. O objetivo é pesquisar anúncios com links individuais e comparar o custo real da compra, considerando quantidade, frete, impostos, outras taxas e cupons confirmados.

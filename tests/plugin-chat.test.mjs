@@ -3,31 +3,21 @@ import assert from "node:assert/strict";
 import { readFileSync, existsSync } from "node:fs";
 const root = new URL("../plugin-chat/", import.meta.url);
 const read = p => readFileSync(new URL(p,root),"utf8");
-test("plugin @comprar utiliza MCP remoto direto sem depender de App legado",()=>{
+test("plugin @comprar web usa App MCP registrado sem exigir desktop",()=>{
   const rootManifest=JSON.parse(read("plugin.json"));
   const compat=JSON.parse(read(".codex-plugin/plugin.json"));
   const app=JSON.parse(read(".app.json"));
   assert.equal(rootManifest.name,"comprar");
   assert.equal(rootManifest.extensions["com.openai"].interface.displayName,"comprar");
-  assert.equal(rootManifest.version,"0.10.3");
-  assert.equal(compat.version,"0.10.3");
-  assert.equal(rootManifest.extensions["com.openai"].apps,undefined);
-  assert.equal(compat.apps,undefined);
-  assert.equal(app.apps["comprar-backend"].id,"asdk_app_6aeca1ead5d88191974ba923cfef6dc3"); // Backup não declarado e sem dependência ativa.
-  assert.equal(compat.mcpServers,"./.mcp.json");
+  assert.equal(rootManifest.version,"0.10.4");
+  assert.equal(compat.version,"0.10.4");
+  assert.equal(rootManifest.extensions["com.openai"].apps,"./.app.json");
+  assert.equal(compat.apps,"./.app.json");
+  assert.equal(app.apps["comprar-backend"].id,"asdk_app_6aeca1ead5d88191974ba923cfef6dc3");
+  assert.equal(compat.mcpServers,undefined);
   assert.equal(rootManifest.mcpServers,undefined);
-  assert.equal(existsSync(new URL("mcp.json",root)),true);
-  assert.equal(existsSync(new URL(".mcp.json",root)),true);
-  const portable=JSON.parse(read("mcp.json"));
-  const legacy=JSON.parse(read(".mcp.json"));
-  const server=portable.mcpServers.comprar;
-  assert.equal(portable.$schema,"https://agent-plugins.org/schemas/1.0.0/mcp.schema.json");
-  assert.equal(server.type,"streamable-http");
-  assert.equal(server.url,"https://comparador-inteligente-compras.vercel.app/api/mcp");
-  assert.equal(server.extensions["com.openai"].auth.type,"none");
-  assert.equal(legacy.mcpServers.comprar.url,server.url);
-  assert.equal(compat.mcpServers,"./.mcp.json");
-  assert.equal(Object.keys(portable.mcpServers).length,1);
+  assert.equal(existsSync(new URL("mcp.json",root)),false);
+  assert.equal(existsSync(new URL(".mcp.json",root)),false);
   assert.match(read("agents/openai.yaml"),/\bCHAT\b/);
   const skill=read("skills/comparar-compras/SKILL.md");
   assert.match(skill,/MODO CHAT É O PADRÃO INCONDICIONAL/);
@@ -161,12 +151,13 @@ test("formulario inicial v0.10.1 tem quatro grupos separados e seis marketplaces
 });
 
 
-test("configuracao MCP direta preserva oito ferramentas e nao incorpora servidor em codigo local",()=>{
+test("App MCP registrado conserva oito ferramentas do servidor remoto",()=>{
   const source=readFileSync(new URL("../app/api/mcp/route.ts",root),"utf8");
   const expected=["preparar_pesquisa","comparar_carrinhos","pesquisar_ofertas","planejar_busca_profunda","analisar_busca_profunda","consolidar_comparacao_chat","abrir_formulario_pesquisa","abrir_tabela_comparacao"];
-  for(const name of expected)assert.ok(source.includes('server.registerTool("'+name+'"'),"Ferramenta nao encontrada: "+name);
-  const portable=JSON.parse(read("mcp.json"));
-  assert.equal(portable.mcpServers.comprar.url,"https://comparador-inteligente-compras.vercel.app/api/mcp");
+  for(const name of expected)assert.ok(source.includes('server.registerTool("'+name+'"'),"Ferramenta ausente: "+name);
   const app=JSON.parse(read(".app.json"));
   assert.equal(app.apps["comprar-backend"].id,"asdk_app_6aeca1ead5d88191974ba923cfef6dc3");
+  const readme=readFileSync(new URL("../README.md",root),"utf8");
+  assert.match(readme,/v0.10.4/);
+  assert.ok(existsSync(new URL("../docs/historico-mcp-direto/mcp.json",root)));
 });

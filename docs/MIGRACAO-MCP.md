@@ -1,3 +1,13 @@
+# Estado atual: restauração para ChatGPT Web (v0.10.4)
+
+**A configuração de transporte MCP direto de v0.10.2–0.10.3 foi retirada do pacote ativo** porque o usuário relatou ausência do plugin no ChatGPT Web e indicação de desktop. O pacote v0.10.4 voltou a ter mapeamento `.app.json` declarado pelos dois manifests. `mcp.json` e `.mcp.json` estão arquivados em `docs/historico-mcp-direto/`, não na raiz de `plugin-chat/`.
+
+A implementação Vercel continua independente da distribuição do plugin e possui todas as ferramentas. O registro App MCP associado ao identificador anterior pode exigir conexão/instalação para uso na web. A publicação do plugin é distinta de sua instalação no navegador, e **nenhum sucesso na UI foi comprovado** pelo teste de repositório.
+
+A tentativa de MCP direto permanece documentada a seguir para eventual retomada em ambiente compatível.
+
+---
+
 # Migração do @comprar para MCP direto — v0.10.3
 
 **Atualização de recuperação (v0.10.3):** a referência ativa ao App registrado separadamente, `extensions.com.openai.apps` e `apps` de compatibilidade, foi removida dos manifests. O arquivo físico `.app.json` foi **preservado como backup não declarado**, sem depender da instalação desfeita de `comprar-backend`. O MCP remoto é acessado pelo `mcp.json` direto e pela variante de compatibilidade `.mcp.json`. A mudança tenta corrigir a ausência do `@comprar` no ChatGPT Web, porém o resultado no seletor só pode ser atestado por um teste de usuário no cliente.

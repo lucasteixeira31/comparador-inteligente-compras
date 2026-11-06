@@ -15,7 +15,7 @@
     "shortDescription": "Compare preços e fretes"
   },
   "name": "comprar",
-  "version": "0.10.3",
+  "version": "0.10.4",
   "description": "Comparador de preços com formulário inicial completo, lojas selecionáveis e correção de custos no ChatGPT.",
   "author": {
     "name": "Faculdade Detroit",
@@ -25,5 +25,5 @@
   "homepage": "https://comparador-inteligente-compras.vercel.app",
   "repository": "https://github.com/lucasteixeira31/comparador-inteligente-compras",
   "skills": "./skills",
-  "mcpServers": "./.mcp.json"
+  "apps": "./.app.json"
 }
