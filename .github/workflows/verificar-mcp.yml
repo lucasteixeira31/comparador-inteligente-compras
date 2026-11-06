@@ -10,6 +10,9 @@ on:
       - 'public/widget-*.html'
       - 'scripts/smoke-mcp.mjs'
       - 'tests/**'
+      - 'plugin-chat/**'
+      - 'docs/**'
+      - 'README.md'
       - 'package.json'
       - '.github/workflows/verificar-mcp.yml'
 

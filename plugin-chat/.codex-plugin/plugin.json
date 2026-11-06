@@ -5,7 +5,7 @@
     ],
     "category": "Productivity",
     "defaultPrompt": [
-      "Pesquise ofertas no modo Chat e mostre a tabela editável inline com botão Enviar tabela.",
+      "@comprar — mostre aviso breve de preços provisórios e pergunte qual produto desejo pesquisar, com botão Enviar no Chat.",
       "Quero corrigir preços, fretes e impostos de todos os anúncios em uma só tabela no chat.",
       "@comprar #visual — abrir interface gráfica avançada sob demanda."
     ],
@@ -16,7 +16,7 @@
   },
   "apps": "./.app.json",
   "name": "comprar",
-  "version": "0.9.8",
+  "version": "0.9.9",
   "description": "Comparador de preços de marketplaces: pesquisa anúncios no ChatGPT, permite corrigir custos e ordenar ofertas com links no chat.",
   "author": {
     "name": "Faculdade Detroit",

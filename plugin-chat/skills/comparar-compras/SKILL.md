@@ -3,7 +3,7 @@ name: comparar-compras
 description: Use quando o usuário invocar @comprar, pedir pesquisa de ofertas, edição de preços/frete/impostos ou classificação de compras na conversa.
 ---
 
-# @comprar — Chat com tabela editável nativa; #visual sob demanda — 0.9.8
+# @comprar — Chat com tabela editável nativa; #visual sob demanda — 0.9.9
 
 ## Modos de uso e gatilhos (experiência padrão: conversa)
 
@@ -27,13 +27,27 @@ O App remoto `comprar-backend` permanece vinculado em `.app.json`. Não adiciona
 
 Apenas Mercado Livre, Shopee, AliExpress, Amazon, SHEIN e Temu. Aceitar anúncios individuais em HTTPS nos domínios oficiais, inclusive vendedores terceiros dentro das lojas, sem ranquear reputação de vendedores. Não usar páginas genéricas de pesquisa como se fossem anúncios nem links falsos/redirecionamentos para pagamentos externos. A seleção padrão, se não informada, é Mercado Livre, Shopee e AliExpress.
 
-## Etapa 1 — Entrada na conversa
+## Etapa 1 — Primeiro contato e entrada conversacional (v0.9.9)
 
-Se o usuário fornecer produto e critérios suficientes, iniciar a busca sem solicitar confirmação redundante. Se invocar apenas `@comprar`, mostrar uma mensagem compacta de coleta de dados, com **produto (obrigatório), características/tamanho/cor (opcional), orçamento total (opcional), quantidade (padrão 1), CEP (opcional), lojas (padrão as três acima) e condição (novo por padrão)**. O usuário pode responder em texto corrido ou preenchendo os campos; qualquer campo não especificado continua com o padrão anunciado. Evitar sequência longa de perguntas. A entrada de um novo produto inicia uma nova comparação; uma correção mantém a pesquisa atual.
+**Fluxo obrigatório quando a mensagem for somente `@comprar` e ainda não houver produto:** a primeira resposta deve conter, nesta ordem e no próprio modo Chat:
 
-No modo Chat, não abrir os widgets HTML/MCP Apps e solicitar os critérios iniciais por mensagem simples. **Depois da busca**, usar controles nativos do ChatGPT para a tabela editável inline, se disponíveis; `#visual` é reservado exclusivamente à interface gráfica MCP Apps avançada. No modo Visual expressamente solicitado com `#visual`, abrir o formulário MCP se disponível.
+1. Um aviso **breve, uma única vez por nova comparação**, em português claro: **"Os preços encontrados na pesquisa podem mudar ou variar conforme tamanho, cor, promoção e frete. Abra cada anúncio, confira os valores e, se houver diferença, corrija os campos do cartão antes de enviar a comparação."** Não alegar que a página atual já foi verificada.
+2. Logo abaixo, a pergunta **"Qual produto você deseja analisar?"** com **um campo conversacional editável** (nativo do ChatGPT, se suportado) com dica de preenchimento como `camiseta oversized G3, até R$ 150`. Um botão **"Pesquisar"** ou **"Enviar"** deve remeter o conteúdo do campo como uma única mensagem à **mesma conversa**, iniciando a busca. Não abrir outra página, site, janela ou o MCP App visual.
+3. Aceitar no mesmo campo texto livre com tamanho/cor, quantidade, orçamento, CEP e lojas. São opcionais: características, orçamento e CEP; quantidade padrão 1, condição padrão nova, marketplaces padrão Mercado Livre, Shopee e AliExpress. Não obrigar o usuário a preencher um formulário longo para fazer a pesquisa. Caso o cliente não permita campo/botão nativo, exibir o mesmo aviso e pergunta por texto e aceitar a resposta pela caixa de mensagens padrão; explicar a limitação se necessário, sem simular controle inoperante.
+
+**Se a invocação já contiver um produto e critérios suficientes** (ex.: `@comprar camiseta oversized G3`), não repetir pergunta nem exigir envio redundante: apresentar aviso sucinto de preços provisórios e iniciar a pesquisa na mesma solicitação. **Se for uma correção ou continuação de compra**, não reiniciar o fluxo, não repetir o aviso e não pesquisar novamente. O envio do botão de pesquisa é a transição de Etapa 1 para Etapa 2. O envio da tabela de correções é outra ação, identificada por **"Enviar tabela"**.
+
+**Após a primeira busca:** a primeira resposta com anúncios deve apresentar **todos os links individuais clicáveis e os controles de edição de preço/frete/impostos no mesmo cartão**, imediatamente. Não enviar somente links nem exigir outra mensagem do usuário para abrir a tabela. O modo Chat não utiliza automaticamente `abrir_formulario_pesquisa` ou `abrir_tabela_comparacao`; essas ferramentas MCP Apps são exclusivas do `#visual`.
 
 ## Etapa 2 — Pesquisa comprovável
+
+### Política de preço recuperado, divergência e referência (v0.9.9)
+
+- A página indexada ou o resultado do buscador pode mostrar **preço desatualizado** ou preço mínimo de outra variação. Quando não houver verificação direta e recente do preço da variante solicitada na página do anúncio, rotular **"Preço encontrado na pesquisa — provisório; confirme no anúncio"**. Não o apresentar como preço atual, preço confirmado de G3, preço final nem menor custo real.
+- Mesmo com página acessível, separar preço da variante, estoque e frete: os três precisam de evidência apropriada e nunca são deduzidos apenas de um título ou snippet. Não exigir que o backend de comparação visite o carrinho, porque ele apenas calcula e filtra dados fornecidos.
+- O campo **"Preço real (R$)"** permanece vazio até confirmação pelo usuário; ao informar um novo valor, conservar `preco_anunciado` como histórico/provisório e usar `preco_unitario` como valor informado na correção. Se diferirem, mostrar ambos e a **diferença em reais**, identificando o preço real como informado pelo usuário (não verificado pelo servidor). Exemplo hipotético: pesquisado R$ 39,77, informado R$ 49,77, diferença +R$ 10,00.
+- Ordenar **preços encontrados na pesquisa** apenas como comparação provisória, com legenda explícita; jamais afirmar o menor preço atual garantido. Ranking por **custo final** somente com preço, frete, impostos, taxas, disponibilidade e desconto devidamente informados/confirmados. Custos desconhecidos continuam `null`, não R$ 0.
+- Preservar URLs de origem como **strings HTTPS puras** ao enviar dados ao MCP: nunca serializar `[texto](https://...)` dentro do campo `url`, nunca anexar pontuação ou alterar IDs. Construir o envio com dados primitivos de cada anúncio e serialização JSON, mantendo o link clicável apenas na apresentação. Se o cliente transformar links em Markdown na mensagem, extrair a URL de destino **somente quando inequívoca e já presente na fonte**, validá-la antes do MCP e não substituir silenciosamente por outro anúncio.
 
 Buscar diferentes palavras-chave e anúncios individuais por marketplace selecionado, respeitando características obrigatórias, condição e orçamento. Não confundir "G3" com tamanhos próximos e não assumir que o menor preço da faixa corresponde a essa variação. Validar por fonte que o anúncio e a característica existem; registrar incertezas em vez de inferir confirmação. Informar que o resultado é o **menor preço encontrado entre anúncios analisados**, nunca o menor preço absoluto da internet. Não inventar produto, link, preço, frete, impostos, desconto, estoque ou tempo de entrega. Se um item não tiver confirmação de preço da variação, marcar "preço inicial/variação não confirmada". Excluir itens claramente incompatíveis ou indisponíveis. Mostrar, quando possível, quantidade de anúncios examinados e lojas sem resultados.
 
@@ -47,9 +61,9 @@ Distinguir **G3 listado na grade** de **preço específico da variação G3**. I
 
 Sempre preservar dados da fonte recuperada e expor incertezas, sem transformar em verificação automática os indicadores declarados à ferramenta. A pesquisa é feita com ferramentas de busca externas efetivamente disponíveis, não pelo analisador.
 
-## Etapa 2.5 — TABELA EDITÁVEL INLINE NO CHAT (fluxo padrão, v0.9.8)
+## Etapa 2.5 — TABELA EDITÁVEL INLINE NO CHAT (fluxo padrão, v0.9.9)
 
-### Apresentação RESPONSIVA EM CARTÕES EXPANSÍVEIS + LINK DESTACADO (v0.9.8)
+### Apresentação RESPONSIVA EM CARTÕES EXPANSÍVEIS + LINK DESTACADO (v0.9.9)
 
 **Regra UX fundamental:** a primeira resposta que apresentar resultados da pesquisa DEVE incluir os **links reais junto da lista editável**, na MESMA mensagem. Não separar um catálogo só textual dos cartões de edição e nunca pedir para o usuário procurar URLs em outra parte da conversa.
 
@@ -61,7 +75,7 @@ Sempre preservar dados da fonte recuperada e expor incertezas, sem transformar e
 - Cada cartão indica discretamente `dados preenchidos` quando houver edição; não marcar como `completo` enquanto houver pendências. Campos vazios significam null, **não zero**; zero apenas se o usuário informar 0.
 - Apenas **UM botão “Enviar tabela” abaixo de todos os cartões**, que envia todos os anúncios (inclusive intactos) e apenas as edições preenchidas na mesma conversa, sem repetir pesquisa, trocar IDs ou URLs e sem exigir comandos de correção.
 - Manter links e cartões acessíveis com toque e leitura confortáveis no celular; sem rolagem horizontal. Não usar ferramentas MCP Apps `abrir_formulario_pesquisa` ou `abrir_tabela_comparacao` fora do gatilho `#visual`.
-- Se o host não puder renderizar controles nativos, oferecer os links individuais destacados com um formulário textual condensado que possa ser devolvido de uma vez, declarando a limitação. Não afirmar que a tabela interativa existe ou funciona em um cliente sem teste.
+- Se o host não puder renderizar controles nativos, oferecer os links individuais destacados com um formulário textual condensado que possa ser devolvido de uma vez, declarando a limitação. Não afirmar que a tabela interativa existe ou funciona em um cliente sem teste. Todo campo de URL transmitido ao backend deve conter somente a URL HTTPS pura, nunca o link formatado em Markdown.
 
 **Requisito principal de UX:** terminou a pesquisa e encontrou anúncios individuais reais? Já mostrar, **na mesma resposta**, um formulário em formato de tabela compacto **dentro da conversa**. Não esperar o usuário digitar `corrigir #6 ...` e não obrigar uma mensagem por anúncio. Usar **componentes nativos interativos do ChatGPT** (`input`/campos, tabelas/linhas, botão de envio ou equivalente) caso o host suporte; são diferentes dos recursos UI/HTML do MCP. Nunca chamar `abrir_tabela_comparacao` ou `abrir_formulario_pesquisa` no modo Chat. Em celulares, adaptar a tabela a linhas/cartões compactos se necessário, sem mudar o fluxo.
 

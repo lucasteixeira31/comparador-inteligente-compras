@@ -9,8 +9,8 @@ test("plugin @comprar usa App MCP sem MCP direto",()=>{
   const app=JSON.parse(read(".app.json"));
   assert.equal(rootManifest.name,"comprar");
   assert.equal(rootManifest.extensions["com.openai"].interface.displayName,"comprar");
-  assert.equal(rootManifest.version,"0.9.8");
-  assert.equal(compat.version,"0.9.8");
+  assert.equal(rootManifest.version,"0.9.9");
+  assert.equal(compat.version,"0.9.9");
   assert.equal(rootManifest.extensions["com.openai"].apps,"./.app.json");
   assert.equal(compat.apps,"./.app.json");
   assert.equal(app.apps["comprar-backend"].id,"asdk_app_6aeca1ead5d88191974ba923cfef6dc3");
@@ -64,4 +64,30 @@ test("guia dos gatilhos esta acessivel a partir do README e esclarece seus limit
   const tabela=readProject("docs/TABELA-CHAT.md");
   assert.match(tabela,/cartões compactos e expansíveis/);
   assert.match(tabela,/não se perdem/);
+});
+
+
+test("primeiro contato @comprar avisa sobre preco e pede produto com envio conversacional",()=>{
+  const skill=read("skills/comparar-compras/SKILL.md");
+  const guia=readFileSync(new URL("../docs/TABELA-CHAT.md",root),"utf8");
+  assert.match(skill,/preços encontrados na pesquisa podem mudar/);
+  assert.match(skill,/Qual produto você deseja analisar\?/);
+  assert.match(skill,/botão \*\*"Pesquisar"\*\*/);
+  assert.match(skill,/mensagem à \*\*mesma conversa\*\*/);
+  assert.match(skill,/produto e critérios suficientes/);
+  assert.match(skill,/não repetir pergunta/);
+  assert.match(guia,/campo de texto conversacional/);
+  assert.match(guia,/link clicável \+ cartão editável/);
+});
+
+test("preco de busca e URL de MCP permanecem separados da edicao",()=>{
+  const skill=read("skills/comparar-compras/SKILL.md");
+  const guia=readFileSync(new URL("../docs/TABELA-CHAT.md",root),"utf8");
+  assert.match(skill,/Preço encontrado na pesquisa — provisório/);
+  assert.match(skill,/preco_anunciado/);
+  assert.match(skill,/preco_unitario/);
+  assert.match(skill,/URLs de origem como \*\*strings HTTPS puras\*\*/);
+  assert.match(skill,/nunca serializar/);
+  assert.match(guia,/R\$ 39,77 pesquisado contra R\$ 49,77/);
+  assert.match(guia,/\*\*nunca\*\* \x60\[rótulo\]\(URL\)\x60/);
 });

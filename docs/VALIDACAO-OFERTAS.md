@@ -2,6 +2,10 @@
 
 O modo **Chat** é o padrão de trabalho. A interface gráfica só será aberta por `#visual` (ver [Gatilhos](GATILHOS.md)).
 
+## Preço indexado e valor visto no anúncio (v0.9.9)
+
+**Todo preço extraído apenas de busca indexada é provisório**, mesmo quando exibido em um cartão com link oficial. Snippets não comprovam o preço atual do tamanho escolhido, estoque ou frete. O usuário deve abrir o anúncio e conferir preços e encargos, informando diferenças nos campos de correção. `preco_anunciado` conserva o valor encontrado, e `preco_unitario` guarda o informado como preço real; informar divergência e não reescrever o histórico. Campo `url` do MCP contém exclusivamente o endereço HTTPS do anúncio em texto puro, sem sintaxe Markdown.
+
 ## O que o comparador consegue comprovar
 
 1. **Link individual:** valida se a URL é HTTPS, pertence ao domínio oficial de um dos seis marketplaces aprovados e corresponde à estrutura de um anúncio individual. Isso **não comprova** que o anúncio existe, esteja disponível ou tenha aquele preço.

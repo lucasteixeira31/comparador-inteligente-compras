@@ -1,8 +1,22 @@
-# Tabela editável na própria conversa — @comprar 0.9.8
+# Tabela editável na própria conversa — @comprar 0.9.9
 
-O modo **Chat** continua sendo a experiência padrão do plugin. A partir da versão 0.9.8, a interface desejada após uma pesquisa é uma **tabela com campos editáveis nativos do ChatGPT e um botão “Enviar tabela”**, sem abrir o HTML da interface `#visual`.
+O modo **Chat** continua sendo a experiência padrão do plugin. A partir da versão 0.9.9, a interface desejada após uma pesquisa é uma **tabela com campos editáveis nativos do ChatGPT e um botão “Enviar tabela”**, sem abrir o HTML da interface `#visual`.
 
-## Layout responsivo aprovado para testes (0.9.8)
+## Entrada obrigatória ao invocar somente @comprar (v0.9.9)
+
+A primeira mensagem do plugin, **antes da pesquisa**, mostra um aviso curto: **"Os preços encontrados na pesquisa podem mudar ou variar conforme tamanho, cor, promoção e frete. Abra cada anúncio, confira os valores e, se houver diferença, corrija os campos do cartão antes de enviar a comparação."**
+
+Em seguida, apresenta **"Qual produto você deseja analisar?"** e um **campo de texto conversacional** com botão **Pesquisar** / **Enviar**, ambos nativos do ChatGPT quando disponíveis. A pessoa digita livremente, por exemplo: `camiseta oversized G3, até R$ 150, 1 unidade, CEP 32340-040, Mercado Livre, Shopee e SHEIN`. O clique gera uma mensagem de pesquisa para **a mesma conversa**; caso o cliente não suporte controles, a pergunta permanece e a pessoa responde pela caixa de mensagens comum. Não ativar `#visual` automaticamente.
+
+Se o produto já estiver indicado na invocação, exibir aviso sucinto e **pesquisar imediatamente**, sem segunda confirmação. A mensagem de resultados traz **link clicável + cartão editável na mesma resposta**, nunca apenas links. O aviso não é repetido na sequência da mesma compra.
+
+## Preços provisórios e divergências de página
+
+Preço de índice de busca = **"Preço encontrado na pesquisa — provisório; confirme no anúncio"**, inclusive se a página apresentar outro preço. O preço de um G3 não pode ser inferido do menor preço de outras variações. O preço real confirmado manualmente entra em campo separado, e o sistema mostra diferenças sem ocultar o valor anterior. Exemplo ilustrativo: R$ 39,77 pesquisado contra R$ 49,77 visto na página = diferença de R$ 10,00. Nunca converter desconhecidos em zero.
+
+**Transmissão dos links:** os cartões exibem links clicáveis, mas o botão `Enviar tabela` serializa no JSON URLs HTTPS em texto puro (valor de `url`), **nunca** `[rótulo](URL)`; os IDs e endereços originais devem permanecer idênticos durante correções. O campo de preço anunciado é histórico, e o de preço real é a correção informada, não uma verificação automática da loja.
+
+## Layout responsivo aprovado para testes (0.9.9)
 
 A versão anterior mostrou quatro campos de entrada em todas as linhas de uma tabela larga e repetitiva. Esse layout não é adequado para celular. O padrão passa a ser **cartões compactos e expansíveis**, em lista vertical:
 
@@ -13,7 +27,7 @@ A versão anterior mostrou quatro campos de entrada em todas as linhas de uma ta
 
 Não usar formulários dentro de tabelas largas ou com colunas estreitas. Priorizar leitura e toque no celular, sem rolagem horizontal; disponibilizar links clicáveis e campos com rótulos visíveis. Números ausentes seguem `null`, jamais zero automático.
 
-## Link individual sempre visível (0.9.8)
+## Link individual sempre visível (0.9.9)
 
 **Na primeira resposta da pesquisa**, cada anúncio já deve aparecer como um cartão compacto com nome, ID, preço de vitrine e um link **“Abrir anúncio na [loja]” em linha separada**, sem precisar clicar em `Editar`. Não esconder o link no título, na expansão ou em uma resposta anterior.
 
