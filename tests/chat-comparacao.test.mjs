@@ -67,3 +67,27 @@ test("rejeita desconto maior que o subtotal sem inventar total",()=>{
     {id:"1",preco_unitario:10,frete:0,impostos:0,outras_taxas:0,disponivel:true,desconto_valor:15,cupom_confirmado:true}
   ]}),/Desconto maior que subtotal/);
 });
+
+test("orcamento considera custo total e diferencia ofertas completas e pendentes",()=>{
+  const r=consolidarComparacaoChat({produto:"blusa oversized",orcamento_total:"50,00",ofertas:cadastro,edicoes:[
+    {id:"1",preco_unitario:30,frete:25,impostos:0,outras_taxas:0,disponivel:true},
+    {id:"2",preco_unitario:40,frete:5,impostos:0,outras_taxas:0,disponivel:true}
+  ]});
+  assert.equal(r.orcamento_total,50);
+  assert.equal(r.dentro_orcamento.length,1);
+  assert.equal(r.dentro_orcamento[0].id,"2");
+  assert.equal(r.acima_orcamento[0].id,"1");
+  assert.equal(r.menor_dentro_orcamento.total,45);
+  assert.match(r.tabela_markdown,/dentro do orçamento/);
+  assert.match(r.tabela_markdown,/acima do orçamento/);
+});
+test("orcamento nao faz ofertas pendentes parecerem dentro do limite",()=>{
+  const r=consolidarComparacaoChat({orcamento_total:150,ofertas:cadastro});
+  assert.equal(r.dentro_orcamento.length,0);
+  assert.equal(r.acima_orcamento.length,0);
+  assert.equal(r.pendentes.length,2);
+  assert.match(r.tabela_markdown,/Indeterminados:\*\* 2/);
+});
+test("rejeita orcamento invalido em vez de inventar total",()=>{
+  assert.throws(()=>consolidarComparacaoChat({orcamento_total:"-10",ofertas:cadastro}),/Valor inválido/);
+});

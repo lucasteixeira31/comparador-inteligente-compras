@@ -66,7 +66,8 @@ function corrigir(oferta, edicao) {
   }
 }
 
-export function consolidarComparacaoChat({ produto = "", quantidade = 1, ofertas = [], edicoes = [] } = {}) {
+export function consolidarComparacaoChat({ produto = "", quantidade = 1, orcamento_total = null, ofertas = [], edicoes = [] } = {}) {
+  const orcamento = validarDinheiro(orcamento_total, "orcamento_total", "pesquisa");
   if (!Number.isInteger(quantidade) || quantidade < 1 || quantidade > 1000) throw Error("Quantidade inválida.");
   if (!Array.isArray(ofertas) || ofertas.length > 100) throw Error("Limite de 100 anúncios.");
   if (!Array.isArray(edicoes) || edicoes.length > 100) throw Error("Limite de 100 correções.");
@@ -97,6 +98,8 @@ export function consolidarComparacaoChat({ produto = "", quantidade = 1, ofertas
     cupom_confirmado: o.cupom_confirmado, disponivel: o.disponivel
   })) });
   const completos = calc.ranking.filter(r => porId.get(r.id).disponivel === true);
+  const dentroOrcamento = orcamento===null ? [] : completos.filter(r=>r.total<=orcamento);
+  const acimaOrcamento = orcamento===null ? [] : completos.filter(r=>r.total>orcamento);
   const pendentes = [...calc.pendentes, ...calc.ranking.filter(r => porId.get(r.id).disponivel !== true)]
     .map(r => ({
       ...r,
@@ -110,12 +113,14 @@ export function consolidarComparacaoChat({ produto = "", quantidade = 1, ofertas
       moeda(o.preco_unitario), moeda(o.frete), moeda(o.impostos), moeda(o.outras_taxas),
       o.cupom_confirmado ? moeda(r.desconto_aplicado) : "não aplicado"];
     if (pendente) return "| " + [...base, "—", texto(r.pendencias.join(", "))].join(" | ") + " |";
-    return "| " + [...base, moeda(r.total), "completo"].join(" | ") + " |";
+    const situacao = orcamento===null ? "completo" : r.total<=orcamento ? "dentro do orçamento" : "acima do orçamento";
+    return "| " + [...base, moeda(r.total), situacao].join(" | ") + " |";
   };
   const cabecalho = "| ID | Loja | Anúncio | Anunciado | Preço real | Frete | Impostos | Taxas | Desconto | Total | Situação |\n" +
     "|---|---|---|---:|---:|---:|---:|---:|---:|---:|---|";
   const tabela = [
     "### Comparação: " + texto(produto || "produtos") + " (quantidade: " + quantidade + ")",
+    ...(orcamento===null ? [] : ["**Orçamento total:** " + moeda(orcamento) + " | **Dentro:** " + dentroOrcamento.length + " | **Acima:** " + acimaOrcamento.length + " | **Indeterminados:** " + pendentes.length]),
     "**Totais completos informados:** " + completos.length,
     completos.length ? [cabecalho, ...completos.map(r => linha(r))].join("\n") : "Nenhum total final completo com disponibilidade confirmada.",
     "**Pendências de custo/verificação:** " + pendentes.length,
@@ -124,7 +129,9 @@ export function consolidarComparacaoChat({ produto = "", quantidade = 1, ofertas
   ].join("\n\n");
   return {
     status: "tabela_conversacional_pronta",
-    produto: String(produto), quantidade,
+    produto: String(produto), quantidade, orcamento_total: orcamento,
+    dentro_orcamento: dentroOrcamento, acima_orcamento: acimaOrcamento,
+    menor_dentro_orcamento: dentroOrcamento[0] ?? null,
     ofertas_atualizadas: registros,
     ranking: completos, pendentes,
     menor_total: completos[0] ?? null,

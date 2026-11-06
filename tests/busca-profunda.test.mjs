@@ -64,3 +64,32 @@ test("sem frete nao atribui valor zero",()=>{
   ]});
   assert.equal(a.ranking_custo_total_confirmado.length,0);
 });
+
+test("G3 nao e validado apenas por confirmacao generica do produto",()=>{
+  const a=analisarBuscaProfunda({produto:"blusa oversized",caracteristicas_obrigatorias:["tamanho G3"],lojas:["Shopee"],ofertas:[
+    {loja:"Shopee",titulo:"Blusa oversized tamanho G1",url:shopee(456),preco_unitario:10,produto_confirmado:true}
+  ]});
+  assert.equal(a.ranking_preco_anunciado_provisorio.length,0);
+  assert.equal(a.cobertura.anuncios_compativeis,0);
+  assert.deepEqual(a.pendentes[0].caracteristicas_faltantes,["tamanho G3"]);
+  assert.ok(a.pendentes[0].pendencias.includes("caracteristicas_obrigatorias_nao_confirmadas"));
+});
+test("G3 encontrado na grade nao implica preco da variacao confirmado",()=>{
+  const a=analisarBuscaProfunda({produto:"blusa oversized",caracteristicas_obrigatorias:["tamanho G3"],lojas:["Shopee"],ofertas:[
+    {loja:"Shopee",titulo:"Blusa oversized G3",url:shopee(456),preco_unitario:29.90,produto_confirmado:true,origem:"indice_web"}
+  ]});
+  assert.equal(a.ranking_preco_anunciado_provisorio.length,1);
+  assert.equal(a.menor_preco_anunciado_provisorio.preco_variacao_confirmado,false);
+  assert.equal(a.menor_preco_da_variacao_confirmada_provisorio,null);
+  assert.ok(a.pendentes[0].pendencias.includes("preco_variacao_nao_confirmado"));
+});
+test("G3 comprovado por variante declarada e preco especifico sinalizado",()=>{
+  const a=analisarBuscaProfunda({produto:"blusa oversized",caracteristicas_obrigatorias:["tamanho G3"],lojas:["Shopee"],ofertas:[
+    {loja:"Shopee",titulo:"Blusa oversized lisa",url:shopee(456),preco_unitario:29.90,produto_confirmado:true,
+      caracteristicas_confirmadas:["G3"],preco_variacao_confirmado:true}
+  ]});
+  assert.equal(a.ranking_preco_anunciado_provisorio.length,1);
+  assert.equal(a.menor_preco_da_variacao_confirmada_provisorio.preco_unitario,29.9);
+  assert.equal(a.cobertura.anuncios_com_preco_da_variacao_nao_confirmado,0);
+  assert.equal(a.menor_custo_total_confirmado,null);
+});

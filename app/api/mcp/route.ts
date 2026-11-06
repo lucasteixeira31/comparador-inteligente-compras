@@ -102,6 +102,8 @@ const handler = createMcpHandler((server) => {
         outras_taxas: dinheiro,
         disponivel: z.boolean().nullable().optional(),
         produto_confirmado: z.boolean().default(false),
+        caracteristicas_confirmadas: z.array(z.string().max(100)).max(8).default([]),
+        preco_variacao_confirmado: z.boolean().default(false),
         preco_confirmado_carrinho: z.boolean().default(false),
         frete_confirmado_carrinho: z.boolean().default(false),
         impostos_confirmados_carrinho: z.boolean().default(false),
@@ -121,6 +123,7 @@ const handler = createMcpHandler((server) => {
     inputSchema: z.object({
       produto: z.string().max(200).default(""),
       quantidade: z.number().int().min(1).max(1000).default(1),
+      orcamento_total: dinheiro,
       ofertas: z.array(z.object({
         id: z.string().optional(), loja, titulo: z.string().min(1).max(300), url: z.string().url(),
         preco_anunciado: dinheiro, preco_unitario: dinheiro, frete: dinheiro,

@@ -4,6 +4,15 @@ import { verificarAnuncio } from "./pesquisa.mjs";
 const normalizar = valor => String(valor || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/[^a-z0-9]+/g, " ").trim();
 const termos = str => normalizar(str).split(" ").filter(x=>x && !["de","da","do","dos","das","a","o","e","com"].includes(x));
 const contem = (texto, requisito) => termos(requisito).every(t=>normalizar(texto).split(" ").includes(t));
+const rotulos = new Set(["tamanho","tam","cor","modelo"]);
+function requisitoNaFonte(titulo, declaradas, requisito) {
+  const tokens = termos(requisito).filter(t=>!rotulos.has(t));
+  if (!tokens.length) return false;
+  return [titulo, ...declaradas].some(texto => {
+    const encontrados = new Set(termos(texto));
+    return tokens.every(t => encontrados.has(t));
+  });
+}
 const dinheiro = valor => cents(valor)===null ? null : cents(valor)/100;
 const validas = lojas => {
   if (!Array.isArray(lojas) || !lojas.length || lojas.some(l=>!LOJAS.includes(l))) throw Error("Marketplaces não aprovados.");
@@ -45,6 +54,8 @@ function registro(o,url) {
     impostos:dinheiro(o.impostos),outras_taxas:dinheiro(o.outras_taxas),
     disponivel:o.disponivel===true?true:o.disponivel===false?false:null,
     produto_confirmado:o.produto_confirmado===true,
+    caracteristicas_confirmadas:Array.isArray(o.caracteristicas_confirmadas)?o.caracteristicas_confirmadas.filter(x=>typeof x==="string"):[],
+    preco_variacao_confirmado:o.preco_variacao_confirmado===true,
     preco_confirmado_carrinho:o.preco_confirmado_carrinho===true,
     frete_confirmado_carrinho:o.frete_confirmado_carrinho===true,
     impostos_confirmados_carrinho:o.impostos_confirmados_carrinho===true,
@@ -53,7 +64,7 @@ function registro(o,url) {
   };
 }
 const nota=r=>["preco_unitario","frete","impostos","outras_taxas"].filter(k=>r[k]!==null).length+
-  ["produto_confirmado","preco_confirmado_carrinho","frete_confirmado_carrinho","impostos_confirmados_carrinho"].filter(k=>r[k]).length+Number(r.disponivel===true);
+  ["produto_confirmado","preco_variacao_confirmado","preco_confirmado_carrinho","frete_confirmado_carrinho","impostos_confirmados_carrinho"].filter(k=>r[k]).length+Math.min(r.caracteristicas_confirmadas.length,8)+Number(r.disponivel===true);
 
 function melhoresPorLoja(lista,campo) {
   const mapa=new Map();
@@ -88,10 +99,15 @@ export function analisarBuscaProfunda({produto,caracteristicas_obrigatorias=[],l
   const compativeis=[],pendentes=[];
   for(const r of vistos.values()){
     if(r.disponivel===false){rejeitados.push({loja:r.loja,url:r.url,motivo:"indisponivel"});continue;}
-    const exigencias=caracteristicas_obrigatorias.filter(x=>!contem(r.titulo,x));
-    const corresponde=r.produto_confirmado || (contem(r.titulo,produto) && exigencias.length===0);
+    const exigencias=caracteristicas_obrigatorias.filter(x=>!requisitoNaFonte(r.titulo,r.caracteristicas_confirmadas,x));
+    const produtoEquivalente=r.produto_confirmado || contem(r.titulo,produto);
+    const corresponde=produtoEquivalente && exigencias.length===0;
     const faltas=[];
-    if(!corresponde) faltas.push("equivalencia_nao_confirmada");
+    r.caracteristicas_faltantes=exigencias;
+    if(!produtoEquivalente) faltas.push("equivalencia_nao_confirmada");
+    if(exigencias.length) faltas.push("caracteristicas_obrigatorias_nao_confirmadas");
+    if(caracteristicas_obrigatorias.length && r.preco_unitario!==null &&
+        !r.preco_variacao_confirmado && !r.preco_confirmado_carrinho) faltas.push("preco_variacao_nao_confirmado");
     if(r.conflito_preco) faltas.push("precos_conflitantes");
     if(r.preco_unitario===null) faltas.push("preco_nao_informado");
     if(r.disponivel!==true) faltas.push("disponibilidade_nao_confirmada");
@@ -105,7 +121,9 @@ export function analisarBuscaProfunda({produto,caracteristicas_obrigatorias=[],l
   }
   const precoProvisorio=compativeis.filter(r=>r.preco_unitario!==null).sort((a,b)=>a.preco_unitario-b.preco_unitario)
     .map(r=>({loja:r.loja,titulo:r.titulo,url:r.url,preco_unitario:r.preco_unitario,
-      preco_sem_frete_quantidade:Math.round(r.preco_unitario*quantidade*100)/100,pendencias:r.pendencias}));
+      preco_sem_frete_quantidade:Math.round(r.preco_unitario*quantidade*100)/100,
+      preco_variacao_confirmado:r.preco_variacao_confirmado || r.preco_confirmado_carrinho,
+      origem:r.origem,pendencias:r.pendencias}));
   const confirmadas=compativeis.filter(r=>r.pendencias.length===0);
   const custos=compararOfertas({quantidade,ofertas:confirmadas.map(r=>({
     loja:r.loja,produto:r.titulo,url:r.url,preco_unitario:r.preco_unitario,frete:r.frete,
@@ -121,16 +139,20 @@ export function analisarBuscaProfunda({produto,caracteristicas_obrigatorias=[],l
       lojas_sem_links_validos:escolhidas.filter(l=>!presentes.includes(l)),
       anuncios_recebidos:ofertas.length,anuncios_unicos_validos:vistos.size,
       anuncios_compativeis:compativeis.length,anuncios_com_total_confirmado:custos.ranking.length,
+      anuncios_com_caracteristicas_pendentes:pendentes.filter(r=>r.caracteristicas_faltantes.length>0).length,
+      anuncios_com_preco_da_variacao_nao_confirmado:pendentes.filter(r=>r.pendencias.includes("preco_variacao_nao_confirmado")).length,
       anuncios_rejeitados:rejeitados.length,
       duplicatas_removidas:[...vistos.values()].reduce((s,r)=>s+r.duplicatas,0)
     },
     menor_preco_anunciado_provisorio:precoProvisorio[0]??null,
+    menor_preco_da_variacao_confirmada_provisorio:
+      (precoProvisorio.find(r=>!caracteristicas_obrigatorias.length||r.preco_variacao_confirmado)??null),
     menores_precos_anunciados_por_loja:melhoresPorLoja(precoProvisorio,"preco_unitario"),
     ranking_preco_anunciado_provisorio:precoProvisorio,
     menor_custo_total_confirmado:custos.menor_total,
     menores_custos_totais_por_loja:melhoresPorLoja(custos.ranking,"total"),
     ranking_custo_total_confirmado:custos.ranking,
     pendentes,rejeitados,
-    observacao:"Resultado limitado aos anúncios fornecidos. Não pesquisa a web nem comprova o menor preço absoluto. Preço anunciado não é preço final. Frete, impostos e outros campos ausentes não são zero."
+    observacao:"Resultado limitado aos anúncios fornecidos e às confirmações declaradas pelo chamador. O servidor não verifica a página, a seleção da variação, o estoque ou o checkout por conta própria. Preço anunciado não é total final; valores ausentes não são zero."
   };
 }
