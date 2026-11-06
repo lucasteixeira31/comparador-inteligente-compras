@@ -9,8 +9,8 @@ test("plugin @comprar usa App MCP sem MCP direto",()=>{
   const app=JSON.parse(read(".app.json"));
   assert.equal(rootManifest.name,"comprar");
   assert.equal(rootManifest.extensions["com.openai"].interface.displayName,"comprar");
-  assert.equal(rootManifest.version,"0.9.9");
-  assert.equal(compat.version,"0.9.9");
+  assert.equal(rootManifest.version,"0.10.0");
+  assert.equal(compat.version,"0.10.0");
   assert.equal(rootManifest.extensions["com.openai"].apps,"./.app.json");
   assert.equal(compat.apps,"./.app.json");
   assert.equal(app.apps["comprar-backend"].id,"asdk_app_6aeca1ead5d88191974ba923cfef6dc3");
@@ -90,4 +90,32 @@ test("preco de busca e URL de MCP permanecem separados da edicao",()=>{
   assert.match(skill,/nunca serializar/);
   assert.match(guia,/R\$ 39,77 pesquisado contra R\$ 49,77/);
   assert.match(guia,/\*\*nunca\*\* \x60\[rótulo\]\(URL\)\x60/);
+});
+
+test("botões de navegação distinguem pesquisar mais de nova pesquisa",()=>{
+  const nav=read("skills/navegacao-compras/SKILL.md");
+  const guia=readFileSync(new URL("../docs/TABELA-CHAT.md",root),"utf8");
+  assert.match(nav,/Buscar mais ofertas/);
+  assert.match(nav,/Nova pesquisa/);
+  assert.match(nav,/Mesmo produto e filtros; procurar outros anúncios/);
+  assert.match(nav,/Escolher outro produto e começar do zero/);
+  assert.match(nav,/abaixo da lista e do botão único/);
+  assert.match(nav,/sem duplicatas|sem duplicata|Mesclar sem duplicatas/);
+  assert.match(nav,/IDs subsequentes/);
+  assert.match(nav,/Preservar o estado da comparação anterior/);
+  assert.match(nav,/edições ainda \*\*não enviadas\*\*/);
+  assert.match(nav,/Nenhuma oferta nova encontrada nesta rodada/);
+  assert.match(nav,/não apagar|sem remover mensagens ou tabelas/);
+  assert.match(guia,/após os anúncios e o único botão Enviar tabela/);
+  assert.match(guia,/sem rolagem horizontal/);
+});
+
+test("busca adicional mantém lojas selecionadas e nova pesquisa não herda resultados",()=>{
+  const nav=read("skills/navegacao-compras/SKILL.md");
+  assert.match(nav,/marketplaces que foram selecionados/);
+  assert.match(nav,/Não ampliar a lojas fora da seleção/);
+  assert.match(nav,/não são duas ofertas|mesmo anúncio|mesmo ID|mesmo anúncio de produto/);
+  assert.match(nav,/não reutilizar anúncios ou custos/);
+  assert.match(nav,/Qual produto você deseja analisar\?/);
+  assert.match(nav,/#visual/);
 });

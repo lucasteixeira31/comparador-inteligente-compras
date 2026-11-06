@@ -1,4 +1,4 @@
-# Tabela editável na própria conversa — @comprar 0.9.9
+# Tabela editável na própria conversa — @comprar 0.10.0
 
 O modo **Chat** continua sendo a experiência padrão do plugin. A partir da versão 0.9.9, a interface desejada após uma pesquisa é uma **tabela com campos editáveis nativos do ChatGPT e um botão “Enviar tabela”**, sem abrir o HTML da interface `#visual`.
 
@@ -26,6 +26,23 @@ A versão anterior mostrou quatro campos de entrada em todas as linhas de uma ta
 4. Um único botão **Enviar tabela** no rodapé, que envia todos os anúncios e as alterações informadas em uma mensagem ao mesmo chat.
 
 Não usar formulários dentro de tabelas largas ou com colunas estreitas. Priorizar leitura e toque no celular, sem rolagem horizontal; disponibilizar links clicáveis e campos com rótulos visíveis. Números ausentes seguem `null`, jamais zero automático.
+
+## Navegação depois da pesquisa — v0.10.0
+
+A interface apresenta, **após os anúncios e o único botão Enviar tabela**, dois controles nativos e responsivos. Eles são opcionais, não substituem a tabela e continuam disponíveis depois da consolidação:
+
+- **Buscar mais ofertas** — texto explicativo: **“Mesmo produto e filtros; procurar outros anúncios.”** Mantém a comparação existente, incluindo tamanho, CEP, orçamento, marketplaces escolhidos, IDs, links, correções e pendências. Executa novas consultas ou utiliza outras fontes de pesquisa autorizadas quando disponíveis, deduplica por URL/ID de anúncio e **acrescenta apenas ofertas inéditas** com IDs subsequentes. Caso não encontre novidades, informa isso sem apagar a tabela. Valores ainda não enviados precisam ser preservados; se o host não puder carregá-los, pedir o envio da tabela antes de pesquisar mais.
+- **Nova pesquisa** — texto explicativo: **“Escolher outro produto e começar do zero.”** Inicia uma comparação independente, sem reaproveitar links ou custos da pesquisa anterior, mas **preserva o histórico da conversa**. Se houver alterações ainda não enviadas, perguntar antes se o usuário deseja enviá-las ou descartá-las; não apagar silenciosamente. Reapresentar o aviso de preços provisórios, o campo “Qual produto você deseja analisar?” e o botão Pesquisar.
+
+Em telas largas, os dois controles podem ficar lado a lado. No celular, devem aparecer empilhados, com ícone e rótulo textual, sem rolagem horizontal. **Não usar apenas “Reiniciar” como título do segundo botão**, pois a intenção é iniciar uma pesquisa nova e independente. Esses controles permanecem no **modo Chat**, sem acionar o modo `#visual`.
+
+### Comportamento das ações
+
+Ao tocar **Buscar mais ofertas**, uma nova mensagem na mesma conversa transporta a intenção de continuar **e, se possível, o estado completo da comparação atual**. Pesquisa adicional não é sinônimo de pesquisar de novo exatamente os mesmos links: variar consultas, páginas e mecanismos efetivamente disponíveis, sempre respeitando as lojas selecionadas. O resultado informa quantas ofertas realmente novas foram adicionadas e mantém os cartões editáveis.
+
+Ao tocar **Nova pesquisa**, a conversa registra a intenção explícita de começar outra comparação e pergunta o novo produto. Novas ofertas começam com IDs próprios a partir de #1; IDs e URLs históricos não são alterados.
+
+Se o cliente ChatGPT não oferecer botões nativos, exibir as duas opções textuais e reconhecer seus nomes como comandos. Nunca indicar que o botão funciona sem teste no cliente. O backend MCP atual não fornece por si só a persistência de estado entre mensagens; o histórico conversacional e o estado enviado pelo host são a referência.
 
 ## Link individual sempre visível (0.9.9)
 

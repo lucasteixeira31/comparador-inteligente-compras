@@ -12,7 +12,7 @@ O nome técnico e visível do plugin atual é **comprar** (menção **`@comprar`
 
 O **modo Chat é padrão** e o modo gráfico só abre por solicitação explícita. Exemplos: `@comprar` (conversa), `@comprar #visual` (gráfico) e `#chat` (voltar ao texto). Consulte o **[guia completo dos gatilhos](docs/GATILHOS.md)**, que explica os comandos, exemplos práticos, limitações e regras de alternância.
 
-## Plugin `@comprar` — Chat padrão e modo gráfico opt-in (0.9.9)
+## Plugin `@comprar` — Chat padrão e modo gráfico opt-in (0.10.0)
 
 **Primeiro contato (`@comprar` sem produto):** mostrar aviso curto de que preços de busca podem mudar; em seguida perguntar **"Qual produto você deseja analisar?"** com campo conversacional e botão **Pesquisar/Enviar** na mesma conversa, se suportados. Ao enviar o produto, pesquisar e mostrar os **links individuais e cartões editáveis juntos na primeira resposta**. Se a invocação já incluir o produto, pesquisar diretamente após aviso sucinto. Caso o cliente não suporte o botão, aceitar resposta textual normalmente.
 
@@ -32,7 +32,13 @@ Na pesquisa de anúncios, o plugin separa **tamanho disponível**, **preço da v
 
 Na comparação conversacional `consolidar_comparacao_chat`, o campo `orcamento_total` compara o limite com o **total de compra completo** (preço × quantidade + frete + impostos + taxas − descontos confirmados). Ofertas que dependam de custos desconhecidos ficam como **indeterminadas** em relação ao orçamento. Consulte [as regras detalhadas de validação de ofertas](docs/VALIDACAO-OFERTAS.md). O modo Chat continua padrão e a interface `#visual` permanece opcional.
 
-## Tabela de custos no modo Chat — 0.9.9
+## Duas ações após cada pesquisa (v0.10.0)
+
+O fluxo conversacional passa a oferecer, logo após a lista de anúncios/campos de correção e o botão `Enviar tabela`, as opções **Buscar mais ofertas** (continua a comparação com os mesmos filtros; consulta outras fontes/termos disponíveis, elimina duplicados e incorpora novos anúncios sem apagar correções) e **Nova pesquisa** (começa outra comparação independente, pergunta qual produto pesquisar e mantém o histórico anterior). Os controles têm ícones + legendas e apresentação responsiva; se o host não renderizar controles, são aceitos como comandos textuais. Não confundir esta navegação com o modo `#visual`.
+
+Consultar [navegação da tabela conversacional](docs/TABELA-CHAT.md#navegação-depois-da-pesquisa--v0100) e `plugin-chat/skills/navegacao-compras/SKILL.md`. A existência da instrução não confirma renderização: testar os botões no ChatGPT Web.
+
+## Tabela de custos no modo Chat — 0.10.0
 
 **Regra de interface:** após apresentar os anúncios, o @comprar mostra **uma lista vertical responsiva de cartões compactos** na própria conversa; cada anúncio apresenta ID, loja, título, preço anunciado e um link **“Abrir anúncio na [loja]” sempre visível em uma linha separada**; o botão **Editar** expande apenas os custos. Somente o cartão aberto revela os campos de valores, sem rolagem horizontal. A lista usa controles nativos do ChatGPT quando disponíveis. Cada linha inclui anúncio/link, preço anunciado, campos **preço real**, **frete**, **impostos** e campos opcionais para custos extras e descontos. O botão **Enviar tabela** encaminha todas as linhas à mesma conversa para cálculo e registro. Campos vazios continuam pendentes; zero só quando explicitamente confirmado. Não exigir comandos do tipo `#6 preço 46,30, frete 12`.
 
