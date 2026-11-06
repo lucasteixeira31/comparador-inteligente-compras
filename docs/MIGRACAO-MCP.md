@@ -1,4 +1,6 @@
-# Migração do @comprar para MCP direto — v0.10.2
+# Migração do @comprar para MCP direto — v0.10.3
+
+**Atualização de recuperação (v0.10.3):** a referência ativa ao App registrado separadamente, `extensions.com.openai.apps` e `apps` de compatibilidade, foi removida dos manifests. O arquivo físico `.app.json` foi **preservado como backup não declarado**, sem depender da instalação desfeita de `comprar-backend`. O MCP remoto é acessado pelo `mcp.json` direto e pela variante de compatibilidade `.mcp.json`. A mudança tenta corrigir a ausência do `@comprar` no ChatGPT Web, porém o resultado no seletor só pode ser atestado por um teste de usuário no cliente.
 
 ## Finalidade
 
@@ -11,7 +13,7 @@ Reunir no plugin pessoal `@comprar` a experiência conversacional (skills e cart
 - MCP remoto já existente: `https://comparador-inteligente-compras.vercel.app/api/mcp`.
 - Configuração portátil em `plugin-chat/mcp.json`: `mcpServers.comprar.type = streamable-http` com HTTPS, autenticador `none`, conforme política atual do endpoint.
 - Formato de compatibilidade em `plugin-chat/.mcp.json`; `plugin-chat/.codex-plugin/plugin.json` referencia `./.mcp.json`.
-- A referência `plugin-chat/.app.json` continua ativa, apontando para o App técnico anterior `asdk_app_6aeca1ead5d88191974ba923cfef6dc3`. A versão nova **não depende de removê-la** para validar o empacotamento.
+- A referência física `plugin-chat/.app.json` continua arquivada como backup, mas não é mais declarada nos manifests. O plugin não depende do cadastro desinstalado.
 
 ## O que esta versão comprova
 

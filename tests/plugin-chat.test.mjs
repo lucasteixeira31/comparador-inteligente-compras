@@ -3,17 +3,17 @@ import assert from "node:assert/strict";
 import { readFileSync, existsSync } from "node:fs";
 const root = new URL("../plugin-chat/", import.meta.url);
 const read = p => readFileSync(new URL(p,root),"utf8");
-test("plugin @comprar combina MCP direto e App legado sem excluir funcionalidades",()=>{
+test("plugin @comprar utiliza MCP remoto direto sem depender de App legado",()=>{
   const rootManifest=JSON.parse(read("plugin.json"));
   const compat=JSON.parse(read(".codex-plugin/plugin.json"));
   const app=JSON.parse(read(".app.json"));
   assert.equal(rootManifest.name,"comprar");
   assert.equal(rootManifest.extensions["com.openai"].interface.displayName,"comprar");
-  assert.equal(rootManifest.version,"0.10.2");
-  assert.equal(compat.version,"0.10.2");
-  assert.equal(rootManifest.extensions["com.openai"].apps,"./.app.json");
-  assert.equal(compat.apps,"./.app.json");
-  assert.equal(app.apps["comprar-backend"].id,"asdk_app_6aeca1ead5d88191974ba923cfef6dc3");
+  assert.equal(rootManifest.version,"0.10.3");
+  assert.equal(compat.version,"0.10.3");
+  assert.equal(rootManifest.extensions["com.openai"].apps,undefined);
+  assert.equal(compat.apps,undefined);
+  assert.equal(app.apps["comprar-backend"].id,"asdk_app_6aeca1ead5d88191974ba923cfef6dc3"); // Backup não declarado e sem dependência ativa.
   assert.equal(compat.mcpServers,"./.mcp.json");
   assert.equal(rootManifest.mcpServers,undefined);
   assert.equal(existsSync(new URL("mcp.json",root)),true);
@@ -26,6 +26,7 @@ test("plugin @comprar combina MCP direto e App legado sem excluir funcionalidade
   assert.equal(server.url,"https://comparador-inteligente-compras.vercel.app/api/mcp");
   assert.equal(server.extensions["com.openai"].auth.type,"none");
   assert.equal(legacy.mcpServers.comprar.url,server.url);
+  assert.equal(compat.mcpServers,"./.mcp.json");
   assert.equal(Object.keys(portable.mcpServers).length,1);
   assert.match(read("agents/openai.yaml"),/\bCHAT\b/);
   const skill=read("skills/comparar-compras/SKILL.md");

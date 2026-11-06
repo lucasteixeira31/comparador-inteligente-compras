@@ -21,12 +21,11 @@
         "displayName": "comprar",
         "longDescription": "Pesquise anúncios do Mercado Livre, Shopee, AliExpress, Amazon, SHEIN e Temu. Selecione lojas e informe produto, descrição e valor pretendido em campos separados. Corrija preços reais, frete, impostos e taxas em cartões editáveis no ChatGPT.",
         "shortDescription": "Compare preços e fretes"
-      },
-      "apps": "./.app.json"
+      }
     }
   },
   "name": "comprar",
-  "version": "0.10.2",
+  "version": "0.10.3",
   "repository": "https://github.com/lucasteixeira31/comparador-inteligente-compras",
   "homepage": "https://comparador-inteligente-compras.vercel.app"
 }

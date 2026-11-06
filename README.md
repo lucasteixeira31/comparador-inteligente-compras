@@ -17,6 +17,14 @@ Projeto pessoal, gratuito, sem monetização e de código aberto para uso no **C
 
 Leia [MIGRACAO-MCP.md](docs/MIGRACAO-MCP.md) para critérios de aceite e reversão.
 
+## Recuperação do @comprar após desinstalação do cadastro técnico (v0.10.3)
+
+Na v0.10.2, o plugin tinha simultaneamente um MCP direto e uma referência `.app.json` para o registro de desenvolvimento `comprar-backend`. Após a desinstalação desse registro, o `@comprar` deixou de aparecer no ChatGPT Web do mantenedor. A causa exata da ausência na interface não pôde ser comprovada por acesso ao cliente, mas a dependência inválida foi removida.
+
+Na **v0.10.3**, o manifesto portátil **não declara `extensions.com.openai.apps`** e o manifesto de compatibilidade **não declara `apps`**. O MCP direto continua disponível via `plugin-chat/mcp.json` e `plugin-chat/.mcp.json`, com `mcpServers.comprar` apontando ao mesmo servidor na Vercel. O arquivo `plugin-chat/.app.json` permanece no repositório **não declarado e inativo**, somente como backup de configuração. O servidor na Vercel, as oito ferramentas, o histórico GitHub e as três skills foram preservados.
+
+**Estado de homologação:** o plugin foi atualizado e os testes automatizados verificam seu empacotamento, mas a presença no seletor `@` e o funcionamento das ferramentas em uma sessão limpa exigem nova confirmação do usuário. Se o plugin não estiver instalado, abrir a página do `@comprar` e instalar/ativar novamente; não reinstalar o antigo `@comprar-backend` para contornar isso sem necessidade. Não prometer que um registro independente desapareça apenas por mudar o pacote.
+
 ## Como encontrar no ChatGPT
 
 O nome técnico e visível do plugin atual é **comprar** (menção **`@comprar`**); a pasta histórica `plugin-template/` usa o identificador antigo `comparador-inteligente-compras` e não é o pacote principal de Chat. O plugin é pessoal e privado; **atualizar o nome não garante que apareça no seletor `@`** se não estiver instalado/ativado ou se o cliente atual não oferecer suporte. Abra a página do plugin no ChatGPT, confira a instalação em **Plugins → Pessoais/Instalados**, e teste novamente em uma conversa compatível, preferencialmente ChatGPT Web. A disponibilidade varia por interface, conta e configurações; uma instalação não substitui o teste na interface.

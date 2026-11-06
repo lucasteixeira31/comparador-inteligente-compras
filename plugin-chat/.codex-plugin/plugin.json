@@ -14,9 +14,8 @@
     "longDescription": "Pesquise anúncios do Mercado Livre, Shopee, AliExpress, Amazon, SHEIN e Temu. Selecione lojas e informe produto, descrição e valor pretendido em campos separados. Corrija preços reais, frete, impostos e taxas em cartões editáveis no ChatGPT.",
     "shortDescription": "Compare preços e fretes"
   },
-  "apps": "./.app.json",
   "name": "comprar",
-  "version": "0.10.2",
+  "version": "0.10.3",
   "description": "Comparador de preços com formulário inicial completo, lojas selecionáveis e correção de custos no ChatGPT.",
   "author": {
     "name": "Faculdade Detroit",
