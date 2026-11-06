@@ -9,8 +9,8 @@ test("plugin @comprar usa App MCP sem MCP direto",()=>{
   const app=JSON.parse(read(".app.json"));
   assert.equal(rootManifest.name,"comprar");
   assert.equal(rootManifest.extensions["com.openai"].interface.displayName,"comprar");
-  assert.equal(rootManifest.version,"0.9.6");
-  assert.equal(compat.version,"0.9.6");
+  assert.equal(rootManifest.version,"0.9.7");
+  assert.equal(compat.version,"0.9.7");
   assert.equal(rootManifest.extensions["com.openai"].apps,"./.app.json");
   assert.equal(compat.apps,"./.app.json");
   assert.equal(app.apps["comprar-backend"].id,"asdk_app_6aeca1ead5d88191974ba923cfef6dc3");
@@ -37,6 +37,11 @@ test("plugin @comprar usa App MCP sem MCP direto",()=>{
   assert.match(skill,/[Cc]ampo vazio significa/);
   assert.match(skill,/Não esperar o usuário digitar/);
   assert.match(skill,/instruções de skill não garantem renderização/);
+  assert.match(skill,/RESPONSIVA EM CARTÕES EXPANSÍVEIS/);
+  assert.match(skill,/mobile-first/);
+  assert.match(skill,/um anúncio por vez/);
+  assert.match(skill,/Manter os valores digitados/);
+  assert.match(skill,/rolagem horizontal/);
 });
 
 test("guia dos gatilhos esta acessivel a partir do README e esclarece seus limites",()=>{
@@ -48,4 +53,7 @@ test("guia dos gatilhos esta acessivel a partir do README e esclarece seus limit
     assert.ok(guia.includes(comando),"Gatilho não documentado: "+comando);
   assert.match(guia,/não comandos universais/);
   assert.match(guia,/não são automaticamente sincronizados/);
+  const tabela=readProject("docs/TABELA-CHAT.md");
+  assert.match(tabela,/cartões compactos e expansíveis/);
+  assert.match(tabela,/não se perdem/);
 });

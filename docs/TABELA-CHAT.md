@@ -1,6 +1,17 @@
-# Tabela editável na própria conversa — @comprar 0.9.6
+# Tabela editável na própria conversa — @comprar 0.9.7
 
-O modo **Chat** continua sendo a experiência padrão do plugin. A partir da versão 0.9.6, a interface desejada após uma pesquisa é uma **tabela com campos editáveis nativos do ChatGPT e um botão “Enviar tabela”**, sem abrir o HTML da interface `#visual`.
+O modo **Chat** continua sendo a experiência padrão do plugin. A partir da versão 0.9.7, a interface desejada após uma pesquisa é uma **tabela com campos editáveis nativos do ChatGPT e um botão “Enviar tabela”**, sem abrir o HTML da interface `#visual`.
+
+## Layout responsivo aprovado para testes (0.9.7)
+
+A versão anterior mostrou quatro campos de entrada em todas as linhas de uma tabela larga e repetitiva. Esse layout não é adequado para celular. O padrão passa a ser **cartões compactos e expansíveis**, em lista vertical:
+
+1. Cartão fechado: número do anúncio, marketplace, nome/link, preço de vitrine e status de G3, com botão `Editar`.
+2. Cartão aberto: **Preço real**, **Frete**, **Impostos** e **Taxas** em grade que se adapta à largura, mais confirmação opcional de G3 disponível.
+3. Um cartão aberto por vez; os valores já digitados **não se perdem** ao navegar entre os anúncios.
+4. Um único botão **Enviar tabela** no rodapé, que envia todos os anúncios e as alterações informadas em uma mensagem ao mesmo chat.
+
+Não usar formulários dentro de tabelas largas ou com colunas estreitas. Priorizar leitura e toque no celular, sem rolagem horizontal; disponibilizar links clicáveis e campos com rótulos visíveis. Números ausentes seguem `null`, jamais zero automático.
 
 ## Como funciona
 
