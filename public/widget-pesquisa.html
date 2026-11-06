@@ -27,8 +27,9 @@ button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-vis
 </head>
 <body>
 <section class="panel">
-  <h1>Comparador de Compras</h1>
-  <p>Preencha o que deseja comprar. A pesquisa acontece na conversa do ChatGPT, e os anúncios encontrados aparecem em uma segunda tabela para conferir e salvar preços reais.</p>
+  <h1>🛒 Comparador Inteligente de Compras</h1>
+  <p>Olá! Este é o chat de comparação de preços do @comprar. Pesquise produtos nas lojas selecionadas, confira os anúncios e compare o custo final com frete, impostos e taxas.</p>
+  <p class="notice">Os preços encontrados podem mudar conforme tamanho, cor, promoção e frete. Abra cada anúncio, confira os valores e, se houver diferença, corrija os campos antes de enviar a comparação.</p>
   <form id="search-form">
     <div class="grid">
       <label class="field" style="grid-column:1/-1">Produto *<input id="product" maxlength="200" placeholder="Ex.: blusa preta masculina" required></label>
@@ -49,7 +50,7 @@ button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-vis
 <script>
 (function(){
 "use strict";
-const shops=["Mercado Livre","Shopee","AliExpress","Amazon","SHEIN","Temu"];
+const shops=["Mercado Livre","Shopee","AliExpress","Amazon","SHEIN","Temu","TikTok Shop"];
 const $=id=>document.getElementById(id);
 const form=$("search-form");
 const status=text=>{$("status").textContent=text;};

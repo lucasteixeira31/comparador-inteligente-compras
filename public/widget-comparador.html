@@ -95,8 +95,8 @@ th{background:#f3f6fa}td b{white-space:nowrap}
 <script>
 (function(){
 "use strict";
-const shops=["Mercado Livre","Shopee","AliExpress","Amazon","SHEIN","Temu"];
-const domains={"Mercado Livre":"mercadolivre.com.br","Shopee":"shopee.com.br","AliExpress":"aliexpress.com","Amazon":"amazon.com.br","SHEIN":"shein.com","Temu":"temu.com"};
+const shops=["Mercado Livre","Shopee","AliExpress","Amazon","SHEIN","Temu","TikTok Shop"];
+const domains={"Mercado Livre":"mercadolivre.com.br","Shopee":"shopee.com.br","AliExpress":"aliexpress.com","Amazon":"amazon.com.br","SHEIN":"shein.com","Temu":"temu.com","TikTok Shop":"tiktok.com"};
 const $=id=>document.getElementById(id);
 const money=n=>new Intl.NumberFormat("pt-BR",{style:"currency",currency:"BRL"}).format(n);
 const raw=v=>String(v??"").trim();
@@ -112,6 +112,7 @@ const validUrl=(value,shop)=>{
     const u=new URL(value);
     const host=u.hostname.toLowerCase(),domain=domains[shop];
     if(!domain||u.protocol!=="https:"||u.username||u.password||!(host===domain||host.endsWith("."+domain)))return false;
+    if(shop==="TikTok Shop"&&!["tiktok.com","www.tiktok.com","shop.tiktok.com"].includes(host))return false;
     const path=u.pathname.toLowerCase();
     if(shop==="Mercado Livre")return /\/mlb-?\d{7,}/.test(path);
     if(shop==="Shopee")return /-i\.\d+\.\d+/.test(path)||/\/product\/\d+\/\d+/.test(path);
@@ -119,6 +120,7 @@ const validUrl=(value,shop)=>{
     if(shop==="Amazon")return /\/(?:dp|gp\/product)\/[a-z0-9]{10}/.test(path);
     if(shop==="SHEIN")return /-p-\d+\.html$/.test(path);
     if(shop==="Temu")return /-g-\d+\.html/.test(path)||(path.includes("/goods.html")&&u.searchParams.has("goods_id"));
+    if(shop==="TikTok Shop")return /^\/(?:shop\/pdp|(?:[a-z]{2}\/)?pdp|view\/product)\/(?:[^/?#]+\/)?\d{15,22}\/?$/.test(path);
     return false;
   }catch{return false;}
 };

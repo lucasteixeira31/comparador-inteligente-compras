@@ -15,7 +15,7 @@
     "shortDescription": "Compare preços e fretes"
   },
   "name": "comprar",
-  "version": "0.10.4",
+  "version": "0.10.5",
   "description": "Comparador de preços com formulário inicial completo, lojas selecionáveis e correção de custos no ChatGPT.",
   "author": {
     "name": "Faculdade Detroit",

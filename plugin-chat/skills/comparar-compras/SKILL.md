@@ -3,7 +3,7 @@ name: comparar-compras
 description: Use quando o usuário invocar @comprar, pedir pesquisa de ofertas, edição de preços/frete/impostos ou classificação de compras na conversa.
 ---
 
-# @comprar — Chat com tabela editável nativa; #visual sob demanda — 0.10.1
+# @comprar — Chat com tabela editável nativa; #visual sob demanda — 0.10.5
 
 ## Modos de uso e gatilhos (experiência padrão: conversa)
 
@@ -25,11 +25,13 @@ Para compatibilidade com o **ChatGPT Web**, usar o App MCP remoto registrado em 
 
 ## Lojas permitidas
 
-Apenas Mercado Livre, Shopee, AliExpress, Amazon, SHEIN e Temu. Aceitar anúncios individuais em HTTPS nos domínios oficiais, inclusive vendedores terceiros dentro das lojas, sem ranquear reputação de vendedores. Não usar páginas genéricas de pesquisa como se fossem anúncios nem links falsos/redirecionamentos para pagamentos externos. A seleção padrão, se não informada, é Mercado Livre, Shopee e AliExpress.
+Apenas Mercado Livre, Shopee, AliExpress, Amazon, SHEIN, Temu e TikTok Shop. Aceitar anúncios individuais em HTTPS nos domínios oficiais, inclusive vendedores terceiros dentro das lojas, sem ranquear reputação de vendedores. Não usar páginas genéricas de pesquisa como se fossem anúncios nem links falsos/redirecionamentos para pagamentos externos. A seleção padrão, se não informada, é Mercado Livre, Shopee e AliExpress.
 
-## Etapa 1 — Primeiro contato e entrada conversacional (v0.10.1)
+**TikTok Shop:** é sétima opção, desmarcada por padrão; se selecionada, pesquisar páginas de **produto** reais nos domínios exatos `shop.tiktok.com`, `www.tiktok.com` ou `tiktok.com` (caminhos `/view/product/<id>`, `/shop/pdp/<slug>/<id>` ou `/br/pdp/<slug>/<id>`, conforme URL efetiva). Links de vídeos, perfis, lives e vitrines sem produto específico não são ofertas. Não inventar disponibilidade ou preço. Aplicar a mesma edição de preço, frete, taxas, impostos, descontos e ranking de todas as lojas. O total só é confirmado quando os componentes forem verificados.
 
-Quando `@comprar` for invocado sem produto, mostrar um aviso curto de que os preços encontrados na pesquisa podem mudar e perguntar “Qual produto você deseja analisar?”. **Não reduzir o formulário a um único campo**: a entrada normal deve exibir **Produto**, **Descrição ou características**, **Onde deseja pesquisar?** (checkboxes para Mercado Livre, Shopee, AliExpress, Amazon, SHEIN e Temu) e **Quanto pretende gastar? (R$)** (valor de referência), cada um com rótulo e controle próprios. Produto é obrigatório; descrição e valor pretendido são opcionais. Mercado Livre, Shopee e AliExpress começam selecionados; o usuário pode alterar as lojas e a pesquisa deve respeitar somente as selecionadas. Mostrar **Quantidade** (1), **CEP** (opcional) e **Condição** (novo) em “Mais opções” quando suportado.
+## Etapa 1 — Primeiro contato e entrada conversacional (v0.10.5)
+
+Quando `@comprar` for invocado sem produto, mostrar um aviso curto de que os preços encontrados na pesquisa podem mudar e perguntar “Qual produto você deseja analisar?”. **Não reduzir o formulário a um único campo**: a entrada normal deve exibir **Produto**, **Descrição ou características**, **Onde deseja pesquisar?** (checkboxes para Mercado Livre, Shopee, AliExpress, Amazon, SHEIN, Temu e TikTok Shop) e **Quanto pretende gastar? (R$)** (valor de referência), cada um com rótulo e controle próprios. Produto é obrigatório; descrição e valor pretendido são opcionais. Mercado Livre, Shopee e AliExpress começam selecionados; o usuário pode alterar as lojas e a pesquisa deve respeitar somente as selecionadas. Mostrar **Quantidade** (1), **CEP** (opcional) e **Condição** (novo) em “Mais opções” quando suportado.
 
 A skill `entrada-compras` detalha o formulário e prevalece na construção do primeiro contato. Em celular, usar cartões/coluna e checkboxes responsivos; não abrir HTML de MCP Apps no modo Chat. Botão **"Pesquisar"** nativo e funcional envia os critérios em uma única mensagem à **mesma conversa**, sem nova aba. Se o cliente não suportar controles, apresentar quatro perguntas separadas em texto para receber uma resposta única. Nunca alegar que o botão funcionou sem teste.
 

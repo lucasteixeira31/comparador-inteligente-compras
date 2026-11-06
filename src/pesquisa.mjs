@@ -10,6 +10,8 @@ function caminhoDeAnuncio(url, loja) {
   if (loja === "Amazon") return /\/(?:dp|gp\/product)\/[a-z0-9]{10}/.test(path);
   if (loja === "Temu") return /-g-\d+\.html/.test(path) || (path.includes("/goods.html") && url.searchParams.has("goods_id"));
   if (loja === "SHEIN") return /-p-\d+\.html$/.test(path);
+  // TikTok Shop: somente páginas de detalhe de produto com ID, não vídeos ou perfis.
+  if (loja === "TikTok Shop") return /^\/(?:shop\/pdp|(?:[a-z]{2}\/)?pdp|view\/product)\/(?:[^/?#]+\/)?\d{15,22}\/?$/.test(path);
   return false;
 }
 
@@ -39,7 +41,7 @@ function consulta(produto, caracteristicas) {
 
 async function pesquisarLoja(loja, query, limite, { apiKey, fetchImpl }) {
   const body = {
-    query,
+    query: loja === "TikTok Shop" ? "TikTok Shop " + query : query,
     search_depth: "basic",
     topic: "general",
     max_results: Math.max(5, Math.min(12, limite * 3)),

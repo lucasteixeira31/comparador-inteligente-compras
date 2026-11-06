@@ -6,6 +6,8 @@ O modo **Chat** continua sendo a experiência padrão do plugin. A partir da ver
 
 O usuário testou o `@comprar` em um chat fora do projeto e viu **apenas um campo único para escrever tudo**. Esse formato é **incompleto** e não atende ao MVP aprovado. A entrada no modo Chat deve conservar o aviso breve e oferecer os **quatro grupos de campos separados** abaixo.
 
+**Cabeçalho:** “🛒 Comparador Inteligente de Compras”. Logo abaixo: “Olá! Este é o chat de comparação de preços do @comprar. Pesquise produtos nas lojas selecionadas, compare anúncios e revise os valores reais antes de salvar sua comparação final.”
+
 **Aviso inicial:** “Os preços encontrados na pesquisa podem mudar conforme tamanho, cor, promoção e frete. Abra cada anúncio, confira os valores e, se houver diferença, corrija os campos antes de enviar a comparação.”
 
 **Pergunta:** “Qual produto você deseja analisar?”
@@ -14,7 +16,7 @@ O usuário testou o `@comprar` em um chat fora do projeto e viu **apenas um camp
 |---|---|---|---|
 | **Produto** | Campo de texto simples | Vazio; ex.: camiseta oversized | Sim |
 | **Descrição ou características** | Área de texto | Vazia; ex.: G3, preta, algodão | Não |
-| **Onde deseja pesquisar?** | Seis checkboxes: Mercado Livre, Shopee, AliExpress, Amazon, SHEIN e Temu | Os três primeiros marcados, demais desmarcados | Ao menos uma loja |
+| **Onde deseja pesquisar?** | Sete checkboxes: Mercado Livre, Shopee, AliExpress, Amazon, SHEIN, Temu e TikTok Shop | Os três primeiros marcados, demais desmarcados | Ao menos uma loja |
 | **Quanto pretende gastar? (R$)** | Campo de valor/moeda | Vazio; ex.: 150,00 | Não |
 
 A seção recolhível **Mais opções** contém **Quantidade** (padrão 1), **CEP** e **Condição** (padrão novo). Os campos aparecem em coluna, checkboxes se adaptam à largura, sem rolagem horizontal. Ao clicar em **Pesquisar**, o ChatGPT recebe o conjunto completo e **somente as lojas efetivamente selecionadas** como uma única mensagem na mesma conversa.

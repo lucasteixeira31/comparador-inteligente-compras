@@ -1,4 +1,4 @@
-export const LOJAS = ["Mercado Livre", "Shopee", "AliExpress", "Amazon", "SHEIN", "Temu"];
+export const LOJAS = ["Mercado Livre", "Shopee", "AliExpress", "Amazon", "SHEIN", "Temu", "TikTok Shop"];
 
 export const DOMINIOS = Object.freeze({
   "Mercado Livre": ["mercadolivre.com.br"],
@@ -6,7 +6,8 @@ export const DOMINIOS = Object.freeze({
   "AliExpress": ["aliexpress.com"],
   "Amazon": ["amazon.com.br"],
   "SHEIN": ["shein.com"],
-  "Temu": ["temu.com"]
+  "Temu": ["temu.com"],
+  "TikTok Shop": ["tiktok.com"]
 });
 
 export function dominioAutorizado(link, loja) {
@@ -15,6 +16,8 @@ export function dominioAutorizado(link, loja) {
     const u = new URL(link);
     if (u.protocol !== "https:" || u.username || u.password) return false;
     const hostname = u.hostname.toLowerCase();
+    // Só os hosts oficiais de páginas de produto, não subdomínios de terceiros.
+    if (loja === "TikTok Shop") return ["tiktok.com", "www.tiktok.com", "shop.tiktok.com"].includes(hostname);
     return DOMINIOS[loja].some(d => hostname === d || hostname.endsWith("." + d));
   } catch {
     return false;

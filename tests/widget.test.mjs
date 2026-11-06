@@ -32,7 +32,7 @@ const formulario = readFileSync(new URL("../public/widget-pesquisa.html",import.
 test("formulario interativo informa criterios sem abrir guias",()=>{
   for(const id of ["product","features","budget","quantity","zip","condition","shops"])
     assert.ok(formulario.includes('id="'+id+'"'),"Campo ausente: "+id);
-  for(const shop of ["Mercado Livre","Shopee","AliExpress","Amazon","SHEIN","Temu"])
+  for(const shop of ["Mercado Livre","Shopee","AliExpress","Amazon","SHEIN","Temu","TikTok Shop"])
     assert.ok(formulario.includes('"'+shop+'"'));
   assert.ok(formulario.includes("sendFollowUpMessage"));
   assert.ok(formulario.includes("abrir_tabela_comparacao"));

@@ -8,7 +8,7 @@ O modo **Chat** é o padrão de trabalho. A interface gráfica só será aberta 
 
 ## O que o comparador consegue comprovar
 
-1. **Link individual:** valida se a URL é HTTPS, pertence ao domínio oficial de um dos seis marketplaces aprovados e corresponde à estrutura de um anúncio individual. Isso **não comprova** que o anúncio existe, esteja disponível ou tenha aquele preço.
+1. **Link individual:** valida se a URL é HTTPS, pertence ao domínio oficial de um dos sete marketplaces aprovados e corresponde à estrutura de um anúncio individual. Isso **não comprova** que o anúncio existe, esteja disponível ou tenha aquele preço.
 2. **Características obrigatórias:** tamanho, cor e versão precisam aparecer no título do anúncio ou estar explicitamente presentes nas informações conferidas na fonte. O indicador `produto_confirmado` não substitui a conferência de G3 quando G3 é obrigatório.
 3. **Preço de variação:** encontrar “G3” na grade não significa que a variante G3 custe o menor preço exibido. Só declarar `preco_variacao_confirmado: true` se o preço da variação estiver realmente visível ou tiver sido informado pelo usuário.
 4. **Disponibilidade:** somente quando conferida na fonte ou afirmada pelo usuário; o analisador não visita páginas por conta própria.
@@ -39,3 +39,8 @@ O custo real da variante e a disponibilidade devem ser conferidos na compra. O s
 - Comando `#visual`: fora do MVP padrão; só abrir por solicitação expressa.
 
 **Limitação técnica:** os novos parâmetros `caracteristicas_confirmadas`, `preco_variacao_confirmado` e `orcamento_total` são dados recebidos pela ferramenta, não uma coleta independente. A confiabilidade depende das fontes efetivamente consultadas e da conferência no carrinho.
+
+
+## TikTok Shop (v0.10.5)
+
+Somente URLs individuais de produto em `shop.tiktok.com`, `www.tiktok.com` e `tiktok.com` com estrutura de detalhe `/view/product/<ID>` ou `/shop/pdp/<slug>/<ID>` (variações regionais suportadas). Recusar vídeos, lives, perfis, páginas de busca, links curtos e domínios falsificados. O ID deve ter 15 a 22 dígitos. Mesmo quando o link passar na validação sintática, isso não prova que a mercadoria exista ou esteja disponível no Brasil; preço e frete continuam a depender de confirmação pelo comprador.

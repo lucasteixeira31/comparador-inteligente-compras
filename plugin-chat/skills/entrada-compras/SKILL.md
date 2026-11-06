@@ -4,15 +4,19 @@ name: entrada-compras
 description: Use obrigatoriamente na invocação @comprar para iniciar uma nova pesquisa, perguntar qual produto analisar, mostrar aviso de preço provisório, enviar pesquisa no modo Chat, apresentar links e cartões editáveis na mesma resposta e corrigir divergências de valores.
 ---
 
-# @comprar — Primeiro contato, conferência e envio conversacional (v0.10.1)
+# @comprar — Primeiro contato, conferência e envio conversacional (v0.10.5)
 
 Esta regra complementa `comparar-compras`, prevalecendo quando o usuário chamar apenas `@comprar` sem informar produto, e especializando a pesquisa de preços quando houver dúvida sobre valores. Preserve os demais mecanismos de validação, modos e cálculo da skill principal.
 
-## 1. Primeira resposta ao chamar apenas `@comprar` (v0.10.1)
+## 1. Primeira resposta ao chamar apenas `@comprar` (v0.10.5)
 
 **Esta regra prevalece sobre instruções antigas que pedem um único campo de texto.** O modo é Chat, sem abrir `#visual`. A captura do teste anterior demonstrou apenas um campo: isso **não atende** ao fluxo aprovado. Renderizar **campos distintos, rótulos e caixas de seleção nativas** na própria conversa quando o cliente permitir.
 
-**Aviso breve, antes do formulário:** “Os preços encontrados na pesquisa podem mudar conforme tamanho, cor, promoção e frete. Abra cada anúncio, confira os valores e, se houver diferença, corrija os campos antes de enviar a comparação.”
+**Cabeçalho da primeira resposta:** **🛒 Comparador Inteligente de Compras** (usar o ícone nativo `shopping-cart` ao lado do título, se disponível).
+
+**Boas-vindas, logo abaixo do cabeçalho:** “Olá! Este é o chat de comparação de preços do @comprar. Pesquise produtos nas lojas selecionadas, compare anúncios e revise os valores reais antes de salvar sua comparação final.”
+
+**Aviso breve, após as boas-vindas e antes do formulário:** “Os preços encontrados na pesquisa podem mudar conforme tamanho, cor, promoção e frete. Abra cada anúncio, confira os valores e, se houver diferença, corrija os campos antes de enviar a comparação.”
 
 **Pergunta:** “Qual produto você deseja analisar?”
 
@@ -20,11 +24,13 @@ Esta regra complementa `comparar-compras`, prevalecendo quando o usuário chamar
 
 1. **Produto** — campo separado `input`, rotulado “Produto *”, obrigatório, exemplo “Camiseta oversized”.
 2. **Descrição ou características** — campo `textarea` separado e opcional. Exemplo “G3, preta, algodão”. Não misturar com o título do produto; preserve tamanho e cor obrigatórios na pesquisa.
-3. **Onde deseja pesquisar?** — **seis checkboxes independentes** e nomeados para **Mercado Livre, Shopee, AliExpress, Amazon, SHEIN e Temu**. Iniciar Mercado Livre, Shopee e AliExpress marcados; os outros desmarcados. Permitir marcar/desmarcar livremente e pesquisar **somente nas lojas selecionadas**. Pelo menos uma loja é necessária.
+3. **Onde deseja pesquisar?** — **sete checkboxes independentes** e nomeados para **Mercado Livre, Shopee, AliExpress, Amazon, SHEIN, Temu e TikTok Shop**. Iniciar Mercado Livre, Shopee e AliExpress marcados; os outros desmarcados. Permitir marcar/desmarcar livremente e pesquisar **somente nas lojas selecionadas**. Pelo menos uma loja é necessária.
 4. **Quanto pretende gastar? (R$)** — campo monetário separado, opcional, exemplo “150,00”. É valor pretendido **de referência**, não exclusão absoluta de ofertas acima. Associá-lo ao orçamento informado para comparação com custos finais, sem ocultar opções relevantes.
 5. **Mais opções** — mostrar, de modo discreto e recolhível, **Quantidade** (padrão 1, inteiro positivo), **CEP** (opcional) e **Condição** (padrão novo); não exigir abertura para iniciar a pesquisa.
 
 O botão **Pesquisar** (ou “Enviar”) deve disparar **uma mensagem à mesma conversa**, com `produto`, `caracteristicas`, `lojas` como **lista das caixas realmente marcadas**, `orcamento`, `quantidade`, `cep`, `condicao`. Não acrescentar lojas não marcadas. Não abrir site externo nem iniciar `#visual`. Validar produto e ao menos uma loja; valores monetários em pt-BR devem ser convertidos corretamente (49,77 não é 4977).
+
+**TikTok Shop:** permitir a seleção individual da plataforma e buscar somente páginas de produto diretas oficiais em HTTPS, como `https://shop.tiktok.com/view/product/{id}` ou `https://www.tiktok.com/shop/pdp/{slug}/{id}`. Links de vídeos, perfis, lives, páginas de pesquisa e redirecionadores não são anúncios válidos; nunca afirmar preço/frete/estoque confirmado sem conferir. Se não houver links individuais acessíveis, informar `nenhum_link_individual` ou limitação de busca. O comparador aceita anúncios legítimos com dados pendentes.
 
 **Responsividade:** campos em coluna; checkboxes em duas colunas apenas quando houver espaço, caso contrário empilhar. Rótulos legíveis, sem rolagem horizontal, com áreas confortáveis para toque. O aviso aparece apenas no início de uma comparação, não depois de cada edição.
 

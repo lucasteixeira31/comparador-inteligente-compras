@@ -11,7 +11,7 @@
 
 ## Marketplaces autorizados
 
-Somente Mercado Livre, Shopee, AliExpress, Amazon, SHEIN e Temu nesta fase. Lista fechada no backend, filtros de domínio na descoberta, validação da plataforma na comparação, links HTTPS oficiais e comparação centrada na plataforma, sem notas individuais de reputação dos vendedores. Anúncios de terceiros dentro dos marketplaces são permitidos; sites, contatos e pagamentos externos não são aceitos. Alibaba está fora da primeira versão de compras ao consumidor.
+Somente Mercado Livre, Shopee, AliExpress, Amazon, SHEIN, Temu e TikTok Shop nesta fase. Lista fechada no backend, filtros de domínio na descoberta, validação da plataforma na comparação, links HTTPS oficiais e comparação centrada na plataforma, sem notas individuais de reputação dos vendedores. Anúncios de terceiros dentro dos marketplaces são permitidos; sites, contatos e pagamentos externos não são aceitos. Alibaba está fora da primeira versão de compras ao consumidor.
 
 ## Componentes
 

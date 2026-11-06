@@ -60,7 +60,7 @@ const handler = createMcpHandler((server) => {
     inputSchema: z.object({
       produto: z.string().min(2).max(200),
       caracteristicas: z.array(z.string().max(160)).max(12).default([]),
-      lojas: z.array(loja).min(1).max(6).default(["Mercado Livre", "Shopee", "AliExpress"]),
+      lojas: z.array(loja).min(1).max(7).default(["Mercado Livre", "Shopee", "AliExpress"]),
       limite_por_loja: z.number().int().min(1).max(5).default(3)
     }),
     annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: false, openWorldHint: true }
@@ -75,7 +75,7 @@ const handler = createMcpHandler((server) => {
     inputSchema: z.object({
       produto: z.string().min(1).max(200),
       caracteristicas_obrigatorias: z.array(z.string().max(100)).max(8).default([]),
-      lojas: z.array(loja).min(1).max(6).default(["Mercado Livre","Shopee","AliExpress","Amazon","SHEIN","Temu"]),
+      lojas: z.array(loja).min(1).max(7).default(["Mercado Livre","Shopee","AliExpress","Amazon","SHEIN","Temu"]),
       max_consultas_por_loja: z.number().int().min(1).max(4).default(3)
     }),
     annotations: {readOnlyHint:true,destructiveHint:false,idempotentHint:true,openWorldHint:false}
@@ -90,7 +90,7 @@ const handler = createMcpHandler((server) => {
     inputSchema: z.object({
       produto: z.string().min(1).max(200),
       caracteristicas_obrigatorias: z.array(z.string().max(100)).max(8).default([]),
-      lojas: z.array(loja).min(1).max(6).default(["Mercado Livre","Shopee","AliExpress","Amazon","SHEIN","Temu"]),
+      lojas: z.array(loja).min(1).max(7).default(["Mercado Livre","Shopee","AliExpress","Amazon","SHEIN","Temu"]),
       quantidade: z.number().int().min(1).max(1000).default(1),
       ofertas: z.array(z.object({
         loja,
@@ -169,7 +169,7 @@ const handler = createMcpHandler((server) => {
       quantidade: z.number().int().min(1).max(1000).default(1),
       cep: z.string().max(9).nullable().optional(),
       condicao: z.enum(["novo", "usado", "qualquer"]).default("novo"),
-      lojas: z.array(loja).min(1).max(6).default(["Mercado Livre", "Shopee", "AliExpress"])
+      lojas: z.array(loja).min(1).max(7).default(["Mercado Livre", "Shopee", "AliExpress"])
     }),
     _meta: {
       ui: { resourceUri: "ui://comparador/formulario-pesquisa-v1" },
