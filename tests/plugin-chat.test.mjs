@@ -115,7 +115,7 @@ test("busca adicional mantém lojas selecionadas e nova pesquisa não herda resu
   assert.match(nav,/marketplaces que foram selecionados/);
   assert.match(nav,/Não ampliar a lojas fora da seleção/);
   assert.match(nav,/não são duas ofertas|mesmo anúncio|mesmo ID|mesmo anúncio de produto/);
-  assert.match(nav,/não reutilizar anúncios ou custos/);
+  assert.match(nav,/não reutilize anúncios ou custos|Não misturar produtos, filtros, links, IDs ou preços/);
   assert.match(nav,/Qual produto você deseja analisar\?/);
   assert.match(nav,/#visual/);
 });
