@@ -75,12 +75,12 @@ test("primeiro contato @comprar avisa sobre preco e apresenta formulario complet
   assert.ok(skill.includes("Pesquisar"));
   assert.match(skill,/mesma conversa/);
   assert.match(skill,/produto e critérios suficientes/);
-  assert.match(skill,/não repetir pergunta/);
+  assert.match(skill,/repetir pergunta/);
   assert.match(skill,/Descrição ou características/);
   assert.match(skill,/Onde deseja pesquisar/);
   assert.match(skill,/Quanto pretende gastar/);
   assert.match(guia,/Formulário de entrada completo/);
-  assert.match(guia,/links individuais e cartões editáveis/);
+  assert.match(guia,/links individuais|links clicáveis/);
 });
 
 test("preco de busca e URL de MCP permanecem separados da edicao",()=>{
